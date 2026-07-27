@@ -37,7 +37,7 @@
               $groupName = $groupItems->first()?->menuGroup?->name;
             @endphp
             @if($groupName)
-              <li class="pt-4 pb-1 px-3 text-xs font-satoshi-bold uppercase tracking-wider text-slate-400 group-[.sidebar-collapsed]:hidden truncate select-none">
+              <li class="pt-4 pb-1 px-3 text-sm font-satoshi-semibold tracking-wider text-slate-400 group-[.sidebar-collapsed]:hidden truncate select-none">
                 {{ $groupName }}
               </li>
               <li class="hidden group-[.sidebar-collapsed]:block my-2 border-t border-slate-100"></li>
