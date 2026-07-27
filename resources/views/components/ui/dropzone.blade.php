@@ -3,7 +3,7 @@
     'label' => '',
     'multiple' => false,
     'accept' => 'image/*',
-    'maxSize' => 10, // in MB
+    'maxSize' => 2, // in MB
     'previewUrl' => null
 ])
 

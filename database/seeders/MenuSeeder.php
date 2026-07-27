@@ -41,6 +41,17 @@ class MenuSeeder extends Seeder
             'sort'               => '2',
         ]);
 
+        // === Menu 3: Banner (Group: Content Management) ===
+        Menu::create([
+            'menu_group_id'      => $kontenGroup?->id,
+            'nama_menu'          => 'Banner',
+            'permission_group_id'=> 9,
+            'icon'               => 'ri-image-line',
+            'href'               => '/banner',
+            'status'             => '1',
+            'sort'               => '2',
+        ]);
+
         // === Menu 2: Setting (Group: PENGATURAN) ===
         $setting = Menu::create([
             'menu_group_id'      => $pengaturanGroup?->id,
