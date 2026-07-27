@@ -10,7 +10,7 @@ class MenuGroupSeeder extends Seeder
     public function run()
     {
         MenuGroup::firstOrCreate(
-            ['name' => 'KONTEN'],
+            ['name' => 'Content Management'],
             [
                 'sort'   => 1,
                 'status' => 1,
@@ -18,7 +18,7 @@ class MenuGroupSeeder extends Seeder
         );
 
         MenuGroup::firstOrCreate(
-            ['name' => 'PENGATURAN'],
+            ['name' => 'Settings'],
             [
                 'sort'   => 2,
                 'status' => 1,

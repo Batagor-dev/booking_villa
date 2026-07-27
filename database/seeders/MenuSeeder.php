@@ -10,10 +10,10 @@ class MenuSeeder extends Seeder
 {
     public function run()
     {
-        $kontenGroup = MenuGroup::where('name', 'KONTEN')->first();
-        $pengaturanGroup = MenuGroup::where('name', 'PENGATURAN')->first();
+        $kontenGroup = MenuGroup::where('name', 'Content Management')->first();
+        $pengaturanGroup = MenuGroup::where('name', 'Settings')->first();
 
-        // === Menu 1: Artikel (Group: KONTEN) ===
+        // === Menu 1: Artikel (Group: Content Management) ===
         $artikel = Menu::create([
             'menu_group_id'      => $kontenGroup?->id,
             'nama_menu'          => 'Artikel',

@@ -1,102 +1,306 @@
-# AGENT.md — Redesign Admin Panel CMS
+# AGENT.md
 
-## 1. Ringkasan Project
+# Project Overview
 
-Redesign total tampilan **admin panel (backend)** dari sebuah CMS. Bagian auth (login/register) sudah dibuat sebelumnya dan **tidak diubah** — fokus redesign ada di layout dashboard/admin setelah user login.
+Project Name:
+Villa Booking, PMS (Property Management System) & Marketing CMS
 
-Prinsip utama pengerjaan:
+Stack:
+- Laravel 11
+- PostgreSQL
+- TailwindCSS
+- AlpineJS
+- Spatie Permission
+- Laravel Fortify (Auth)
+- Laravel Socialite (OAuth)
+- Yajra Laravel DataTables
+- Diglactic Laravel Breadcrumbs
+- Spatie Laravel Sluggable
+- Intervention Image v3
+- Laravel Pint (Linter)
 
-- **Cek kode/struktur lama dulu** sebelum menambah file baru — jangan duplikat komponen yang fungsinya sudah ada.
-- **Clean code & efisien** — hindari class Tailwind yang berulang-ulang ditulis manual di banyak file.
-- **Reusable component** — apapun yang muncul di lebih dari 1 halaman (button, card, table, badge, dll) WAJIB jadi Blade Component, bukan copy-paste.
+Architecture:
+Modular Monolith
 
-## 2. Tech Stack
+---
 
-| Layer              | Tools                                                                                                                          |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| Backend            | Laravel 11                                                                                                                     |
-| Styling            | Tailwind CSS v4 (`@tailwindcss/vite`, CSS-first config via `@theme`)                                                           |
-| Icon               | Remix Icon (`remixicon` — pakai class `ri-*`)                                                                                  |
-| Komponen           | Blade Components (`x-component`)                                                                                               |
-| Data Table         | Yajra Laravel DataTables + DataTables.js           |
-| Form Enhancement   | Select2 (`select2` — searchable select, multi-select, tagging)                                                                 |
-| Alert & Dialog     | SweetAlert2 (`sweetalert2` — alert, konfirmasi, toast notification)                                                            |
-| Chart (Opsional)   | ApexCharts — direkomendasikan karena ringan & gampang di-theme pakai CSS variable, cocok sama pendekatan CSS-first Tailwind v4 |
-| JavaScript         | Vanilla JavaScript (ES6+)                                                                                                      |
-| Build Tool         | Vite                                                                                                                           |
+# Goal
 
-> **Catatan Tailwind v4:** Konfigurasi warna, font, dan design token dilakukan lewat `@theme` di file CSS utama (bukan lagi `tailwind.config.js` untuk sebagian besar kasus). Sesuaikan bagian ini kalau project kamu masih memakai konfigurasi Tailwind versi sebelumnya.
+Membangun platform terintegrasi untuk booking villa (frontend & booking engine), Property Management System / PMS (backend pengelolaan operasional, reservasi, housekeeping, dan tarif), serta sistem pemasaran & pembuatan konten artikel/blog (CMS dengan SEO optimasi).
 
-## 3. Struktur Folder yang Disarankan
+Sistem harus scalable agar dapat digunakan oleh:
+- Single Villa / Private Owner
+- Multi-Villa / Property Management Group
+- Boutique Resort / Multi-Unit Properties
 
+Semua fitur operasional wajib mempertimbangkan konsep Multi-Property (Multi-Tenant).
+
+---
+
+# Multi-Property Concept
+
+Project menggunakan Single Database Multi Tenant.
+Bukan satu database per properti/villa.
+
+Semua data operasional properti dipisahkan menggunakan:
 ```
-resources/
-  views/
-    layouts/
-      backend/
-        main.blade.php          # layout utama admin (sidebar+header+body+footer+breadcumrd)
-    components/
-      layout/
-        admin/
-            sidebar.blade.php
-            header.blade.php
-            footer.blade.php
-            breadcrumb.blade.php
-            children.blade.php     # recursive helper untuk menu nested
-      ui/
-        button.blade.php
-        google-button.blade.php
-        input.blade.php
-        password.blade.php
-    dashboard/
-      index.blade.php
-    auth/
-      ...halaman auth ada di sini
+property_id
 ```
 
-> Catatan: struktur ini sejajar dengan folder view yang sudah ada. `layouts/backend/main.blade.php` tetap jadi wrapper admin, sementara potongan layout disimpan di `components/layout/`.
+Setiap query operasional wajib memfilter menggunakan `property_id` aktif untuk menjaga integritas data antar villa/properti, kecuali untuk data global.
 
-## 4. Scope Pengerjaan
+---
 
-### 4.1 Layout Backend (Admin Panel)
+# Hierarchy
 
-- [ ] `layouts/backend/main.blade.php` — Layout utama Admin Panel (Sidebar, Header, Breadcrumb, Content, Footer)
-- [ ] `x-layout.admin.sidebar` — Sidebar navigasi, mendukung active state dan submenu (collapsible jika diperlukan)
-- [ ] `x-layout.admin.header` — Header / Topbar (Search, Notification, Profile Dropdown)
-- [ ] `x-layout.admin.breadcrumb` — Breadcrumb dinamis, menerima prop `items`
+```
+Company
+│
+└── Property (Villa Group / Resort)
+    ├── Room Unit (Unit Kamar / Villa Unit)
+    ├── Booking & Reservation (Transaksi Sewa & Layanan)
+    ├── Housekeeping (Jadwal & Status Kebersihan)
+    ├── Inventory Stock (Amenities & Supplies)
+    ├── Property Service & Facility (F&B, Transport, Tour)
+    └── Property Employee (Staff / Receptionist)
+```
 
-      [
-          ['label' => 'Dashboard', 'url' => route('dashboard')],
-          ['label' => 'User', 'url' => route('users.index')],
-          ['label' => 'Create', 'url' => null],
-      ]
+---
 
-- [ ] `x-layout.admin.children`
-  - Bertugas merender menu anak (`children`) secara rekursif.
-  - Digunakan oleh `x-layout.admin.sidebar`.
-  - Mendukung nested menu tanpa batas level.
-  - Mengikuti permission (`@can`) dan active state.
-- [ ] `x-layout.admin.footer` — Footer Admin (Copyright, Versi Aplikasi)
+# Authentication
+
+User login menggunakan email.
+Setelah login, user memiliki:
+```
+User
+Role
+Permission
+Accessible Properties
+```
+
+User dapat memiliki akses ke lebih dari satu properti.
+Contoh:
+```
+User A (Manager)
+├── Villa Seminyak
+└── Villa Ubud
+```
+
+Super Admin memiliki akses penuh ke seluruh properti dan manajemen sistem global.
+
+---
+
+# Authorization
+
+Gunakan Role Based Access Control (RBAC).
+
+Role contoh:
+- **Super Admin**: Akses seluruh sistem global, setting global, multi-property management.
+- **Owner**: Akses ke seluruh properti miliknya, laporan finansial, dan performa bisnis.
+- **Villa Manager**: Mengelola operasional properti tertentu, mengatur harga, review artikel pemasaran.
+- **Receptionist**: Mengelola booking, check-in/out, melayani tamu, input transaksi tambahan.
+- **Housekeeping**: Memantau status kebersihan unit villa, melaporkan kerusakan/kebutuhan unit.
+- **Content/Marketing Writer**: Menulis artikel blog, mengelola SEO metadata properti, merilis konten promosi.
+- **Guest**: Melakukan booking secara mandiri, melihat riwayat booking, menulis ulasan (jika registrasi aktif).
+
+Permission hanya mengatur tindakan spesifik:
+```
+create booking
+update rate_plan
+assign housekeeping
+create article
+publish article
+view financial_report
+```
+
+Sedangkan `property_id` menentukan data properti mana yang boleh diakses.
+
+---
+
+# Data Scope
+
+Semua query operasional harus mengikuti properti aktif.
+Contoh:
+```php
+Booking::where('property_id', auth()->user()->current_property_id);
+```
+Jangan pernah mengambil seluruh data tanpa filter properti kecuali dalam konteks global dashboard oleh Super Admin.
+
+---
+
+# Global Tables
+Tidak memiliki `property_id`.
+Contoh:
+- `companies`
+- `roles`
+- `permissions`
+- `users`
+- `article_categories` (Kategori artikel global / blog)
+- `articles` (Konten artikel pemasaran global)
+- `global_settings`
+
+# Property Tables
+Harus memiliki `property_id`.
+Contoh:
+- `room_units` (Unit spesifik villa)
+- `bookings` (Transaksi pemesanan villa)
+- `payments` (Pencatatan pembayaran DP / pelunasan)
+- `rate_plans` (Paket harga musiman / weekend)
+- `housekeepings` (Log & jadwal kebersihan)
+- `extra_services` (Layanan F&B, rental motor, spa)
+- `property_settings` (Setting lokal properti seperti koordinat, check-in time)
+
+---
+
+# Room & Pricing Strategy
+
+Villa Unit / Room Unit merupakan inventaris utama properti.
+Harga sewa bersifat dinamis berdasarkan kalender ketersediaan dan musim (season rates).
+
+Gunakan skema tabel rate plan untuk fleksibilitas harga:
+```
+rate_plans
+
+id
+property_id
+name
+base_price
+weekend_price
+season_type (low, high, peak)
+start_date
+end_date
+status
+```
+
+Ketersediaan villa (availability calendar) harus dilacak per hari untuk mencegah double booking.
+
+---
+
+# Marketing & Article System
+
+Bagian pemasaran didesain agar mempermudah pembuatan konten promosi villa untuk meningkatkan SEO dan mendatangkan traffic organik (Direct Booking).
+
+### 1. Struktur Artikel SEO-Friendly
+Tabel `articles` wajib menampung struktur metadata SEO lengkap:
+- `title` & `slug` (menggunakan generator otomatis `Spatie Laravel Sluggable`).
+- `content` (isi artikel / blog post promosi).
+- `featured_image` (gambar utama artikel yang sudah dikompres dengan `ImageService`).
+- `meta_title`, `meta_description`, `meta_keywords` (untuk optimasi pencarian di Google).
+- `status` (`draft`, `published`, `scheduled`).
+- `published_at` (untuk mendukung penjadwalan konten).
+
+### 2. Fitur Content Assistant (AI Prompt Template)
+Sistem CMS artikel harus memiliki integrasi/penyediaan template prompt untuk memudahkan copywriter membuat artikel promosi villa (misal: "Review Wisata Sekitar Villa", "Tips Liburan di Bali").
+
+---
+
+# Developer Guide & Client Code Patterns
+
+Untuk memudahkan pemahaman dan pengembangan kode, ikuti standar / antarmuka "Client Code" berikut:
+
+### 1. Models & UUID
+Setiap model utama wajib memiliki kolom `id` (primary key auto-increment internal) dan `uuid` (untuk public exposure / url).
+- Gunakan trait `App\Models\Traits\HasUuid` untuk generate UUID otomatis saat record dibuat.
+- Override `getRouteKeyName` untuk binding route menggunakan `uuid`.
+- Gunakan SoftDeletes jika model tersebut memerlukan pengamanan data dari penghapusan permanen.
+```php
+use App\Models\Traits\HasUuid;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Booking extends Model {
+    use HasUuid, SoftDeletes;
+    
+    public function getRouteKeyName(): string {
+        return 'uuid';
+    }
+}
+```
+
+### 2. Yajra DataTables (Server-side Table)
+Untuk list data yang kompleks (seperti daftar booking atau daftar artikel), gunakan Yajra DataTables dengan layout custom Tailwind + Remix Icons.
+- Definisikan class DataTable di `app/DataTables/` (contoh: `BookingDataTable.php`).
+- Atur CSS styling tabel di method `html()` menggunakan class Tailwind agar seragam dengan UI yang ada.
+- Gunakan controller untuk merender class DataTable tersebut:
+```php
+public function index(BookingDataTable $dataTable) {
+    return $dataTable->render('booking.index');
+}
+```
+
+### 3. Controller & Request Validation
+- Pastikan controller bersih dari logic bisnis yang berat.
+- Gunakan Form Request khusus untuk validasi data input (contoh: `StoreBookingRequest`).
+- Kirim data ke view menggunakan structured array `$this->data`.
+
+### 4. Settings System Helper
+Untuk mengakses/menyimpan konfigurasi aplikasi global:
+- Gunakan helper `settings()` yang mengembalikan array metadata.
+- Atau panggil static method pada model `Setting`:
+  - `Setting::getValue('key', $default)` (mendukung deserialisasi otomatis jika bertipe array/JSON).
+  - `Setting::setValue(['key1' => 'val1', 'key2' => 'val2'])` (mendukung upsert dan auto-serialize).
+  - `Setting::deleteOldFile('key')` untuk membersihkan disk dari file lama jika di-overwrite.
+
+### 5. Breadcrumbs
+Aplikasi menggunakan `diglactic/laravel-breadcrumbs`. Setiap halaman/route baru wajib didaftarkan breadcrumb-nya di `routes/breadcrumbs.php` agar mempermudah navigasi user.
+
+### 6. Image Resizing & Compression
+- Untuk mengunggah gambar villa atau gambar featured artikel blog, gunakan `App\Services\ImageService` yang memanfaatkan `Intervention Image v3` untuk kompresi dan scale aspect-ratio secara otomatis guna menghemat penyimpanan dan mengoptimalkan load time (penting untuk skor SEO).
+
+---
 
 
-### 4.2 Chart (Opsional)
+# Coding Rules
 
-- [ ] `x-admin.chart` — wrapper ApexCharts, terima props `type` (line/bar/donut) dan `data` (array/JSON) supaya bisa dipakai ulang di halaman manapun tanpa nulis ulang script inisialisasi
+- Gunakan Service Layer.
+- Jangan letakkan business logic di Controller.
+- Gunakan Repository bila query kompleks.
+- Validasi menggunakan Form Request.
+- Gunakan Policy untuk Authorization.
+- Hindari Query Builder di Blade.
+- Hindari N+1 Query.
 
-## 5. Aturan Kerja untuk AI/Developer
+# Naming Convention
 
-1. **Selalu cek dulu** apakah komponen serupa sudah ada di `resources/views/components/` sebelum bikin baru.
-2. Semua styling pakai **utility class Tailwind v4** langsung di Blade — hindari inline `<style>` kecuali benar-benar perlu.
-3. Icon pakai Remix Icon: `<i class="ri-dashboard-line"></i>` — jangan campur dengan icon library lain.
-4. Props Blade Component pakai `@props([...])` dengan default value yang jelas.
-5. Jangan sentuh/ubah logic auth yang sudah ada — redesign murni di sisi tampilan admin panel setelah login.
-6. Penamaan file & komponen: `kebab-case`, dikelompokkan per folder (`admin.*` untuk layout/UI, `forms.*` untuk elemen form).
-7. Konsisten warna & spacing: definisikan token warna sekali di `@theme` (CSS), semua komponen pakai token itu — jangan hex code lepas di tiap file.
+Gunakan bahasa Inggris untuk database, file, variable, class, dan function.
 
-## 6. Belum Diputuskan / Perlu Info Tambahan
+Contoh:
+- `Property` (Bukan `Properti`)
+- `Booking` (Bukan `Pemesanan` / `Reservasi`)
+- `Housekeeping` (Bukan `Kebersihan`)
+- `Guest` (Bukan `Tamu`)
+- `Article` (Bukan `Artikel`)
 
-- Isi kode auth & layout lama belum di-review langsung — sebaiknya ditempel/upload supaya konvensi (penamaan, struktur folder existing) bisa disamakan, bukan dibuat dari asumsi.
-- Skema warna/branding admin panel belum ditentukan.
+---
 
-## Note
-Gunakan bahasa yang mudah di pahami dan pakai lah bahasa indonesai pada saat berinteraksi
+# Migration Rule
+
+Seluruh tabel operasional properti wajib memiliki:
+```
+property_id
+```
+Foreign key wajib dibuat dan mengarah ke tabel `properties`. Gunakan cascade sesuai kebutuhan.
+
+---
+
+# Future Features
+
+Platform dikembangkan untuk mudah diintegrasikan dengan fitur masa depan:
+- **Channel Manager (OTA Sync)**: Sinkronisasi ketersediaan villa via iCal dengan Airbnb, Agoda, Booking.com.
+- **Payment Gateway**: Integrasi pembayaran deposit/DP otomatis (Midtrans/Xendit).
+- **AI Content Generator**: Pembuatan draf artikel promosi villa otomatis berbasis AI langsung dari dashboard admin.
+- **Dynamic Season Pricing**: Perubahan harga sewa secara otomatis mengikuti musim liburan (peak season).
+- **Guest Portal / WhatsApp Notification**: Pengiriman tiket booking digital dan reminder check-in melalui WhatsApp API.
+
+Jangan membuat desain yang menghambat fitur-fitur tersebut.
+
+---
+
+# AI Instruction
+
+Saat menghasilkan kode:
+- **Selalu pertimbangkan konsep Multi-Property**: Gunakan scope `property_id` di query, database migration, dan policy.
+- **Kelola Status Booking dengan Benar**: Gunakan enum/state status booking yang jelas (`draft`, `pending`, `confirmed`, `checked_in`, `checked_out`, `cancelled`).
+- **Maksimalkan SEO untuk Artikel**: Saat membuat modul artikel, pastikan terdapat validasi metadata SEO (meta description minimal 120 karakter, slug unik).
+- **Gunakan Laravel Best Practice**: Terapkan Form Request, Service Layer, HasUuid, dan Clean Code.
+- **Ikuti struktur project yang sudah ada**: Konsisten dengan penulisan DataTables, Form Request, controller, dan route binding menggunakan UUID.
+- **Prioritaskan performance**: Pastikan query ketersediaan villa bebas dari N+1 query.
