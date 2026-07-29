@@ -264,3 +264,75 @@ Breadcrumbs::for('banner.edit', function (BreadcrumbTrail $trail, $banner) {
 });
 
 // **************************** END BANNER ***************************
+
+
+// **************************** PROPERTY SERVICES ***************************
+
+// Home > Property Services
+Breadcrumbs::for('property_services.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Property Services', route('property_services.index'));
+});
+
+// Home > Property Services > Create
+Breadcrumbs::for('property_services.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('property_services.index');
+    $trail->push('Create', route('property_services.create'));
+});
+
+// Home > Property Services > Edit
+Breadcrumbs::for('property_services.edit', function (BreadcrumbTrail $trail, $property_service) {
+    $trail->parent('property_services.index');
+    $trail->push('Update [' . $property_service->name . ']', route('property_services.edit', $property_service));
+});
+
+// **************************** END PROPERTY SERVICES ***************************
+
+
+// **************************** PROPERTIES ***************************
+
+// Home > Properties
+Breadcrumbs::for('properties.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Properties', route('properties.index'));
+});
+
+// Home > Properties > Create
+Breadcrumbs::for('properties.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('properties.index');
+    $trail->push('Create', route('properties.create'));
+});
+
+// Home > Properties > Edit
+Breadcrumbs::for('properties.edit', function (BreadcrumbTrail $trail, $property) {
+    $trail->parent('properties.index');
+    $trail->push('Update [' . $property->name . ']', route('properties.edit', $property));
+});
+
+// **************************** END PROPERTIES ***************************
+
+
+// **************************** FACILITIES ***************************
+
+
+// Home > Facilities
+Breadcrumbs::for('facilities.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Facilities', route('facilities.index'));
+});
+
+// Home > Facilities > Create
+Breadcrumbs::for('facilities.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('facilities.index');
+    $trail->push('Create', route('facilities.create'));
+});
+
+// Home > Facilities > Edit
+Breadcrumbs::for('facilities.edit', function (BreadcrumbTrail $trail, $facility) {
+    $trail->parent('facilities.index');
+    $trail->push('Update [' . $facility->name . ']', route('facilities.edit', $facility));
+});
+
+// **************************** END FACILITIES ***************************
+
+

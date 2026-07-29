@@ -26,6 +26,9 @@ class RolePermissionSeeder extends Seeder
             'Article',
             'Setting',
             'Banner',
+            'Property Service',
+            'Facility',
+            'Property',
         ];
 
         foreach ($permissiongroups as $permissiongroup) {
@@ -77,6 +80,21 @@ class RolePermissionSeeder extends Seeder
             'Banner Create-9',
             'Banner Update-9',
             'Banner Delete-9',
+            'Property Service Access-10',
+            'Property Service Detail-10',
+            'Property Service Create-10',
+            'Property Service Update-10',
+            'Property Service Delete-10',
+            'Facility Access-11',
+            'Facility Detail-11',
+            'Facility Create-11',
+            'Facility Update-11',
+            'Facility Delete-11',
+            'Property Access-12',
+            'Property Detail-12',
+            'Property Create-12',
+            'Property Update-12',
+            'Property Delete-12',
         ];
 
         foreach ($permissions as $permission) {

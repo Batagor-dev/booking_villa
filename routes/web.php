@@ -58,6 +58,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'banner' => 'banner:uuid',
     ]);
 
+    Route::resource('/properties', App\Http\Controllers\PropertiesController::class)->parameters([
+        'properties' => 'property:uuid',
+    ])->except('show');
+
+    Route::resource('/property_services', App\Http\Controllers\PropertyServicesController::class)->parameters([
+        'property_services' => 'property_service:uuid',
+    ])->except('show');
+
+    Route::resource('/facilities', App\Http\Controllers\FacilityController::class)->parameters([
+        'facilities' => 'facility:uuid',
+    ])->except('show');
+
+
+
+
     // Route::prefix('setting')->group(function () {
     //     Route::get('/',[App\Http\Controllers\SettingController::class, 'index'])->name('setting.index');
     //     Route::get('/create',[App\Http\Controllers\SettingController::class, 'create'])->name('setting.create');

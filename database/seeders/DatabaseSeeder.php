@@ -40,5 +40,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call(MenuGroupSeeder::class);
         $this->call(MenuSeeder::class);
+        $this->call(FacilitySeeder::class);
+        $this->call(PropertyServiceSeeder::class);
     }
 }
+
+
+

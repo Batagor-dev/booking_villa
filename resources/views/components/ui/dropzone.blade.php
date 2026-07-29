@@ -88,9 +88,10 @@
                         </div>
                         
                         <!-- Delete Button (Top Right) -->
-                        <button type="button" @click.stop="removeFile(files[0].id)" class="absolute top-3 right-3 h-8 w-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border border-red-400 transition-all transform hover:scale-105">
+                        <button type="button" @click.stop="removeFile(files[0].id)" class="absolute top-3 right-3 h-8 w-8 rounded-full bg-slate-900/80 hover:bg-slate-950 text-white flex items-center justify-center shadow-lg border border-slate-700/50 transition-all transform hover:scale-105">
                             <i class="ri-close-line text-lg"></i>
                         </button>
+
                     </div>
                 </template>
 
@@ -105,9 +106,10 @@
                         <p class="text-xs text-slate-400 font-satoshi-regular mt-1" x-text="files[0].size"></p>
                         
                         <!-- Delete Button (Top Right) -->
-                        <button type="button" @click.stop="removeFile(files[0].id)" class="absolute top-3 right-3 h-8 w-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border border-red-400 transition-all transform hover:scale-105">
+                        <button type="button" @click.stop="removeFile(files[0].id)" class="absolute top-3 right-3 h-8 w-8 rounded-full bg-slate-900/80 hover:bg-slate-950 text-white flex items-center justify-center shadow-lg border border-slate-700/50 transition-all transform hover:scale-105">
                             <i class="ri-close-line text-lg"></i>
                         </button>
+
                     </div>
                 </template>
             </div>
@@ -144,9 +146,10 @@
                             </template>
 
                             <!-- Delete Button (Top Right) -->
-                            <button type="button" @click.stop="removeFile(file.id)" class="absolute top-2 right-2 h-6 w-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md border border-red-400 transition-all transform hover:scale-105">
+                            <button type="button" @click.stop="removeFile(file.id)" class="absolute top-2 right-2 h-6 w-6 rounded-full bg-slate-900/80 hover:bg-slate-950 text-white flex items-center justify-center shadow-md border border-slate-700/50 transition-all transform hover:scale-105">
                                 <i class="ri-close-line text-sm"></i>
                             </button>
+
                         </div>
                     </template>
 

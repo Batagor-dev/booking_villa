@@ -11,6 +11,7 @@ class MenuSeeder extends Seeder
     public function run()
     {
         $kontenGroup = MenuGroup::where('name', 'Content Management')->first();
+        $propertyGroup = MenuGroup::where('name', 'Property Management')->first();
         $pengaturanGroup = MenuGroup::where('name', 'Settings')->first();
 
         // === Menu 1: Artikel (Group: Content Management) ===
@@ -41,7 +42,7 @@ class MenuSeeder extends Seeder
             'sort'               => '2',
         ]);
 
-        // === Menu 3: Banner (Group: Content Management) ===
+        // === Menu 2: Banner (Group: Content Management) ===
         Menu::create([
             'menu_group_id'      => $kontenGroup?->id,
             'nama_menu'          => 'Banner',
@@ -51,6 +52,41 @@ class MenuSeeder extends Seeder
             'status'             => '1',
             'sort'               => '2',
         ]);
+
+        // === Single Menus (Group: Property Management) ===
+        Menu::create([
+            'menu_group_id'      => $propertyGroup?->id,
+            'nama_menu'          => 'Properties',
+            'permission_group_id'=> 12,
+            'icon'               => 'ri-building-4-line',
+            'href'               => '/properties',
+            'status'             => '1',
+            'sort'               => '1',
+        ]);
+
+        Menu::create([
+            'menu_group_id'      => $propertyGroup?->id,
+            'nama_menu'          => 'Property Services',
+            'permission_group_id'=> 10,
+            'icon'               => 'ri-customer-service-2-line',
+            'href'               => '/property_services',
+            'status'             => '1',
+            'sort'               => '2',
+        ]);
+
+        Menu::create([
+            'menu_group_id'      => $propertyGroup?->id,
+            'nama_menu'          => 'Facilities',
+            'permission_group_id'=> 11,
+            'icon'               => 'ri-building-2-line',
+            'href'               => '/facilities',
+            'status'             => '1',
+            'sort'               => '3',
+        ]);
+
+
+
+
 
         // === Menu 2: Setting (Group: PENGATURAN) ===
         $setting = Menu::create([

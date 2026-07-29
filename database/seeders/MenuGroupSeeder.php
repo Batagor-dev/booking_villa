@@ -18,11 +18,20 @@ class MenuGroupSeeder extends Seeder
         );
 
         MenuGroup::firstOrCreate(
-            ['name' => 'Settings'],
+            ['name' => 'Property Management'],
             [
                 'sort'   => 2,
                 'status' => 1,
             ]
         );
+
+        MenuGroup::firstOrCreate(
+            ['name' => 'Settings'],
+            [
+                'sort'   => 3,
+                'status' => 1,
+            ]
+        );
     }
 }
+
