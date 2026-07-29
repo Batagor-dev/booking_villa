@@ -16,6 +16,11 @@ class MenuGroupDataTable extends DataTable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
+            ->addColumn('permission_group', function ($row) {
+                return $row->permissionGroup 
+                    ? '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-satoshi-medium bg-slate-100 text-slate-700">' . e($row->permissionGroup->name) . '</span>' 
+                    : '<span class="text-slate-400 font-satoshi text-xs">-</span>';
+            })
             ->addColumn('status', fn($row) => $row->status 
                 ? '<span class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-satoshi-semibold select-none bg-emerald-100 text-emerald-700">Active</span>' 
                 : '<span class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-satoshi-semibold select-none bg-slate-100 text-slate-600">Off</span>')
@@ -37,7 +42,7 @@ class MenuGroupDataTable extends DataTable
 
                 return '<div class="flex items-center space-x-2 justify-center">' . $edit.' '.$delete . '</div>';
             })
-            ->rawColumns(['status', 'action']);
+            ->rawColumns(['permission_group', 'status', 'action']);
     }
 
     /**
@@ -45,7 +50,7 @@ class MenuGroupDataTable extends DataTable
      */
     public function query(MenuGroup $model)
     {
-        return $model->newQuery();
+        return $model->newQuery()->with('permissionGroup');
     }
 
     /**
@@ -87,6 +92,7 @@ class MenuGroupDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('No')->searchable(false)->orderable(false)->width(40)->addClass('text-center px-4 py-3 bg-slate-50 font-satoshi-medium text-slate-500 border-b border-slate-200'),
             Column::make('name')->title('Group Name')->addClass('px-4 py-3 border-b border-slate-200 text-slate-900 font-semibold'),
+            Column::make('permission_group')->title('Permission Group')->orderable(false)->addClass('px-4 py-3 border-b border-slate-200 text-slate-700 font-satoshi-medium'),
             Column::make('sort')->title('Order')->addClass('text-center px-4 py-3 border-b border-slate-200 text-slate-500'),
             Column::make('status')->title('Status')->orderable(false)->addClass('text-center px-4 py-3 border-b border-slate-200'),
             Column::computed('action')

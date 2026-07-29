@@ -34,33 +34,42 @@
         @if(isset($groupedMenus) && count($groupedMenus) > 0)
           @foreach($groupedMenus as $groupId => $groupItems)
             @php
-              $groupName = $groupItems->first()?->menuGroup?->name;
-            @endphp
-            @if($groupName)
-              <li class="pt-4 pb-1 px-3 text-sm font-satoshi-semibold tracking-wider text-slate-400 group-[.sidebar-collapsed]:hidden truncate select-none">
-                {{ $groupName }}
-              </li>
-              <li class="hidden group-[.sidebar-collapsed]:block my-2 border-t border-slate-100"></li>
-            @endif
-            @foreach($groupItems->sortBy('sort') as $menu)
-              @php
-                  $permissionName = optional($menu->permissionGroup)->name . ' Access';
-              @endphp
+              $menuGroup = $groupItems->first()?->menuGroup;
 
-              @can($permissionName)
-                  @include('components.layout.admin.children', ['menu' => $menu])
-              @endcan
-            @endforeach
+              // Filter menu mana saja dalam grup yang berhak diakses user
+              $visibleMenus = $groupItems->sortBy('sort')->filter(function($menu) {
+                  $mPermName = optional($menu->permissionGroup)->name ? (optional($menu->permissionGroup)->name . ' Access') : null;
+                  return !$mPermName || (auth()->check() && auth()->user()->can($mPermName));
+              });
+
+              $groupPermName = optional($menuGroup?->permissionGroup)->name ? (optional($menuGroup?->permissionGroup)->name . ' Access') : null;
+              
+              // Hak akses grup: grup diakses jika user punya akses permission grup (atau tanpa permission) DAN memiliki setidaknya 1 menu visible
+              $canAccessGroup = (!$groupPermName || (auth()->check() && auth()->user()->can($groupPermName))) && $visibleMenus->count() > 0;
+            @endphp
+
+            @if($canAccessGroup)
+              @if($menuGroup)
+                <li class="pt-4 pb-1 px-3 text-sm font-satoshi-semibold tracking-wider text-slate-400 group-[.sidebar-collapsed]:hidden truncate select-none">
+                  {{ $menuGroup->name }}
+                </li>
+                <li class="hidden group-[.sidebar-collapsed]:block my-2 border-t border-slate-100"></li>
+              @endif
+
+              @foreach($visibleMenus as $menu)
+                @include('components.layout.admin.children', ['menu' => $menu])
+              @endforeach
+            @endif
           @endforeach
         @else
           @foreach($menus as $menu)
             @php
-                $permissionName = optional($menu->permissionGroup)->name . ' Access';
+              $mPermName = optional($menu->permissionGroup)->name ? (optional($menu->permissionGroup)->name . ' Access') : null;
+              $canAccess = !$mPermName || (auth()->check() && auth()->user()->can($mPermName));
             @endphp
-
-            @can($permissionName)
-                @include('components.layout.admin.children', ['menu' => $menu])
-            @endcan
+            @if($canAccess)
+              @include('components.layout.admin.children', ['menu' => $menu])
+            @endif
           @endforeach
         @endif
       </ul>

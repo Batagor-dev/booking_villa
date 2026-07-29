@@ -17,18 +17,22 @@ class RolePermissionSeeder extends Seeder
     public function run()
     {
         $permissiongroups = [
-            'User',
-            'Role',
-            'Permission Group',
-            'Permission',
-            'Menu',
-            'Article Category',
-            'Article',
-            'Setting',
-            'Banner',
-            'Property Service',
-            'Facility',
-            'Property',
+            'User',                 // 1
+            'Role',                 // 2
+            'Permission Group',     // 3
+            'Permission',           // 4
+            'Menu',                 // 5
+            'Menu Group',           // 6
+            'Article Category',     // 7
+            'Article',              // 8
+            'Setting',              // 9
+            'Banner',               // 10
+            'Property Service',     // 11
+            'Facility',             // 12
+            'Property',             // 13
+            'Content Management',   // 14
+            'Property Management',  // 15
+            'Settings',             // 16
         ];
 
         foreach ($permissiongroups as $permissiongroup) {
@@ -61,40 +65,47 @@ class RolePermissionSeeder extends Seeder
             'Menu Create-5',
             'Menu Update-5',
             'Menu Delete-5',
-            'Article Category Access-6',
-            'Article Category Create-6',
-            'Article Category Update-6',
-            'Article Category Delete-6',
-            'Article Access-7',
-            'Article Detail-7',
-            'Article Create-7',
-            'Article Update-7',
-            'Article Delete-7',
-            'Setting Access-8',
-            'Setting Detail-8',
-            'Setting Create-8',
-            'Setting Update-8',
-            'Setting Delete-8',
-            'Banner Access-9',
-            'Banner Detail-9',
-            'Banner Create-9',
-            'Banner Update-9',
-            'Banner Delete-9',
-            'Property Service Access-10',
-            'Property Service Detail-10',
-            'Property Service Create-10',
-            'Property Service Update-10',
-            'Property Service Delete-10',
-            'Facility Access-11',
-            'Facility Detail-11',
-            'Facility Create-11',
-            'Facility Update-11',
-            'Facility Delete-11',
-            'Property Access-12',
-            'Property Detail-12',
-            'Property Create-12',
-            'Property Update-12',
-            'Property Delete-12',
+            'Menu Group Access-6',
+            'Menu Group Create-6',
+            'Menu Group Update-6',
+            'Menu Group Delete-6',
+            'Article Category Access-7',
+            'Article Category Create-7',
+            'Article Category Update-7',
+            'Article Category Delete-7',
+            'Article Access-8',
+            'Article Detail-8',
+            'Article Create-8',
+            'Article Update-8',
+            'Article Delete-8',
+            'Setting Access-9',
+            'Setting Detail-9',
+            'Setting Create-9',
+            'Setting Update-9',
+            'Setting Delete-9',
+            'Banner Access-10',
+            'Banner Detail-10',
+            'Banner Create-10',
+            'Banner Update-10',
+            'Banner Delete-10',
+            'Property Service Access-11',
+            'Property Service Detail-11',
+            'Property Service Create-11',
+            'Property Service Update-11',
+            'Property Service Delete-11',
+            'Facility Access-12',
+            'Facility Detail-12',
+            'Facility Create-12',
+            'Facility Update-12',
+            'Facility Delete-12',
+            'Property Access-13',
+            'Property Detail-13',
+            'Property Create-13',
+            'Property Update-13',
+            'Property Delete-13',
+            'Content Management Access-14',
+            'Property Management Access-15',
+            'Settings Access-16',
         ];
 
         foreach ($permissions as $permission) {
@@ -117,5 +128,6 @@ class RolePermissionSeeder extends Seeder
             'guard_name' => 'web'
         ]);
         $role->givePermissionTo('Article Access');
+        $role->givePermissionTo('Content Management Access');
     }
 }

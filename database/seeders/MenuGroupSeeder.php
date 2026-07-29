@@ -9,29 +9,31 @@ class MenuGroupSeeder extends Seeder
 {
     public function run()
     {
-        MenuGroup::firstOrCreate(
+        MenuGroup::updateOrCreate(
             ['name' => 'Content Management'],
             [
+                'permission_group_id' => 14,
                 'sort'   => 1,
                 'status' => 1,
             ]
         );
 
-        MenuGroup::firstOrCreate(
+        MenuGroup::updateOrCreate(
             ['name' => 'Property Management'],
             [
+                'permission_group_id' => 15,
                 'sort'   => 2,
                 'status' => 1,
             ]
         );
 
-        MenuGroup::firstOrCreate(
+        MenuGroup::updateOrCreate(
             ['name' => 'Settings'],
             [
+                'permission_group_id' => 16,
                 'sort'   => 3,
                 'status' => 1,
             ]
         );
     }
 }
-

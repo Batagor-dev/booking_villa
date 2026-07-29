@@ -13,7 +13,7 @@ class SidebarServiceProvider extends ServiceProvider
         View::composer(['components.layout.admin.sidebar', 'layout.backend.sidebar'], function ($view) {
             $menus = Menu::whereNull('menu_id')
                 ->where('status', 1)
-                ->with(['children', 'menuGroup'])
+                ->with(['children.permissionGroup', 'menuGroup.permissionGroup', 'permissionGroup'])
                 ->get();
 
             $groupedMenus = $menus->groupBy(function($menu) {

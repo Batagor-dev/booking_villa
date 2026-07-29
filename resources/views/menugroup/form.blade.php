@@ -38,6 +38,14 @@
                             required
                         />
 
+                        <!-- Permission Group -->
+                        <x-ui.select 
+                            name="permission_group_id" 
+                            label="Permission Group" 
+                            :options="['' => '-- No Permission (Kosong) --'] + ($permissiongroups ? $permissiongroups->pluck('name', 'id')->toArray() : [])"
+                            :value="old('permission_group_id', $menugroup_data->permission_group_id ?? '')"
+                        />
+
                         <!-- Sort Order -->
                         <x-ui.input 
                             type="number"

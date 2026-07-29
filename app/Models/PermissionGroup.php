@@ -29,6 +29,11 @@ class PermissionGroup extends Model
         return $this->hasMany(Permission::class, 'permission_group_id');
     }
 
+    public function menuGroups()
+    {
+        return $this->hasMany(MenuGroup::class, 'permission_group_id');
+    }
+
     public function getRouteKeyName()
     {
         return 'uuid';
