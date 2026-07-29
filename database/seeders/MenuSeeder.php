@@ -4,37 +4,27 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Menu;
-use App\Models\MenuGroup;
-use App\Models\PermissionGroup;
 
 class MenuSeeder extends Seeder
 {
     public function run()
     {
-        $kontenGroup     = MenuGroup::where('name', 'Content Management')->first();
-        $propertyGroup   = MenuGroup::where('name', 'Property Management')->first();
-        $pengaturanGroup = MenuGroup::where('name', 'Settings')->first();
+        // Menu Group IDs:
+        // 1 = Content Management
+        // 2 = Property Management
+        // 3 = Settings
 
-        // Permission Groups
-        $pgUser           = PermissionGroup::where('name', 'User')->first();
-        $pgRole           = PermissionGroup::where('name', 'Role')->first();
-        $pgPermGroup      = PermissionGroup::where('name', 'Permission Group')->first();
-        $pgPermission     = PermissionGroup::where('name', 'Permission')->first();
-        $pgMenu           = PermissionGroup::where('name', 'Menu')->first();
-        $pgMenuGroup      = PermissionGroup::where('name', 'Menu Group')->first();
-        $pgArticleCategory= PermissionGroup::where('name', 'Article Category')->first();
-        $pgArticle        = PermissionGroup::where('name', 'Article')->first();
-        $pgSetting        = PermissionGroup::where('name', 'Setting')->first();
-        $pgBanner         = PermissionGroup::where('name', 'Banner')->first();
-        $pgPropertyService= PermissionGroup::where('name', 'Property Service')->first();
-        $pgFacility       = PermissionGroup::where('name', 'Facility')->first();
-        $pgProperty       = PermissionGroup::where('name', 'Property')->first();
+        // Permission Group IDs:
+        // 1 = User, 2 = Role, 3 = Permission Group, 4 = Permission, 5 = Menu, 6 = Menu Group,
+        // 7 = Article Category, 8 = Article, 9 = Setting, 10 = Banner, 11 = Property Service,
+        // 12 = Facility, 13 = Property, 14 = Content Management, 15 = Property Management,
+        // 16 = Settings, 17 = Payment Method
 
-        // === Menu 1: Artikel (Group: Content Management) ===
+        // === Menu 1: Artikel (Group: Content Management - ID 1) ===
         $artikel = Menu::create([
-            'menu_group_id'      => $kontenGroup?->id,
+            'menu_group_id'      => 1,
             'nama_menu'          => 'Artikel',
-            'permission_group_id'=> $pgArticle?->id, 
+            'permission_group_id'=> 8, 
             'icon'               => 'ri-article-line',
             'status'             => '1',
             'sort'               => '1',
@@ -43,7 +33,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $artikel->id,
             'nama_menu'          => 'Artikel Kategori',
-            'permission_group_id'=> $pgArticleCategory?->id,
+            'permission_group_id'=> 7,
             'href'               => '/article_categories',
             'status'             => '1',
             'sort'               => '1',
@@ -52,28 +42,28 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $artikel->id,
             'nama_menu'          => 'Artikel',
-            'permission_group_id'=> $pgArticle?->id,
+            'permission_group_id'=> 8,
             'href'               => '/article',
             'status'             => '1',
             'sort'               => '2',
         ]);
 
-        // === Menu 2: Banner (Group: Content Management) ===
+        // === Menu 2: Banner (Group: Content Management - ID 1) ===
         Menu::create([
-            'menu_group_id'      => $kontenGroup?->id,
+            'menu_group_id'      => 1,
             'nama_menu'          => 'Banner',
-            'permission_group_id'=> $pgBanner?->id,
+            'permission_group_id'=> 10,
             'icon'               => 'ri-image-line',
             'href'               => '/banner',
             'status'             => '1',
             'sort'               => '2',
         ]);
 
-        // === Single Menus (Group: Property Management) ===
+        // === Single Menus (Group: Property Management - ID 2) ===
         Menu::create([
-            'menu_group_id'      => $propertyGroup?->id,
+            'menu_group_id'      => 2,
             'nama_menu'          => 'Properties',
-            'permission_group_id'=> $pgProperty?->id,
+            'permission_group_id'=> 13,
             'icon'               => 'ri-building-4-line',
             'href'               => '/properties',
             'status'             => '1',
@@ -81,9 +71,9 @@ class MenuSeeder extends Seeder
         ]);
 
         Menu::create([
-            'menu_group_id'      => $propertyGroup?->id,
+            'menu_group_id'      => 2,
             'nama_menu'          => 'Property Services',
-            'permission_group_id'=> $pgPropertyService?->id,
+            'permission_group_id'=> 11,
             'icon'               => 'ri-customer-service-2-line',
             'href'               => '/property_services',
             'status'             => '1',
@@ -91,20 +81,30 @@ class MenuSeeder extends Seeder
         ]);
 
         Menu::create([
-            'menu_group_id'      => $propertyGroup?->id,
+            'menu_group_id'      => 2,
             'nama_menu'          => 'Facilities',
-            'permission_group_id'=> $pgFacility?->id,
+            'permission_group_id'=> 12,
             'icon'               => 'ri-building-2-line',
             'href'               => '/facilities',
             'status'             => '1',
             'sort'               => '3',
         ]);
 
-        // === Menu 2: Setting (Group: PENGATURAN) ===
+        Menu::create([
+            'menu_group_id'      => 2,
+            'nama_menu'          => 'Payment Methods',
+            'permission_group_id'=> 17,
+            'icon'               => 'ri-bank-card-line',
+            'href'               => '/payment_methods',
+            'status'             => '1',
+            'sort'               => '4',
+        ]);
+
+        // === Menu 2: Setting (Group: Settings - ID 3) ===
         $setting = Menu::create([
-            'menu_group_id'      => $pengaturanGroup?->id,
+            'menu_group_id'      => 3,
             'nama_menu'          => 'Setting',
-            'permission_group_id'=> $pgSetting?->id,
+            'permission_group_id'=> 9,
             'icon'               => 'ri-settings-3-line',
             'status'             => '1',
             'sort'               => '2',
@@ -114,7 +114,7 @@ class MenuSeeder extends Seeder
         $userManagement = Menu::create([
             'menu_id'            => $setting->id,
             'nama_menu'          => 'User Management',
-            'permission_group_id'=> $pgUser?->id,
+            'permission_group_id'=> 1,
             'status'             => '1',
             'sort'               => '1',
         ]);
@@ -123,7 +123,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $userManagement->id,
             'nama_menu'          => 'Users',
-            'permission_group_id'=> $pgUser?->id,
+            'permission_group_id'=> 1,
             'href'               => '/user',
             'status'             => '1',
             'sort'               => '1',
@@ -132,7 +132,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $userManagement->id,
             'nama_menu'          => 'Permission Group',
-            'permission_group_id'=> $pgPermGroup?->id,
+            'permission_group_id'=> 3,
             'href'               => '/permissiongroup',
             'status'             => '1',
             'sort'               => '2',
@@ -141,7 +141,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $userManagement->id,
             'nama_menu'          => 'Permissions',
-            'permission_group_id'=> $pgPermission?->id,
+            'permission_group_id'=> 4,
             'href'               => '/permission',
             'status'             => '1',
             'sort'               => '3',
@@ -150,7 +150,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $userManagement->id,
             'nama_menu'          => 'Roles',
-            'permission_group_id'=> $pgRole?->id,
+            'permission_group_id'=> 2,
             'href'               => '/role',
             'status'             => '1',
             'sort'               => '4',
@@ -160,7 +160,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $setting->id,
             'nama_menu'          => 'Web Setting',
-            'permission_group_id'=> $pgSetting?->id,
+            'permission_group_id'=> 9,
             'href'               => '/setting',
             'status'             => '1',
             'sort'               => '2',
@@ -169,7 +169,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $setting->id,
             'nama_menu'          => 'Menu Management',
-            'permission_group_id'=> $pgMenu?->id,
+            'permission_group_id'=> 5,
             'href'               => '/menu',
             'status'             => '1',
             'sort'               => '3',
@@ -178,7 +178,7 @@ class MenuSeeder extends Seeder
         Menu::create([
             'menu_id'            => $setting->id,
             'nama_menu'          => 'Menu Group',
-            'permission_group_id'=> $pgMenuGroup?->id,
+            'permission_group_id'=> 6,
             'href'               => '/menugroup',
             'status'             => '1',
             'sort'               => '4',

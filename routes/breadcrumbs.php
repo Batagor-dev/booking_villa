@@ -336,3 +336,27 @@ Breadcrumbs::for('facilities.edit', function (BreadcrumbTrail $trail, $facility)
 // **************************** END FACILITIES ***************************
 
 
+// **************************** PAYMENT METHODS ***************************
+
+// Home > Payment Methods
+Breadcrumbs::for('payment_methods.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Payment Methods', route('payment_methods.index'));
+});
+
+// Home > Payment Methods > Create
+Breadcrumbs::for('payment_methods.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('payment_methods.index');
+    $trail->push('Create', route('payment_methods.create'));
+});
+
+// Home > Payment Methods > Edit
+Breadcrumbs::for('payment_methods.edit', function (BreadcrumbTrail $trail, $payment_method) {
+    $trail->parent('payment_methods.index');
+    $trail->push('Update [' . $payment_method->name . ']', route('payment_methods.edit', $payment_method));
+});
+
+// **************************** END PAYMENT METHODS ***************************
+
+
+

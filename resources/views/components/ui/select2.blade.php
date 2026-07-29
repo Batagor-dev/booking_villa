@@ -87,11 +87,11 @@
 
         <!-- Hidden input untuk disubmit ke backend -->
         <template x-if="!multiple">
-            <input type="hidden" name="{{ $name }}" :value="selected[0] || ''">
+            <input type="hidden" name="{{ $name }}" :value="selected[0] || ''" x-init="$watch('selected', () => $nextTick(() => $el.dispatchEvent(new Event('change', { bubbles: true }))))">
         </template>
         <template x-if="multiple">
             <template x-for="val in selected">
-                <input type="hidden" name="{{ $name }}[]" :value="val">
+                <input type="hidden" name="{{ $name }}[]" :value="val" x-init="$watch('selected', () => $nextTick(() => $el.dispatchEvent(new Event('change', { bubbles: true }))))">
             </template>
         </template>
 

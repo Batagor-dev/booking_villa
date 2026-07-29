@@ -70,6 +70,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'facilities' => 'facility:uuid',
     ])->except('show');
 
+    Route::resource('/payment_methods', App\Http\Controllers\PaymentMethodController::class)->parameters([
+        'payment_methods' => 'payment_method:uuid',
+    ])->except('show');
+
+
 
 
 

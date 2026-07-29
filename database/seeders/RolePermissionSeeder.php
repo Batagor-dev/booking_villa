@@ -33,6 +33,7 @@ class RolePermissionSeeder extends Seeder
             'Content Management',   // 14
             'Property Management',  // 15
             'Settings',             // 16
+            'Payment Method',       // 17
         ];
 
         foreach ($permissiongroups as $permissiongroup) {
@@ -106,6 +107,11 @@ class RolePermissionSeeder extends Seeder
             'Content Management Access-14',
             'Property Management Access-15',
             'Settings Access-16',
+            'Payment Method Access-17',
+            'Payment Method Detail-17',
+            'Payment Method Create-17',
+            'Payment Method Update-17',
+            'Payment Method Delete-17',
         ];
 
         foreach ($permissions as $permission) {

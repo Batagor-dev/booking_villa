@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MenuSeeder::class);
         $this->call(FacilitySeeder::class);
         $this->call(PropertyServiceSeeder::class);
+        $this->call(PaymentMethodSeeder::class);
     }
 }
 
