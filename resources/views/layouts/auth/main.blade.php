@@ -23,10 +23,10 @@
       <!-- LEFT COLUMN: LUXURY SHOWCASE (Visible on lg screens) -->
       <div class="hidden lg:flex lg:w-7/12 relative overflow-hidden bg-slate-950 flex-col justify-between p-12 xl:p-16 min-h-screen">
         <!-- Background Image with Gradient Overlays -->
-        <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 z-0 pointer-events-none select-none">
           <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1800&q=85" 
                alt="Luxury Villa Resort" 
-               class="w-full h-full object-cover object-center scale-105 transition-transform duration-10000 hover:scale-100">
+               class="w-full h-full object-cover object-center scale-105">
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-black/30"></div>
           <div class="absolute inset-0 bg-radial from-transparent via-black/20 to-slate-950/60"></div>
         </div>
@@ -74,8 +74,8 @@
           <a href="{{ route('home') }}" class="lg:hidden font-serif-title text-2xl font-bold tracking-[0.2em] text-slate-900 uppercase">
             PALMA
           </a>
-          <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#ca9e54] transition-colors ml-auto group">
-            <i class="ri-arrow-left-line text-sm group-hover:-translate-x-1 transition-transform"></i>
+          <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-sm font-satoshi-bold text-slate-700 hover:text-[#ca9e54] transition-colors ml-auto group">
+            <i class="ri-arrow-left-line text-base group-hover:-translate-x-1 transition-transform"></i>
             <span>Kembali ke Beranda</span>
           </a>
         </div>
@@ -87,7 +87,7 @@
             <h2 class="font-serif-title text-3xl sm:text-4xl font-normal text-slate-900 tracking-tight">
               @yield('title', 'Selamat Datang')
             </h2>
-            <p class="text-xs sm:text-sm text-slate-500 font-light leading-relaxed">
+            <p class="text-sm sm:text-base text-slate-600 font-satoshi-medium leading-relaxed">
               @yield('subtitle', 'Masuk untuk mengelola dan mengakses layanan eksklusif Anda.')
             </p>
           </div>

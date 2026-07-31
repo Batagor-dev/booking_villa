@@ -63,7 +63,13 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
 
         $user = User::create($data);
-        $user->assignRole('user');
+        
+        $userRole = Role::whereRaw('LOWER(name) = ?', ['user'])->first();
+        if ($userRole) {
+            $user->assignRole($userRole);
+        } else {
+            $user->assignRole('User');
+        }
 
         return redirect('/user')->with('success', 'New user has been created!');
     }

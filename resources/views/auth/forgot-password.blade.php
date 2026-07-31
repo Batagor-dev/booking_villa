@@ -36,14 +36,13 @@
         autofocus 
       />
 
-      <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white font-satoshi-bold text-sm py-3.5 px-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-wider group cursor-pointer">
-        <span>Kirim Tautan Pemulihan</span>
-        <i class="ri-send-plane-line text-lg group-hover:translate-x-1 transition-transform"></i>
+      <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white font-satoshi-bold text-base py-3.5 px-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 uppercase tracking-wider cursor-pointer">
+        Kirim Tautan Pemulihan
       </button>
     </form>
 
-    <div class="text-center text-xs text-slate-500 font-satoshi-medium pt-2">
-      Ingat kata sandi Anda?
+    <div class="text-center text-sm text-slate-600 font-satoshi-medium pt-2">
+      Sudah mengingat kata sandi?
       <a href="{{ route('login') }}" class="font-satoshi-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors underline ml-1">
         Masuk sekarang
       </a>

@@ -57,4 +57,20 @@ class UpdateUserRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Pesan kesalahan khusus untuk validasi pembaruan user.
+     */
+    public function messages(): array
+    {
+        return [
+            'username.required' => 'Username wajib diisi.',
+            'username.unique'   => 'Username ini sudah digunakan, silakan pilih username lain.',
+            'email.required'    => 'Alamat email wajib diisi.',
+            'email.unique'      => 'Alamat email ini sudah terdaftar, silakan gunakan email lain.',
+            'name.required'     => 'Nama lengkap wajib diisi.',
+            'password.min'      => 'Kata sandi minimal berisi 8 karakter.',
+            'password.confirmed'=> 'Konfirmasi kata sandi tidak cocok.',
+        ];
+    }
 }

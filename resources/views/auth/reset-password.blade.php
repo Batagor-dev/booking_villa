@@ -26,13 +26,12 @@
 
       <x-ui.password id="password_confirmation" name="password_confirmation" placeholder="••••••••" required label="Konfirmasi Kata Sandi Baru" />
 
-      <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white font-satoshi-bold text-sm py-3.5 px-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-wider group cursor-pointer mt-2">
-        <span>Simpan Kata Sandi Baru</span>
-        <i class="ri-check-line text-lg group-hover:scale-110 transition-transform"></i>
+      <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white font-satoshi-bold text-base py-3.5 px-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 uppercase tracking-wider cursor-pointer mt-2">
+        Simpan Kata Sandi Baru
       </button>
     </form>
 
-    <div class="text-center text-xs text-slate-500 font-satoshi-medium pt-1">
+    <div class="text-center text-sm text-slate-600 font-satoshi-medium pt-1">
       Kembali ke halaman masuk?
       <a href="{{ route('login') }}" class="font-satoshi-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors underline ml-1">
         Masuk sekarang

@@ -50,19 +50,18 @@
         required 
       />
 
-      <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white font-satoshi-bold text-sm py-3.5 px-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-wider group cursor-pointer mt-2">
-        <span>Daftar Akun Palma</span>
-        <i class="ri-arrow-right-line text-lg group-hover:translate-x-1 transition-transform"></i>
+      <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white font-satoshi-bold text-base py-3.5 px-6 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 uppercase tracking-wider cursor-pointer mt-2">
+        Daftar Akun Palma
       </button>
     </form>
 
     <!-- Social Divider -->
     <div class="relative py-1">
       <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-t border-slate-200/80"></div>
+        <div class="w-full border-t border-slate-200"></div>
       </div>
       <div class="relative flex justify-center text-xs uppercase">
-        <span class="bg-[#fcfbf9] px-4 text-slate-400 font-satoshi-medium tracking-wider">Atau daftar dengan</span>
+        <span class="bg-[#fcfbf9] px-4 text-slate-500 font-satoshi-semibold tracking-wider">Atau daftar dengan</span>
       </div>
     </div>
 
@@ -72,7 +71,7 @@
     </div>
 
     <!-- Sign In Link -->
-    <div class="text-center text-xs text-slate-500 font-satoshi-medium pt-1">
+    <div class="text-center text-sm text-slate-600 font-satoshi-medium pt-1">
       Sudah memiliki akun?
       <a href="{{ route('login') }}" class="font-satoshi-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors underline ml-1">
         Masuk sekarang

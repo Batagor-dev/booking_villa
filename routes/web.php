@@ -23,6 +23,13 @@ Route::get('/auth/google', [App\Http\Controllers\SocialiteController::class, 're
 // Route callback tempat Google mengirim data kembali
 Route::get('/auth/google/callback', [App\Http\Controllers\SocialiteController::class, 'handleGoogleCallback']);
 
+// Route Verifikasi Email Berbasis Kode OTP
+Route::middleware(['auth'])->group(function () {
+    Route::get('/email/verify', [App\Http\Controllers\Auth\OtpVerificationController::class, 'show'])->name('verification.notice');
+    Route::post('/email/verify-otp', [App\Http\Controllers\Auth\OtpVerificationController::class, 'verify'])->name('verification.otp.verify');
+    Route::post('/email/resend-otp', [App\Http\Controllers\Auth\OtpVerificationController::class, 'resend'])->name('verification.otp.resend');
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
