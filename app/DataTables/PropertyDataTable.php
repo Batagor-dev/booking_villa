@@ -24,7 +24,8 @@ class PropertyDataTable extends DataTable
             })
             ->addColumn('property_info', function ($row) {
                 $code = $row->code ? '<span class="text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono ml-1.5">' . e($row->code) . '</span>' : '';
-                return '<div><div class="font-satoshi-bold text-slate-900 text-base flex items-center">' . e($row->name) . $code . '</div><div class="text-xs text-slate-500 font-satoshi-regular">' . e($row->type) . '</div></div>';
+                $capacity = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-xs font-satoshi-medium ml-2"><i class="ri-user-3-line"></i> ' . e($row->capacity ?? 2) . ' Tamu</span>';
+                return '<div><div class="font-satoshi-bold text-slate-900 text-base flex items-center">' . e($row->name) . $code . '</div><div class="text-xs text-slate-500 font-satoshi-regular flex items-center gap-1 mt-0.5"><span>' . e($row->type) . '</span>' . $capacity . '</div></div>';
             })
             ->addColumn('location', function ($row) {
                 $city = $row->city ?? '-';

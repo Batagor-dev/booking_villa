@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code')->nullable();
             $table->string('type')->default('Villa'); // Villa, Resort, Hotel, Apartment
+            $table->integer('capacity')->default(2);
             $table->text('description')->nullable();
             $table->text('address')->nullable();
             $table->string('city')->nullable();

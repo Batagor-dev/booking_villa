@@ -24,6 +24,7 @@ class StorePropertyRequest extends FormRequest
             'name'                  => 'required|string|max:255',
             'code'                  => 'nullable|string|max:50|unique:properties,code',
             'type'                  => 'required|string|max:100',
+            'capacity'              => 'required|integer|min:1',
             'description'           => 'nullable|string',
             'address'               => 'nullable|string',
             'city'                  => 'nullable|string|max:100',

@@ -98,7 +98,7 @@
                         />
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
                         <!-- Property Type Select2 Component -->
                         <div>
                             <x-ui.select2 
@@ -107,6 +107,19 @@
                                 placeholder="Select Type..." 
                                 :options="$propertyTypes"
                                 :value="old('type', $property_data->type ?? 'Villa')"
+                            />
+                        </div>
+
+                        <!-- Capacity (Guests) -->
+                        <div>
+                            <x-ui.input 
+                                type="number"
+                                name="capacity" 
+                                label="Kapasitas Tamu (Max Guests) *" 
+                                placeholder="e.g. 4" 
+                                min="1"
+                                value="{{ old('capacity', $property_data->capacity ?? 2) }}"
+                                required
                             />
                         </div>
 
