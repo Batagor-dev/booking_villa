@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niskala - Pelarian Mewah & Villa Impian Anda</title>
+    <title>Palma - Pelarian Mewah & Villa Impian Anda</title>
     
     <!-- Preconnect & Google Fonts (Non-blocking display=swap) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,10 +21,10 @@
             <!-- Brand Logo -->
             <a href="#" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 rounded-full bg-navy-main flex items-center justify-center text-white font-bold text-xl shadow-md group-hover:scale-105 transition-transform duration-300">
-                    N
+                    P
                 </div>
                 <span class="font-serif-title text-2xl font-bold tracking-tight text-white transition-colors duration-300" id="nav-logo-text">
-                    Niskala
+                    Palma
                 </span>
             </a>
 

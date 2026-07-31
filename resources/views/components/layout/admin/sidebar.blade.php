@@ -8,7 +8,7 @@
   <div class="relative flex h-20 items-center px-5 border-b border-slate-100 group-[.sidebar-collapsed]:justify-center group-[.sidebar-collapsed]:px-0 transition-all duration-300">
     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 overflow-hidden">
       <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Logo" class="h-10 w-auto object-contain flex-shrink-0" onerror="this.style.display='none'">
-      <span class="text-2xl font-satoshi-bold tracking-tight text-slate-900 transition-all duration-300 group-[.sidebar-collapsed]:w-0 group-[.sidebar-collapsed]:opacity-0 truncate">Techarea</span>
+      <span class="text-2xl font-satoshi-bold tracking-tight text-slate-900 transition-all duration-300 group-[.sidebar-collapsed]:w-0 group-[.sidebar-collapsed]:opacity-0 truncate">Palma</span>
     </a>
 
     <button

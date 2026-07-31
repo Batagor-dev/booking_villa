@@ -3,7 +3,7 @@
 # Project Overview
 
 Project Name:
-Villa Booking, PMS (Property Management System) & Marketing CMS
+Palma - Villa Booking, PMS (Property Management System) & Marketing CMS
 
 Stack:
 - Laravel 11

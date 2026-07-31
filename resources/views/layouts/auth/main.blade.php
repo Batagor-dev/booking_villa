@@ -17,7 +17,7 @@
       <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white/95 p-8 shadow-xl shadow-slate-300/40 backdrop-blur-sm">
         <div class="mb-8 text-center">
           <a href="{{ route('home') }}" class="text-3xl font-satoshi-bold text-slate-900">
-            @yield('brand', $appSettings['title'] ?? 'Techarea')
+            @yield('brand', $appSettings['title'] ?? 'Palma')
           </a>
           <p class="mt-2 text-base text-slate-500 font-satoshi-medium">
             @yield('subtitle', 'Sign in to manage the application.')

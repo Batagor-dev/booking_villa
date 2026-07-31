@@ -13,10 +13,10 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         Setting::setValue([
-            'title'       => 'Villa Management System',
-            'author'      => 'Techarea Production',
-            'keyword'     => ['villa', 'booking', 'resort', 'vacation', 'luxury', 'management'],
-            'description' => 'Sistem Manajemen dan Pemesanan Villa Mewah & Resort Terpercaya.',
+            'title'       => 'Palma - Villa Management System',
+            'author'      => 'Palma Team',
+            'keyword'     => ['palma', 'villa', 'booking', 'resort', 'vacation', 'luxury', 'management'],
+            'description' => 'Palma - Sistem Manajemen dan Pemesanan Villa Mewah & Resort Terpercaya.',
         ]);
     }
 }
