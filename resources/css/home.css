@@ -1,0 +1,63 @@
+/* Niskala Luxury Home Page Styles */
+
+/* Font & Utility Classes */
+.font-serif-title {
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Custom Color Theme Classes */
+.bg-luxury-gold {
+    background-color: #ca9e54;
+}
+
+.text-luxury-gold {
+    color: #ca9e54;
+}
+
+.border-luxury-gold {
+    border-color: #ca9e54;
+}
+
+.bg-navy-main {
+    background-color: #152c4e;
+}
+
+.bg-navy-dark {
+    background-color: #0f1e36;
+}
+
+.text-navy-main {
+    color: #152c4e;
+}
+
+/* Performant Glassmorphism & GPU Acceleration */
+.glass-card {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transform: translateZ(0);
+    will-change: transform, opacity;
+}
+
+.glass-pill {
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    transform: translateZ(0);
+}
+
+/* Smooth Image Hover Animation */
+.img-zoom {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group:hover .img-zoom {
+    transform: scale(1.05);
+}
+
+/* Performance Optimization for Below-the-Fold Sections */
+.section-lazy {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 800px;
+}

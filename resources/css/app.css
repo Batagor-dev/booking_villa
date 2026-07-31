@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import "tailwindcss";
 
 /* Satoshi Variable Font */
@@ -10,8 +11,18 @@
 }
 
 @theme {
-    --font-sans: "Satoshi", sans-serif;
-    --font-satoshi: "Satoshi", sans-serif;
+    --font-sans: "Satoshi", system-ui, sans-serif;
+    --font-satoshi: "Satoshi", system-ui, sans-serif;
+    --font-serif: "Playfair Display", Georgia, serif;
+    --color-niskala-navy: #152c4e;
+    --color-niskala-dark: #0f1e36;
+    --color-niskala-gold: #ca9e54;
+    --color-niskala-gold-light: #e5c382;
+    --color-niskala-cream: #f9f8f3;
+}
+
+@utility font-serif-heading {
+    font-family: "Playfair Display", Georgia, serif;
 }
 
 @utility font-satoshi {
@@ -55,6 +66,7 @@
 
 @import "./datatable.css";
 @import "./select2-tailwind.css";
+@import "./home.css";
 
 /* --- Custom Page Loader & Progress Bar (NProgress style) --- */
 #nprogress {
