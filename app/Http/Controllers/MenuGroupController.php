@@ -42,6 +42,7 @@ class MenuGroupController extends Controller
     public function store(StoreMenuGroupRequest $request)
     {
         MenuGroup::create($request->validated());
+        \Illuminate\Support\Facades\Cache::forget('admin_sidebar_menus');
 
         return redirect('/menugroup')->with('success', 'New menu group has been created!');
     }
@@ -71,6 +72,7 @@ class MenuGroupController extends Controller
     public function update(UpdateMenuGroupRequest $request, MenuGroup $menugroup)
     {
         $menugroup->update($request->validated());
+        \Illuminate\Support\Facades\Cache::forget('admin_sidebar_menus');
 
         return redirect('/menugroup')->with('success', 'Menu group has been updated!');
     }
@@ -84,6 +86,8 @@ class MenuGroupController extends Controller
     public function destroy(MenuGroup $menugroup)
     {
         $menugroup->delete();
+        \Illuminate\Support\Facades\Cache::forget('admin_sidebar_menus');
+
         return redirect('/menugroup')->with('success', 'Menu group has been deleted!');
     }
 }

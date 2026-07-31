@@ -45,6 +45,7 @@ class MenuController extends Controller
     public function store(StoreMenuRequest $request)
     {
         Menu::create($request->all());
+        \Illuminate\Support\Facades\Cache::forget('admin_sidebar_menus');
 
         return redirect('/menu')->with('success', 'New menu has been created!');
     }       
@@ -75,6 +76,7 @@ class MenuController extends Controller
     public function update(UpdateMenuRequest $request, Menu $menu)
     {
         $menu->update($request->all());
+        \Illuminate\Support\Facades\Cache::forget('admin_sidebar_menus');
 
         return redirect('/menu')->with('success', 'Menu has been updated!');
     }
@@ -88,6 +90,8 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         $menu->delete();
+        \Illuminate\Support\Facades\Cache::forget('admin_sidebar_menus');
+
         return redirect('/menu')->with('success', 'Menu has been deleted!');
     }
 

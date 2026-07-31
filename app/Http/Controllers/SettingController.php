@@ -46,6 +46,7 @@ class SettingController extends Controller
         );
 
         Setting::setValue($payload);
+        \Illuminate\Support\Facades\Cache::forget('app_settings');
 
         return redirect()->route('setting.index')
                          ->with('success', __('messages.settings_saved'));

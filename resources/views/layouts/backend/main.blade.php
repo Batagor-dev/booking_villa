@@ -1,3 +1,6 @@
+@php
+  $appSettings = settings();
+@endphp
 <!doctype html>
 <html lang="en" class="h-full bg-[#f7f7f7]">
   <head>
@@ -6,23 +9,24 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>{{ settings()['title'] ?? config('app.name') }}</title>
-    <meta name="author" content="{{ settings()['author'] ?? '' }}">
-    <meta name="description" content="{{ settings()['description'] ?? '' }}">
+    <title>{{ $appSettings['title'] ?? config('app.name') }}</title>
+    <meta name="author" content="{{ $appSettings['author'] ?? '' }}">
+    <meta name="description" content="{{ $appSettings['description'] ?? '' }}">
     <link rel="icon" type="image/png"
-      href="{{ settings()['favicon'] ? asset('storage/' . settings()['favicon']) : asset('images/no-image.png') }}">
+      href="{{ !empty($appSettings['favicon']) ? asset('storage/' . $appSettings['favicon']) : asset('images/no-image.png') }}">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" />
+    {{-- Local Vendor Assets (Fast & Offline Ready) --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" />
 
     {{-- Data Table --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/datatables/css/datatables.min.css') }}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/datatables/css/responsive.dataTables.min.css') }}">
 
     {{-- Select2 --}}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{{ asset('assets/vendor/select2/select2.min.css') }}"/>
 
     {{-- Alpine.js --}}
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="{{ asset('assets/vendor/alpine/alpine.min.js') }}"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -71,14 +75,14 @@
     </script>
 
     {{-- jQuery --}}
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
 
     {{-- Data table --}}
     <script src="{{ asset('assets/vendor/datatables/js/datatables.min.js') }}"></script>
-    <script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.min.js"></script>
+    <script src="{{ asset('assets/vendor/datatables/js/dataTables.responsive.min.js') }}"></script>
 
     {{-- Select2 --}}
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <script src="{{ asset('assets/vendor/select2/select2.min.js') }}"></script>
     
     {{-- Custom Components --}}
     <x-ui.notification />
