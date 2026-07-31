@@ -22,7 +22,6 @@
       <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white/95 p-8 shadow-xl shadow-slate-300/40 backdrop-blur-sm">
         <div class="mb-8 text-center">
           <a href="{{ route('home') }}" class="inline-flex items-center justify-center gap-2.5">
-            <div class="h-10 w-10 rounded-xl bg-[#ca9e54] text-white flex items-center justify-center font-serif-title font-bold text-2xl shadow-sm flex-shrink-0">P</div>
             <span class="font-serif-title text-3xl font-bold tracking-[0.2em] uppercase text-slate-900">
               @yield('brand', $appSettings['title'] ?? 'PALMA')
             </span>
