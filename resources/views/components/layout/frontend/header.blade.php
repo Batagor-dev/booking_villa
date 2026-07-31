@@ -33,7 +33,7 @@
                     Dashboard
                 </a>
             @else
-                <a href="{{ route('login') }}" id="nav-login-btn" class="border border-white/40 hover:border-white bg-white/10 hover:bg-white text-white hover:text-slate-900 font-satoshi text-xs font-semibold uppercase tracking-wider px-6 py-2.5 rounded-full transition duration-300">
+                <a href="{{ route('login') }}" id="nav-login-btn" class="border border-white/40 hover:border-white bg-white/10 hover:bg-[#152c4e] text-white hover:text-slate-900 font-satoshi text-xs font-semibold uppercase tracking-wider px-6 py-2.5 rounded-full transition duration-300">
                     Masuk
                 </a>
             @endauth
