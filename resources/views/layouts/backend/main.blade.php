@@ -15,6 +15,11 @@
     <link rel="icon" type="image/png"
       href="{{ !empty($appSettings['favicon']) ? asset('storage/' . $appSettings['favicon']) : asset('images/no-image.png') }}">
 
+    <!-- Preconnect & Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
     {{-- Local Vendor Assets (Fast & Offline Ready) --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" />
 

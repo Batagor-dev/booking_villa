@@ -24,6 +24,14 @@
     font-family: "Playfair Display", Georgia, serif;
 }
 
+@utility font-serif-title {
+    font-family: "Playfair Display", Georgia, serif;
+}
+
+.font-serif-title {
+    font-family: "Playfair Display", Georgia, serif;
+}
+
 @utility font-satoshi {
     font-family: "Satoshi", sans-serif;
 }

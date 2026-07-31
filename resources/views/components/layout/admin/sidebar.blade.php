@@ -7,8 +7,8 @@
   <!-- Brand Header -->
   <div class="relative flex h-20 items-center px-5 border-b border-slate-100 group-[.sidebar-collapsed]:justify-center group-[.sidebar-collapsed]:px-0 transition-all duration-300">
     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 overflow-hidden">
-      <img src="{{ asset('assets/img/logo/logo.png') }}" alt="Logo" class="h-10 w-auto object-contain flex-shrink-0" onerror="this.style.display='none'">
-      <span class="text-2xl font-satoshi-bold tracking-tight text-slate-900 transition-all duration-300 group-[.sidebar-collapsed]:w-0 group-[.sidebar-collapsed]:opacity-0 truncate">Palma</span>
+      <div class="h-9 w-9 rounded-xl bg-[#ca9e54] text-white flex items-center justify-center font-serif-title font-bold text-xl shadow-xs flex-shrink-0">P</div>
+      <span class="font-serif-title text-2xl font-bold tracking-[0.15em] uppercase text-slate-900 transition-all duration-300 group-[.sidebar-collapsed]:w-0 group-[.sidebar-collapsed]:opacity-0 truncate">PALMA</span>
     </a>
 
     <button

@@ -2,7 +2,7 @@
 <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-5 px-6 md:px-16">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <!-- Brand Logo -->
-        <a href="{{ route('home') }}" class="flex items-center gap-2 group">
+        <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
             <span class="font-serif-title text-2xl font-bold tracking-[0.2em] text-white uppercase transition-colors duration-300" id="nav-logo-text">
                 PALMA
             </span>

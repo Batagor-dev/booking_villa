@@ -9,6 +9,11 @@
     <title>@yield('title', 'Sign In') - {{ $appSettings['title'] ?? config('app.name') }}</title>
     <link rel="icon" type="image/png" href="{{ !empty($appSettings['favicon']) ? asset('storage/' . $appSettings['favicon']) : asset('images/no-image.png') }}">
     
+    <!-- Preconnect & Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
   </head>
@@ -16,8 +21,11 @@
     <div class="flex min-h-screen items-center justify-center px-4 py-10">
       <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white/95 p-8 shadow-xl shadow-slate-300/40 backdrop-blur-sm">
         <div class="mb-8 text-center">
-          <a href="{{ route('home') }}" class="text-3xl font-satoshi-bold text-slate-900">
-            @yield('brand', $appSettings['title'] ?? 'Palma')
+          <a href="{{ route('home') }}" class="inline-flex items-center justify-center gap-2.5">
+            <div class="h-10 w-10 rounded-xl bg-[#ca9e54] text-white flex items-center justify-center font-serif-title font-bold text-2xl shadow-sm flex-shrink-0">P</div>
+            <span class="font-serif-title text-3xl font-bold tracking-[0.2em] uppercase text-slate-900">
+              @yield('brand', $appSettings['title'] ?? 'PALMA')
+            </span>
           </a>
           <p class="mt-2 text-base text-slate-500 font-satoshi-medium">
             @yield('subtitle', 'Sign in to manage the application.')
