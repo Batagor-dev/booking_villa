@@ -14,8 +14,29 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('home');
+    return view('home.index');
 })->name('home');
+
+// Public Frontend Pages
+Route::get('/villa', function () {
+    return view('villa.index');
+})->name('villa.index');
+
+Route::get('/villa/{id}', function ($id = 1) {
+    return view('villa.show', compact('id'));
+})->name('villa.show');
+
+Route::get('/wisata', function () {
+    return view('wisata.index');
+})->name('wisata.index');
+
+Route::get('/layanan', function () {
+    return view('layanan.index');
+})->name('layanan.index');
+
+Route::get('/promo', function () {
+    return view('promo.index');
+})->name('promo.index');
 
 // Route untuk memicu login Google
 Route::get('/auth/google', [App\Http\Controllers\SocialiteController::class, 'redirectToGoogle'])->name('google.login');
