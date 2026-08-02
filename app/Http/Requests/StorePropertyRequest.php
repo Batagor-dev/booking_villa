@@ -22,9 +22,13 @@ class StorePropertyRequest extends FormRequest
         return [
             // Main property rules
             'name'                  => 'required|string|max:255',
+            'slug'                  => 'nullable|string|max:255|unique:properties,slug',
             'code'                  => 'nullable|string|max:50|unique:properties,code',
             'type'                  => 'required|string|max:100',
+            'price'                 => 'required|numeric|min:0',
+            'bedrooms'              => 'required|integer|min:1',
             'capacity'              => 'required|integer|min:1',
+            'rating'                => 'nullable|numeric|between:0,5',
             'description'           => 'nullable|string',
             'address'               => 'nullable|string',
             'city'                  => 'nullable|string|max:100',

@@ -41,6 +41,9 @@ class DatabaseSeeder extends Seeder
         $this->call(MenuGroupSeeder::class);
         $this->call(MenuSeeder::class);
         $this->call(FacilitySeeder::class);
+        $this->call(PropertySeeder::class);
+        $this->call(PropertySettingSeeder::class);
+        $this->call(PropertyGallerySeeder::class);
         $this->call(PropertyServiceSeeder::class);
         $this->call(PaymentMethodSeeder::class);
         $this->call(SettingSeeder::class);

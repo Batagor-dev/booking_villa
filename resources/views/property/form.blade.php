@@ -98,7 +98,7 @@
                         />
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <!-- Property Type Select2 Component -->
                         <div>
                             <x-ui.select2 
@@ -110,21 +110,52 @@
                             />
                         </div>
 
+                        <!-- Price Per Night -->
+                        <div>
+                            <x-ui.input 
+                                type="number"
+                                name="price" 
+                                label="Harga Per Malam (IDR) *" 
+                                placeholder="e.g. 2500000" 
+                                min="0"
+                                step="1000"
+                                value="{{ old('price', $property_data->price ?? 0) }}"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <!-- Bedrooms -->
+                        <div>
+                            <x-ui.input 
+                                type="number"
+                                name="bedrooms" 
+                                label="Kamar Tidur (Bedrooms) *" 
+                                placeholder="e.g. 3" 
+                                min="1"
+                                value="{{ old('bedrooms', $property_data->bedrooms ?? 1) }}"
+                                required
+                            />
+                        </div>
+
                         <!-- Capacity (Guests) -->
                         <div>
                             <x-ui.input 
                                 type="number"
                                 name="capacity" 
                                 label="Kapasitas Tamu (Max Guests) *" 
-                                placeholder="e.g. 4" 
+                                placeholder="e.g. 6" 
                                 min="1"
                                 value="{{ old('capacity', $property_data->capacity ?? 2) }}"
                                 required
                             />
                         </div>
+                    </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <!-- Status / Active -->
-                        <div class="flex items-center pt-6">
+                        <div class="flex items-center">
                             <x-ui.switch 
                                 name="status" 
                                 label="Active Status" 
@@ -134,7 +165,7 @@
                         </div>
 
                         <!-- Is Featured -->
-                        <div class="flex items-center pt-6">
+                        <div class="flex items-center">
                             <x-ui.switch 
                                 name="is_featured" 
                                 label="Featured Property" 

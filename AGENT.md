@@ -279,7 +279,8 @@ Seluruh tabel operasional properti wajib memiliki:
 property_id
 ```
 Foreign key wajib dibuat dan mengarah ke tabel `properties`. Gunakan cascade sesuai kebutuhan.
-
+```
+Buatkan kalau add colum bisa masuk langsung migration
 ---
 
 # Future Features

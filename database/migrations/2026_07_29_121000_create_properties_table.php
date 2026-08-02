@@ -15,9 +15,18 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('name');
+            $table->string('slug')->nullable()->unique();
             $table->string('code')->nullable();
             $table->string('type')->default('Villa'); // Villa, Resort, Hotel, Apartment
+            
+            // Specification & Pricing
+            $table->decimal('price', 15, 2)->default(0);
+            $table->integer('bedrooms')->default(1);
             $table->integer('capacity')->default(2);
+
+            // Ratings Cache
+            $table->decimal('rating', 3, 2)->default(0.00);
+
             $table->text('description')->nullable();
             $table->text('address')->nullable();
             $table->string('city')->nullable();
@@ -33,7 +42,6 @@ return new class extends Migration
         });
     }
 
-
     /**
      * Reverse the migrations.
      */
@@ -42,4 +50,3 @@ return new class extends Migration
         Schema::dropIfExists('properties');
     }
 };
-

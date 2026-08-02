@@ -18,23 +18,45 @@ class PropertyDataTable extends DataTable
             ->addIndexColumn()
             ->addColumn('image_preview', function ($row) {
                 if ($row->main_image) {
-                    return '<img src="' . asset('storage/' . $row->main_image) . '" class="w-16 h-12 object-cover rounded-xl shadow-xs mx-auto border border-slate-200">';
+                    $src = \Illuminate\Support\Str::startsWith($row->main_image, ['http://', 'https://'])
+                        ? $row->main_image
+                        : asset('storage/' . $row->main_image);
+                    return '<img src="' . e($src) . '" class="w-16 h-12 object-cover rounded-xl shadow-xs mx-auto border border-slate-200/80 transition-transform hover:scale-105">';
                 }
-                return '<div class="w-16 h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl"><i class="ri-building-4-line"></i></div>';
+                return '<div class="w-16 h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl border border-slate-200/60"><i class="ri-building-4-line"></i></div>';
             })
             ->addColumn('property_info', function ($row) {
-                $code = $row->code ? '<span class="text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono ml-1.5">' . e($row->code) . '</span>' : '';
-                $capacity = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-xs font-satoshi-medium ml-2"><i class="ri-user-3-line"></i> ' . e($row->capacity ?? 2) . ' Tamu</span>';
-                return '<div><div class="font-satoshi-bold text-slate-900 text-base flex items-center">' . e($row->name) . $code . '</div><div class="text-xs text-slate-500 font-satoshi-regular flex items-center gap-1 mt-0.5"><span>' . e($row->type) . '</span>' . $capacity . '</div></div>';
+                $code = $row->code ? '<span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono border border-slate-200/60 ml-1.5">' . e($row->code) . '</span>' : '';
+                $type = '<span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 mt-1">' . e($row->type) . '</span>';
+                
+                return '<div class="space-y-0.5">
+                    <div class="font-satoshi-bold text-slate-900 text-sm flex items-center flex-wrap gap-1">' . e($row->name) . $code . '</div>
+                    <div>' . $type . '</div>
+                </div>';
+            })
+            ->addColumn('price_info', function ($row) {
+                return '<div><span class="font-satoshi-bold text-slate-900 text-sm">Rp ' . number_format($row->price ?? 0, 0, ',', '.') . '</span> <span class="text-[10px] text-slate-400">/ malam</span></div>';
+            })
+            ->addColumn('specs', function ($row) {
+                return '<div class="flex flex-col gap-1 text-xs text-slate-600 font-satoshi-medium">
+                    <span class="inline-flex items-center gap-1.5"><i class="ri-hotel-bed-line text-amber-500"></i> ' . e($row->bedrooms ?? 1) . ' Kamar</span>
+                    <span class="inline-flex items-center gap-1.5"><i class="ri-user-3-line text-emerald-500"></i> ' . e($row->capacity ?? 2) . ' Tamu</span>
+                </div>';
             })
             ->addColumn('location', function ($row) {
                 $city = $row->city ?? '-';
                 $prov = $row->province ? ', ' . $row->province : '';
-                return '<span class="text-slate-700 font-satoshi-medium"><i class="ri-map-pin-line text-indigo-500 mr-1"></i>' . e($city . $prov) . '</span>';
+                return '<div class="text-xs font-satoshi-medium text-slate-800 flex items-center gap-1">
+                    <i class="ri-map-pin-2-fill text-rose-500 text-sm"></i>
+                    <span>' . e($city . $prov) . '</span>
+                </div>';
             })
-            ->addColumn('facilities_count', function ($row) {
-                $count = $row->facilities_count ?? $row->facilities()->count();
-                return '<span class="inline-flex items-center gap-1 rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-satoshi-bold text-indigo-700"><i class="ri-checkbox-circle-line"></i> ' . $count . ' Facilities</span>';
+            ->addColumn('rating_info', function ($row) {
+                $rating = number_format($row->rating ?? 0, 2);
+                return '<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-satoshi-bold border border-amber-200/60">
+                    <i class="ri-star-fill text-amber-500"></i>
+                    <span>' . $rating . '</span>
+                </div>';
             })
             ->addColumn('status', function ($row) {
                 $statusBadge = $row->status
@@ -42,10 +64,10 @@ class PropertyDataTable extends DataTable
                     : '<span class="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-satoshi-medium text-rose-700 ring-1 ring-inset ring-rose-600/10"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Inactive</span>';
 
                 $featuredBadge = $row->is_featured
-                    ? '<span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-satoshi-medium text-amber-700 ring-1 ring-inset ring-amber-600/10 ml-1"><i class="ri-star-fill text-amber-500"></i> Featured</span>'
+                    ? '<span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-satoshi-bold text-amber-700 ring-1 ring-inset ring-amber-600/20"><i class="ri-star-fill text-amber-500"></i> Featured</span>'
                     : '';
 
-                return '<div class="flex flex-col items-center gap-1">' . $statusBadge . $featuredBadge . '</div>';
+                return '<div class="flex flex-col items-center gap-1.5">' . $statusBadge . $featuredBadge . '</div>';
             })
             ->addColumn('action', function ($row) {
                 $edit = '';
@@ -53,9 +75,9 @@ class PropertyDataTable extends DataTable
 
                 if (auth()->user()->can('Property Update')) {
                     $edit = '<a href="' . route('properties.edit', $row->uuid) . '"
-                                class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 transition-colors font-satoshi-medium"
-                                data-bs-toggle="tooltip" title="Edit">
-                                <i class="ri ri-edit-line text-lg"></i>
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors font-satoshi-medium"
+                                data-bs-toggle="tooltip" title="Edit Property">
+                                <i class="ri ri-edit-line text-base"></i>
                              </a>';
                 }
 
@@ -64,18 +86,17 @@ class PropertyDataTable extends DataTable
                         <form action="' . route('properties.destroy', $row->uuid) . '"
                               method="POST" style="display:inline-block;" class="delete-form m-0">
                             ' . csrf_field() . method_field('DELETE') . '
-                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 transition-colors delete-btn font-satoshi-medium"
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors delete-btn font-satoshi-medium"
                                 data-id="' . $row->uuid . '"
-                                data-bs-toggle="tooltip" title="Delete">
-                                <i class="ri ri-delete-bin-line text-lg"></i>
+                                data-bs-toggle="tooltip" title="Delete Property">
+                                <i class="ri ri-delete-bin-line text-base"></i>
                             </button>
                         </form>';
                 }
 
-                return '<div class="flex items-center space-x-2 justify-center">' . $edit . ' ' . $delete . '</div>';
-
+                return '<div class="flex items-center space-x-1 justify-center">' . $edit . ' ' . $delete . '</div>';
             })
-            ->rawColumns(['image_preview', 'property_info', 'location', 'facilities_count', 'status', 'action']);
+            ->rawColumns(['image_preview', 'property_info', 'price_info', 'specs', 'location', 'rating_info', 'status', 'action']);
     }
 
     /**
@@ -95,18 +116,18 @@ class PropertyDataTable extends DataTable
             ->setTableId('properties-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(1)
+            ->orderBy(1, 'asc')
             ->responsive(true)
             ->addTableClass('min-w-full divide-y divide-slate-200 overflow-hidden bg-white text-sm font-satoshi-medium text-slate-700')
             ->parameters([
                 'dom' => '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 font-satoshi-medium"lf>' .
-                         '<"overflow-x-auto w-full"tr>' .
+                         '<"overflow-x-auto w-full border border-slate-100 rounded-2xl shadow-xs"tr>' .
                          '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-4 font-satoshi-medium text-slate-500 text-sm"ip>',
                 'language' => [
                     'search' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Search:</span>',
-                    'searchPlaceholder' => 'Search property...',
-                    'lengthMenu' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Show</span> _MENU_ <span class="text-slate-600 ml-2 font-satoshi-medium">Entries</span>',
-                    'info' => 'Showing _START_ to _END_ of _TOTAL_ entries',
+                    'searchPlaceholder' => 'Cari nama, kota, tipe...',
+                    'lengthMenu' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Tampilkan</span> _MENU_ <span class="text-slate-600 ml-2 font-satoshi-medium">Data</span>',
+                    'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
                     'paginate' => [
                         'first' => '<i class="ri-arrow-left-double-line text-lg"></i>',
                         'previous' => '<i class="ri-arrow-left-s-line text-lg"></i>',
@@ -123,18 +144,20 @@ class PropertyDataTable extends DataTable
     protected function getColumns()
     {
         return [
-            Column::make('DT_RowIndex')->title('No')->searchable(false)->orderable(false)->width(50)->addClass('text-center px-4 py-3 bg-slate-50 font-satoshi-medium text-slate-500 border-b border-slate-200'),
-            Column::make('image_preview')->title('Cover')->orderable(false)->searchable(false)->width(80)->addClass('text-center px-4 py-3 border-b border-slate-200'),
-            Column::make('property_info')->title('Property Details')->addClass('px-4 py-3 border-b border-slate-200'),
-            Column::make('location')->title('Location')->addClass('px-4 py-3 border-b border-slate-200'),
-            Column::make('facilities_count')->title('Facilities')->addClass('px-4 py-3 border-b border-slate-200 text-center'),
-            Column::make('status')->title('Status')->addClass('px-4 py-3 border-b border-slate-200 text-center'),
+            Column::make('DT_RowIndex')->title('No')->searchable(false)->orderable(false)->width(40)->addClass('text-center px-3 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-500 border-b border-slate-200'),
+            Column::make('image_preview')->title('Cover')->orderable(false)->searchable(false)->width(90)->addClass('text-center px-3 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
+            Column::make('property_info')->title('Informasi Properti')->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
+            Column::make('price_info')->title('Harga Per Malam')->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
+            Column::make('specs')->title('Spesifikasi')->orderable(false)->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
+            Column::make('location')->title('Lokasi')->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
+            Column::make('rating_info')->title('Rating')->addClass('text-center px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
+            Column::make('status')->title('Status')->addClass('text-center px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
             Column::computed('action')
-                ->title('Action')
+                ->title('Aksi')
                 ->exportable(false)
                 ->printable(false)
-                ->width(120)
-                ->addClass('text-center px-4 py-3 border-b border-slate-200'),
+                ->width(90)
+                ->addClass('text-center px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
         ];
     }
 
