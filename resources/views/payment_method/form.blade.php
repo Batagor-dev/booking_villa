@@ -100,10 +100,13 @@
                 </div>
 
                 <!-- Note / Payment Instructions -->
-                <div>
-                    <label class="mb-2 block text-base font-satoshi-medium text-slate-700">Payment Instructions / Note</label>
-                    <textarea name="note" rows="3" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-satoshi-medium text-slate-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Informasi atau petunjuk pembayaran bagi tamu...">{{ old('note', $payment_method_data->note ?? '') }}</textarea>
-                </div>
+                <x-ui.textarea 
+                    name="note" 
+                    label="Payment Instructions / Note" 
+                    placeholder="Informasi atau petunjuk pembayaran bagi tamu..."
+                    value="{{ old('note', $payment_method_data->note ?? '') }}"
+                    rows="3"
+                />
 
                 <!-- Images: Provider Logo & QRIS Image -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

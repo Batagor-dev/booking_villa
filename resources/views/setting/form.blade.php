@@ -59,20 +59,18 @@
 
                     <!-- Description -->
                     <div class="mt-6">
-                        <label for="description" class="mb-2 block text-base font-satoshi-medium text-slate-700">Description</label>
-                        <textarea class="block w-full font-satoshi-medium rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base outline-none transition focus:bg-white focus:ring-2 focus:ring-slate-200 @error('description') border-red-400 bg-red-50/50 text-red-900 @enderror"
-                                  id="description"
-                                  name="description"
-                                  placeholder="Description"
-                                  rows="4"
-                                  maxlength="160">{{ old('description', $description ?? '') }}</textarea>
+                        <x-ui.textarea 
+                            name="description" 
+                            label="Description" 
+                            placeholder="Description"
+                            value="{{ old('description', $description ?? '') }}"
+                            rows="4"
+                            maxlength="160"
+                        />
                         <div class="mt-1.5 flex justify-between items-center text-xs text-slate-400 font-satoshi">
                             <span>Sisa karakter: <span id="count" class="font-satoshi-bold text-slate-500">160</span></span>
                             <span>Maksimal 160 karakter</span>
                         </div>
-                        @error('description')
-                            <span class="mt-1.5 block text-sm font-medium text-red-600">{{ $message }}</span>
-                        @enderror
                     </div>
                 </div>
 

@@ -94,10 +94,13 @@
                 </div>
 
                 <!-- Description -->
-                <div>
-                    <label class="mb-2 block text-base font-satoshi-medium text-slate-700">Description</label>
-                    <textarea name="description" rows="3" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-satoshi-medium text-slate-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Facility description details...">{{ old('description', $facility_data->description ?? '') }}</textarea>
-                </div>
+                <x-ui.textarea 
+                    name="description" 
+                    label="Description" 
+                    placeholder="Facility description details..."
+                    value="{{ old('description', $facility_data->description ?? '') }}"
+                    rows="3"
+                />
 
                 <!-- Facility Image -->
                 <div>

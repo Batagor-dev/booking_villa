@@ -76,15 +76,13 @@
 
                         <!-- Admin Notes -->
                         <div>
-                            <label class="block text-xs font-satoshi-bold text-slate-800 uppercase tracking-wider mb-2">
-                                Catatan Khusus / Admin Notes
-                            </label>
-                            <textarea 
+                            <x-ui.textarea 
                                 name="notes" 
-                                rows="4" 
-                                placeholder="Tambahkan catatan khusus atau instruksi verifikasi..." 
-                                class="w-full bg-slate-50/70 border border-slate-200 rounded-2xl p-4 text-xs font-satoshi-medium text-slate-900 focus:outline-none focus:border-slate-400 transition"
-                            >{{ old('notes', $booking->notes) }}</textarea>
+                                label="Catatan Khusus / Admin Notes" 
+                                placeholder="Tambahkan catatan khusus atau instruksi verifikasi..."
+                                value="{{ old('notes', $booking->notes) }}"
+                                rows="4"
+                            />
                         </div>
                     </div>
                 </x-ui.card>

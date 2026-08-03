@@ -37,16 +37,16 @@
                         required
                     />
 
-@php
-    $serviceCategories = [
-        ['value' => 'Transport', 'label' => 'Transport'],
-        ['value' => 'F&B', 'label' => 'F&B (Food & Beverage)'],
-        ['value' => 'Wellness', 'label' => 'Wellness & Spa'],
-        ['value' => 'Tour', 'label' => 'Tour & Activity'],
-        ['value' => 'Laundry', 'label' => 'Laundry & Cleaning'],
-        ['value' => 'Entertainment', 'label' => 'Entertainment'],
-    ];
-@endphp
+                    @php
+                        $serviceCategories = [
+                            ['value' => 'Transport', 'label' => 'Transport'],
+                            ['value' => 'F&B', 'label' => 'F&B (Food & Beverage)'],
+                            ['value' => 'Wellness', 'label' => 'Wellness & Spa'],
+                            ['value' => 'Tour', 'label' => 'Tour & Activity'],
+                            ['value' => 'Laundry', 'label' => 'Laundry & Cleaning'],
+                            ['value' => 'Entertainment', 'label' => 'Entertainment'],
+                        ];
+                    @endphp
 
                     <!-- Category -->
                     <div>
@@ -74,15 +74,15 @@
                         step="5000"
                     />
 
-@php
-    $priceTypes = [
-        ['value' => 'per_item', 'label' => 'Per Item'],
-        ['value' => 'per_person', 'label' => 'Per Person'],
-        ['value' => 'per_stay', 'label' => 'Per Stay'],
-        ['value' => 'per_hour', 'label' => 'Per Hour'],
-        ['value' => 'fixed', 'label' => 'Fixed'],
-    ];
-@endphp
+                    @php
+                        $priceTypes = [
+                            ['value' => 'per_item', 'label' => 'Per Item'],
+                            ['value' => 'per_person', 'label' => 'Per Person'],
+                            ['value' => 'per_stay', 'label' => 'Per Stay'],
+                            ['value' => 'per_hour', 'label' => 'Per Hour'],
+                            ['value' => 'fixed', 'label' => 'Fixed'],
+                        ];
+                    @endphp
 
                     <!-- Price Type -->
                     <div>
@@ -129,10 +129,13 @@
                 </div>
 
                 <!-- Description -->
-                <div>
-                    <label class="mb-2 block text-base font-satoshi-medium text-slate-700">Description</label>
-                    <textarea name="description" rows="3" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-satoshi-medium text-slate-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Service description details...">{{ old('description', $service_data->description ?? '') }}</textarea>
-                </div>
+                <x-ui.textarea 
+                    name="description" 
+                    label="Description" 
+                    placeholder="Service description details..."
+                    value="{{ old('description', $service_data->description ?? '') }}"
+                    rows="3"
+                />
 
                 <!-- Service Image -->
                 <div>

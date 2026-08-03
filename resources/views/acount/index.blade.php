@@ -94,18 +94,13 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <div class="w-full">
-                        <label for="address" class="mb-2 block text-base font-satoshi-medium text-slate-700">Address</label>
-                        <textarea 
-                            id="address" 
-                            name="address" 
-                            rows="3" 
-                            class="block w-full font-satoshi-medium rounded-2xl border px-4 py-3 text-base outline-none transition focus:bg-white focus:ring-2 {{ $errors->has('address') ? 'border-red-400 bg-red-50/50 text-red-900 focus:border-red-500 focus:ring-red-100' : 'border-slate-200 bg-slate-50 text-slate-900 focus:border-slate-400 focus:ring-slate-200' }}"
-                            placeholder="Address">{{ old('address', Auth::user()->address) }}</textarea>
-                        @error('address')
-                            <span class="mt-1.5 block text-sm font-medium text-red-600">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    <x-ui.textarea 
+                        name="address" 
+                        label="Address" 
+                        placeholder="Address"
+                        value="{{ old('address', Auth::user()->address) }}"
+                        rows="3"
+                    />
                 </div>
             </div>
         </x-ui.card>

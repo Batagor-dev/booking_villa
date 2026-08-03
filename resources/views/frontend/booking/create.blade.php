@@ -254,10 +254,13 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-satoshi-medium text-slate-700 mb-1">
-                                    Catatan / Permintaan Khusus (Opsional)
-                                </label>
-                                <textarea name="notes" rows="2" placeholder="Contoh: Minta tempat tidur tambahan, perkiraan waktu kedatangan jam 15:00..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs font-satoshi-medium text-slate-900 focus:outline-none focus:border-slate-400 transition">{{ old('notes') }}</textarea>
+                                <x-ui.textarea 
+                                    name="notes" 
+                                    label="Catatan / Permintaan Khusus (Opsional)" 
+                                    placeholder="Contoh: Minta tempat tidur tambahan, perkiraan waktu kedatangan jam 15:00..."
+                                    value="{{ old('notes') }}"
+                                    rows="2"
+                                />
                             </div>
                         </div>
                     </div>

@@ -506,10 +506,12 @@
                     </div>
 
                     <!-- Notes Optional -->
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">CATATAN KHUSUS (OPTIONAL)</label>
-                        <textarea name="notes" rows="2" placeholder="Catatan khusus atau permintaan check-in..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#ca9e54]"></textarea>
-                    </div>
+                    <x-ui.textarea 
+                        name="notes" 
+                        label="CATATAN KHUSUS (OPTIONAL)" 
+                        placeholder="Catatan khusus atau permintaan check-in..."
+                        rows="2"
+                    />
                 </div>
 
                 <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#0f1e36] text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-colors mt-4 cursor-pointer flex items-center justify-center gap-2">
