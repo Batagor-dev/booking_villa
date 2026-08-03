@@ -93,7 +93,8 @@
 }
 
 /* --- Global Spinner Animasi untuk Tombol/Loading --- */
-.animate-spin {
+.animate-spin,
+.btn-submit-spinner {
     animation: spin 1s linear infinite;
 }
 
@@ -104,4 +105,23 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* --- Submit Button Loading Spinner --- */
+.btn-submit-spinner {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    color: currentColor;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Tombol submit saat loading: pastikan flex agar spinner + teks sejajar */
+button[type="submit"]:disabled {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    pointer-events: none;
 }
