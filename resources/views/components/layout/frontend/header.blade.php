@@ -45,58 +45,76 @@
                 @endphp
 
                 <!-- User Profile Dropdown -->
-                <div class="relative">
+                <div class="relative" id="user-dropdown-wrapper">
                     <button type="button" 
                             onclick="toggleUserDropdown(event)"
-                            class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden transition duration-300 flex items-center justify-center cursor-pointer shrink-0 hover:scale-105 focus:outline-none" 
+                            class="flex items-center gap-2 p-1 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0 focus:outline-none" 
                             id="user-menu-btn"
                             title="{{ $authUser->name }}">
-                        @if($userAvatar)
-                            <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="w-full h-full object-cover">
-                        @else
-                            <div class="w-full h-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-xs sm:text-sm">
-                                {{ strtoupper(substr($authUser->name, 0, 1)) }}
-                            </div>
-                        @endif
+                        <div class="relative">
+                            @if($userAvatar)
+                                <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover">
+                            @else
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-xs sm:text-sm">
+                                    {{ strtoupper(substr($authUser->name, 0, 1)) }}
+                                </div>
+                            @endif
+
+                        </div>
+                        <span class="hidden sm:block text-xs font-satoshi-semibold text-white max-w-[100px] truncate transition-colors duration-300" id="nav-user-name">
+                            {{ $authUser->name }}
+                        </span>
+                        <i class="ri-arrow-down-s-line text-white/70 text-sm hidden sm:block transition-transform duration-200" id="user-menu-arrow"></i>
                     </button>
 
-                    <!-- Dropdown Menu Box -->
+                    <!-- Dropdown Card (Admin Panel Style) -->
                     <div id="user-dropdown-menu" 
-                         class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 text-slate-800 font-satoshi text-xs hidden transition-all duration-200">
-                        <div class="px-3 py-2 border-b border-slate-100 flex items-center gap-2.5">
+                         class="absolute right-0 mt-2 w-56 origin-top-right rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl transition-all scale-95 opacity-0 pointer-events-none z-50">
+                        <!-- User Info Header -->
+                        <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
                             @if($userAvatar)
-                                <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0">
+                                <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="h-12 w-12 rounded-full object-cover shadow-sm flex-shrink-0">
                             @else
-                                <div class="w-9 h-9 rounded-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                <div class="h-12 w-12 rounded-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
                                     {{ strtoupper(substr($authUser->name, 0, 1)) }}
                                 </div>
                             @endif
                             <div class="min-w-0 flex-1">
-                                <span class="font-bold text-slate-900 block truncate">{{ $authUser->name }}</span>
-                                <span class="text-[10px] text-slate-400 block truncate">{{ $authUser->email }}</span>
+                                <h3 class="text-sm font-satoshi-bold text-slate-900 truncate">
+                                    {{ $authUser->name }}
+                                </h3>
+                                <p class="mt-0.5 text-xs font-satoshi-medium text-slate-500 truncate">
+                                    {{ $authUser->email }}
+                                </p>
                             </div>
                         </div>
 
+                        <!-- Links -->
                         <div class="py-1">
-                            <a href="{{ route('user.account') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-700 font-bold transition">
-                                <i class="ri-user-settings-line text-[#ca9e54] text-sm"></i> Kelola Akun
+                            <a href="{{ route('user.account') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                                <i class="ri-user-settings-line text-lg text-slate-400"></i>
+                                <span>Kelola Akun</span>
                             </a>
 
                             @if(method_exists($authUser, 'hasRole') && $authUser->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
-                                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-700 font-bold transition border-t border-slate-100 mt-1">
-                                    <i class="ri-dashboard-line text-[#152c4e] text-sm"></i> Admin Panel
+                                <a href="{{ route('dashboard') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                                    <i class="ri-dashboard-line text-lg text-slate-400"></i>
+                                    <span>Admin Panel</span>
                                 </a>
                             @endif
                         </div>
 
-                        <div class="pt-1 border-t border-slate-100">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 font-bold transition text-left cursor-pointer">
-                                    <i class="ri-logout-box-r-line text-sm"></i> Keluar
-                                </button>
-                            </form>
-                        </div>
+                        <div class="border-t border-slate-100 my-1"></div>
+
+                        <!-- Logout Button -->
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" 
+                                class="w-full flex items-center justify-center font-satoshi-semibold gap-2.5 px-3 py-1.5 rounded-lg text-sm bg-rose-600 text-white hover:bg-rose-700 transition-colors cursor-pointer">
+                                <span>Keluar</span>
+                                <i class="ri-logout-box-r-line text-lg text-white"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             @else
@@ -324,29 +342,32 @@
         if (mobileLangBtn) mobileLangBtn.addEventListener('click', toggleLanguage);
     });
 
-    // User Profile Dropdown Toggle Function
+    // User Profile Dropdown Toggle Function (Admin Panel Style)
     window.toggleUserDropdown = function(event) {
         if (event) event.stopPropagation();
         const menu = document.getElementById('user-dropdown-menu');
         const arrow = document.getElementById('user-menu-arrow');
         if (!menu) return;
 
-        const isHidden = menu.classList.contains('hidden');
-        if (isHidden) {
-            menu.classList.remove('hidden');
+        const isClosed = menu.classList.contains('pointer-events-none');
+        if (isClosed) {
+            menu.classList.remove('pointer-events-none', 'scale-95', 'opacity-0');
+            menu.classList.add('scale-100', 'opacity-100');
             if (arrow) arrow.classList.add('rotate-180');
         } else {
-            menu.classList.add('hidden');
+            menu.classList.add('pointer-events-none', 'scale-95', 'opacity-0');
+            menu.classList.remove('scale-100', 'opacity-100');
             if (arrow) arrow.classList.remove('rotate-180');
         }
     };
 
     document.addEventListener('click', function(event) {
+        const wrapper = document.getElementById('user-dropdown-wrapper');
         const menu = document.getElementById('user-dropdown-menu');
-        const btn = document.getElementById('user-menu-btn');
         const arrow = document.getElementById('user-menu-arrow');
-        if (menu && !menu.classList.contains('hidden') && btn && !btn.contains(event.target) && !menu.contains(event.target)) {
-            menu.classList.add('hidden');
+        if (wrapper && menu && !wrapper.contains(event.target)) {
+            menu.classList.add('pointer-events-none', 'scale-95', 'opacity-0');
+            menu.classList.remove('scale-100', 'opacity-100');
             if (arrow) arrow.classList.remove('rotate-180');
         }
     });

@@ -108,6 +108,8 @@
         const navFavIcon = document.getElementById('nav-fav-icon');
         const langToggleBtn = document.getElementById('lang-toggle-btn');
         const navLoginBtn = document.getElementById('nav-login-btn');
+        const navUserName = document.getElementById('nav-user-name');
+        const navUserArrow = document.getElementById('user-menu-arrow');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileCloseBtn = document.getElementById('mobile-close-btn');
         const mobileDrawer = document.getElementById('mobile-drawer');
@@ -134,6 +136,8 @@
                         navLoginBtn.classList.remove('border-white/40', 'text-white', 'bg-white/10');
                         navLoginBtn.classList.add('border-slate-900', 'text-slate-900', 'hover:bg-slate-900', 'hover:text-white');
                     }
+                    if (navUserName) { navUserName.classList.remove('text-white'); navUserName.classList.add('text-slate-900'); }
+                    if (navUserArrow) { navUserArrow.classList.remove('text-white/70'); navUserArrow.classList.add('text-slate-500'); }
                 } else {
                     navbar.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'border-b', 'border-slate-100', 'py-3');
                     navbar.classList.add('py-4', 'md:py-5');
@@ -150,6 +154,8 @@
                         navLoginBtn.classList.add('border-white/40', 'text-white', 'bg-white/10');
                         navLoginBtn.classList.remove('border-slate-900', 'text-slate-900', 'hover:bg-slate-900', 'hover:text-white');
                     }
+                    if (navUserName) { navUserName.classList.add('text-white'); navUserName.classList.remove('text-slate-900'); }
+                    if (navUserArrow) { navUserArrow.classList.add('text-white/70'); navUserArrow.classList.remove('text-slate-500'); }
                 }
             }
 
