@@ -98,239 +98,46 @@
             </div>
         </div>
 
-        <!-- Villa Grid (9 Cards) -->
+        <!-- Villa Grid (Dynamic) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
-            <!-- Villa Card 1 -->
-            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
-                <div class="relative h-60 overflow-hidden bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75" alt="Villa Azure Paradise" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <div class="absolute top-4 left-4 flex gap-2">
-                        <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md">-30% OFF</span>
-                        <span class="bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-md">Beachfront</span>
-                    </div>
-                    <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors shadow-md">
-                        <i class="ri-heart-line text-lg"></i>
-                    </button>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <a href="{{ route('villa.show', 1) }}" class="font-serif-title text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors">Villa Azure Paradise</a>
-                            <div class="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                                <i class="ri-star-fill text-[#ca9e54]"></i>
-                                <span>4.9</span> <span class="text-[10px] text-slate-400">(127)</span>
+            @if(isset($properties) && $properties->count() > 0)
+                @foreach($properties as $villa)
+                    <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
+                        <div class="relative h-60 overflow-hidden bg-slate-100">
+                            <img src="{{ $villa->main_image ? asset('storage/' . $villa->main_image) : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75' }}" alt="{{ $villa->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md uppercase">{{ $villa->code ?? 'PLM' }}</span>
+                                <span class="bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-md">{{ $villa->type ?? 'Villa' }}</span>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
-                            <i class="ri-map-pin-line text-slate-400 text-sm"></i> Seminyak, Bali
-                        </p>
-                        <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> 5 Kamar</span>
-                            <span class="flex items-center gap-1"><i class="ri-showers-line text-[#ca9e54]"></i> 4 Mandi</span>
-                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> 10 Tamu</span>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                        <div>
-                            <span class="text-xs text-slate-400 line-through mr-1">$650</span>
-                            <span class="text-2xl font-bold text-[#152c4e]">$450</span>
-                            <span class="text-xs font-normal text-slate-500">/ malam</span>
-                        </div>
-                        <a href="{{ route('villa.show', 1) }}" class="bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Villa Card 2 -->
-            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
-                <div class="relative h-60 overflow-hidden bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=600&q=75" alt="Villa Ocean Breeze" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <div class="absolute top-4 left-4">
-                        <span class="bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-md">Cliffside View</span>
-                    </div>
-                    <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors shadow-md">
-                        <i class="ri-heart-line text-lg"></i>
-                    </button>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-serif-title text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors">Villa Ocean Breeze</h3>
-                            <div class="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                                <i class="ri-star-fill text-[#ca9e54]"></i>
-                                <span>5.0</span> <span class="text-[10px] text-slate-400">(89)</span>
+                        <div class="p-6 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <a href="{{ route('villa.show', $villa->slug) }}" class="font-serif-title text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors line-clamp-1">{{ $villa->name }}</a>
+                                    <div class="flex items-center gap-1 text-xs font-semibold text-slate-700 shrink-0 ml-2">
+                                        <i class="ri-star-fill text-[#ca9e54]"></i>
+                                        <span>{{ number_format($villa->rating ?? 4.9, 1) }}</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
+                                    <i class="ri-map-pin-line text-slate-400 text-sm"></i> {{ $villa->city ?? 'Seminyak' }}, {{ $villa->province ?? 'Bali' }}
+                                </p>
+                                <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
+                                    <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> {{ $villa->bedrooms }} Kamar</span>
+                                    <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> {{ $villa->capacity }} Tamu</span>
+                                </div>
+                            </div>
+                            <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
+                                <div>
+                                    <span class="text-xl font-bold text-[#152c4e]">Rp {{ number_format($villa->price, 0, ',', '.') }}</span>
+                                    <span class="text-xs font-normal text-slate-500">/ malam</span>
+                                </div>
+                                <a href="{{ route('villa.show', $villa->slug) }}" class="bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
-                            <i class="ri-map-pin-line text-slate-400 text-sm"></i> Uluwatu, Bali
-                        </p>
-                        <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> 6 Kamar</span>
-                            <span class="flex items-center gap-1"><i class="ri-showers-line text-[#ca9e54]"></i> 5 Mandi</span>
-                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> 12 Tamu</span>
-                        </div>
                     </div>
-                    <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                        <div>
-                            <span class="text-2xl font-bold text-[#152c4e]">$680</span>
-                            <span class="text-xs font-normal text-slate-500">/ malam</span>
-                        </div>
-                        <a href="#booking" class="bg-[#152c4e] hover:bg-[#0f1e36] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Villa Card 3 -->
-            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
-                <div class="relative h-60 overflow-hidden bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=75" alt="Villa Tropical Serenity" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <div class="absolute top-4 left-4">
-                        <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md">-28% OFF</span>
-                    </div>
-                    <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors shadow-md">
-                        <i class="ri-heart-line text-lg"></i>
-                    </button>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-serif-title text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors">Villa Tropical Serenity</h3>
-                            <div class="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                                <i class="ri-star-fill text-[#ca9e54]"></i>
-                                <span>4.8</span> <span class="text-[10px] text-slate-400">(203)</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
-                            <i class="ri-map-pin-line text-slate-400 text-sm"></i> Canggu, Bali
-                        </p>
-                        <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> 4 Kamar</span>
-                            <span class="flex items-center gap-1"><i class="ri-showers-line text-[#ca9e54]"></i> 3 Mandi</span>
-                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> 8 Tamu</span>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                        <div>
-                            <span class="text-xs text-slate-400 line-through mr-1">$450</span>
-                            <span class="text-2xl font-bold text-[#152c4e]">$320</span>
-                            <span class="text-xs font-normal text-slate-500">/ malam</span>
-                        </div>
-                        <a href="#booking" class="bg-[#152c4e] hover:bg-[#0f1e36] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Villa Card 4 -->
-            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
-                <div class="relative h-60 overflow-hidden bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=75" alt="Villa Sunset Cliff" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors shadow-md">
-                        <i class="ri-heart-line text-lg"></i>
-                    </button>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-serif-title text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors">Villa Sunset Cliff</h3>
-                            <div class="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                                <i class="ri-star-fill text-[#ca9e54]"></i>
-                                <span>4.9</span> <span class="text-[10px] text-slate-400">(156)</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
-                            <i class="ri-map-pin-line text-slate-400 text-sm"></i> Nusa Dua, Bali
-                        </p>
-                        <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> 5 Kamar</span>
-                            <span class="flex items-center gap-1"><i class="ri-showers-line text-[#ca9e54]"></i> 4 Mandi</span>
-                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> 10 Tamu</span>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                        <div>
-                            <span class="text-2xl font-bold text-[#152c4e]">$550</span>
-                            <span class="text-xs font-normal text-slate-500">/ malam</span>
-                        </div>
-                        <a href="#booking" class="bg-[#152c4e] hover:bg-[#0f1e36] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Villa Card 5 -->
-            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
-                <div class="relative h-60 overflow-hidden bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=75" alt="Villa Emerald Hills" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <div class="absolute top-4 left-4">
-                        <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md">-30% OFF</span>
-                    </div>
-                    <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors shadow-md">
-                        <i class="ri-heart-line text-lg"></i>
-                    </button>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-serif-title text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors">Villa Emerald Hills</h3>
-                            <div class="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                                <i class="ri-star-fill text-[#ca9e54]"></i>
-                                <span>4.7</span> <span class="text-[10px] text-slate-400">(94)</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
-                            <i class="ri-map-pin-line text-slate-400 text-sm"></i> Ubud, Bali
-                        </p>
-                        <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> 3 Kamar</span>
-                            <span class="flex items-center gap-1"><i class="ri-showers-line text-[#ca9e54]"></i> 3 Mandi</span>
-                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> 6 Tamu</span>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                        <div>
-                            <span class="text-xs text-slate-400 line-through mr-1">$400</span>
-                            <span class="text-2xl font-bold text-[#152c4e]">$280</span>
-                            <span class="text-xs font-normal text-slate-500">/ malam</span>
-                        </div>
-                        <a href="#booking" class="bg-[#152c4e] hover:bg-[#0f1e36] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Villa Card 6 -->
-            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
-                <div class="relative h-60 overflow-hidden bg-slate-100">
-                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=75" alt="Villa Coastal Dream" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors shadow-md">
-                        <i class="ri-heart-line text-lg"></i>
-                    </button>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-serif-title text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors">Villa Coastal Dream</h3>
-                            <div class="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                                <i class="ri-star-fill text-[#ca9e54]"></i>
-                                <span>4.8</span> <span class="text-[10px] text-slate-400">(178)</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
-                            <i class="ri-map-pin-line text-slate-400 text-sm"></i> Jimbaran, Bali
-                        </p>
-                        <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> 4 Kamar</span>
-                            <span class="flex items-center gap-1"><i class="ri-showers-line text-[#ca9e54]"></i> 4 Mandi</span>
-                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> 8 Tamu</span>
-                        </div>
-                    </div>
-                    <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                        <div>
-                            <span class="text-2xl font-bold text-[#152c4e]">$420</span>
-                            <span class="text-xs font-normal text-slate-500">/ malam</span>
-                        </div>
-                        <a href="#booking" class="bg-[#152c4e] hover:bg-[#0f1e36] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
-                    </div>
-                </div>
-            </div>
+                @endforeach
+            @endif
         </div>
 
         <!-- Load More Pagination -->

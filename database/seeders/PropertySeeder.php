@@ -17,7 +17,7 @@ class PropertySeeder extends Seeder
             [
                 'name'           => 'Villa Azure Ocean Sanctuary',
                 'slug'           => 'villa-azure-ocean-sanctuary',
-                'code'           => 'VLA-SMY-01',
+                'code'           => 'VAO',
                 'type'           => 'Villa',
                 'price'          => 4500000.00,
                 'bedrooms'       => 5,
@@ -36,7 +36,7 @@ class PropertySeeder extends Seeder
             [
                 'name'           => 'Villa Ocean Cliffview Retreat',
                 'slug'           => 'villa-ocean-cliffview-retreat',
-                'code'           => 'VLA-ULW-02',
+                'code'           => 'VOC',
                 'type'           => 'Villa',
                 'price'          => 6500000.00,
                 'bedrooms'       => 4,
@@ -55,7 +55,7 @@ class PropertySeeder extends Seeder
             [
                 'name'           => 'Villa Bamboo Jungle Sanctuary',
                 'slug'           => 'villa-bamboo-jungle-sanctuary',
-                'code'           => 'VLA-UBD-03',
+                'code'           => 'VBJ',
                 'type'           => 'Villa',
                 'price'          => 3200000.00,
                 'bedrooms'       => 3,
@@ -74,7 +74,7 @@ class PropertySeeder extends Seeder
             [
                 'name'           => 'Villa Sunset Ricefield Breeze',
                 'slug'           => 'villa-sunset-ricefield-breeze',
-                'code'           => 'VLA-CGU-04',
+                'code'           => 'VSR',
                 'type'           => 'Villa',
                 'price'          => 4100000.00,
                 'bedrooms'       => 4,
@@ -93,7 +93,7 @@ class PropertySeeder extends Seeder
             [
                 'name'           => 'Villa Royal Palms Estate',
                 'slug'           => 'villa-royal-palms-estate',
-                'code'           => 'VLA-NSD-05',
+                'code'           => 'VRP',
                 'type'           => 'Resort',
                 'price'          => 8500000.00,
                 'bedrooms'       => 6,

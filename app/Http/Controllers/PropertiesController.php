@@ -43,6 +43,13 @@ class PropertiesController extends Controller
             $data['status'] = $request->has('status') ? 1 : 0;
             $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
+            // Auto generate 3-letter code if empty
+            if (empty($data['code'])) {
+                $cleanName = preg_replace('/[^A-Za-z]/', '', $data['name']);
+                $code = strtoupper(substr($cleanName, 0, 3));
+                $data['code'] = str_pad($code, 3, 'V');
+            }
+
             // 1. Upload Cover Image
             if ($request->hasFile('main_image')) {
                 $file = $request->file('main_image');
@@ -100,7 +107,7 @@ class PropertiesController extends Controller
         $this->data['property_data'] = $property;
         $this->data['facilities'] = Facilities::where('status', true)->orderBy('sort')->get();
         $this->data['selected_facilities'] = $property->facilities->pluck('id')->toArray();
-        $this->data['action'] = route('properties.update', $property->uuid);
+        $this->data['action'] = route('properties.update', $property->slug);
         return view('property.form', $this->data);
     }
 

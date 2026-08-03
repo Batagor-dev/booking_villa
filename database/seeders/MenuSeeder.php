@@ -100,6 +100,16 @@ class MenuSeeder extends Seeder
             'sort'               => '4',
         ]);
 
+        Menu::create([
+            'menu_group_id'      => 2,
+            'nama_menu'          => 'Bookings',
+            'permission_group_id'=> 18,
+            'icon'               => 'ri-calendar-check-line',
+            'href'               => '/bookings',
+            'status'             => '1',
+            'sort'               => '5',
+        ]);
+
         // === Menu 2: Setting (Group: Settings - ID 3) ===
         $setting = Menu::create([
             'menu_group_id'      => 3,

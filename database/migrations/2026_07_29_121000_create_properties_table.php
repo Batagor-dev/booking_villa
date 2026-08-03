@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
             $table->string('name');
-            $table->string('slug')->nullable()->unique();
+            $table->string('slug')->unique();
             $table->string('code')->nullable();
             $table->string('type')->default('Villa'); // Villa, Resort, Hotel, Apartment
             

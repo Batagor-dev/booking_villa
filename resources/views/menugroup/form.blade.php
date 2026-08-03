@@ -39,7 +39,7 @@
                         />
 
                         <!-- Permission Group -->
-                        <x-ui.select 
+                        <x-ui.select2 
                             name="permission_group_id" 
                             label="Permission Group" 
                             :options="['' => '-- No Permission (Kosong) --'] + ($permissiongroups ? $permissiongroups->pluck('name', 'id')->toArray() : [])"

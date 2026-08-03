@@ -34,6 +34,7 @@ class RolePermissionSeeder extends Seeder
             'Property Management',  // 15
             'Settings',             // 16
             'Payment Method',       // 17
+            'Booking',              // 18
         ];
 
         foreach ($permissiongroups as $permissiongroup) {
@@ -112,6 +113,11 @@ class RolePermissionSeeder extends Seeder
             'Payment Method Create-17',
             'Payment Method Update-17',
             'Payment Method Delete-17',
+            'Booking Access-18',
+            'Booking Detail-18',
+            'Booking Create-18',
+            'Booking Update-18',
+            'Booking Delete-18',
         ];
 
         foreach ($permissions as $permission) {

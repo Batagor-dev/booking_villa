@@ -4,20 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\HasUuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Properties extends Model
 {
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'properties';
 
-    protected $guarded = ['id', 'uuid'];
+    protected $guarded = ['id'];
 
     public function getRouteKeyName()
     {
-        return 'uuid';
+        return 'slug';
     }
 
     public function settings()

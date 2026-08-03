@@ -14,17 +14,31 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('home.index');
+    $properties = App\Models\Properties::where('status', true)->latest()->get();
+    return view('home.index', compact('properties'));
 })->name('home');
 
 // Public Frontend Pages
 Route::get('/villa', function () {
-    return view('villa.index');
+    $properties = App\Models\Properties::where('status', true)->latest()->get();
+    return view('villa.index', compact('properties'));
 })->name('villa.index');
 
-Route::get('/villa/{id}', function ($id = 1) {
-    return view('villa.show', compact('id'));
+Route::get('/villa/{property:slug}', function (App\Models\Properties $property) {
+    $property->load(['settings', 'galleries', 'facilities']);
+    $paymentMethods = App\Models\PaymentMethod::where('is_active', true)->get();
+    return view('villa.show', compact('property', 'paymentMethods'));
 })->name('villa.show');
+
+// User Frontend Account & Booking Portal (Requires Auth)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/booking/{property:slug?}', [App\Http\Controllers\BookingController::class, 'createPublic'])->name('booking.create');
+    Route::post('/booking', [App\Http\Controllers\BookingController::class, 'store'])->name('booking.store');
+
+    Route::get('/my-bookings', [App\Http\Controllers\UserBookingController::class, 'bookings'])->name('user.bookings');
+    Route::get('/my-account', [App\Http\Controllers\UserBookingController::class, 'account'])->name('user.account');
+    Route::post('/my-account', [App\Http\Controllers\UserBookingController::class, 'updateAccount'])->name('user.account.update');
+});
 
 Route::get('/wisata', function () {
     return view('wisata.index');
@@ -51,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/email/resend-otp', [App\Http\Controllers\Auth\OtpVerificationController::class, 'resend'])->name('verification.otp.resend');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
     Route::get('/user/role/{user}', [App\Http\Controllers\UserController::class, 'role'])->name('user.role');
@@ -87,7 +101,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ]);
 
     Route::resource('/properties', App\Http\Controllers\PropertiesController::class)->parameters([
-        'properties' => 'property:uuid',
+        'properties' => 'property:slug',
     ])->except('show');
 
     Route::resource('/property_services', App\Http\Controllers\PropertyServicesController::class)->parameters([
@@ -101,6 +115,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/payment_methods', App\Http\Controllers\PaymentMethodController::class)->parameters([
         'payment_methods' => 'payment_method:uuid',
     ])->except('show');
+
+    Route::resource('/bookings', App\Http\Controllers\BookingController::class)->parameters([
+        'bookings' => 'booking:uuid',
+    ])->only(['index', 'show', 'edit', 'update', 'destroy']);
+    Route::patch('/bookings/{booking}/status', [App\Http\Controllers\BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
 
 

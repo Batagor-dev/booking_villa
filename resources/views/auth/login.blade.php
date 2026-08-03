@@ -14,6 +14,9 @@
 
     <form method="POST" action="{{ route('login') }}" class="space-y-4">
       @csrf
+      @if(request()->has('redirect'))
+        <input type="hidden" name="redirect" value="{{ request()->query('redirect') }}">
+      @endif
 
       <x-ui.input 
         name="email" 

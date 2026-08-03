@@ -358,5 +358,21 @@ Breadcrumbs::for('payment_methods.edit', function (BreadcrumbTrail $trail, $paym
 
 // **************************** END PAYMENT METHODS ***************************
 
+// **************************** BOOKINGS ***************************
+
+// Home > Bookings
+Breadcrumbs::for('bookings.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Bookings', route('bookings.index'));
+});
+
+// Home > Bookings > Edit
+Breadcrumbs::for('bookings.edit', function (BreadcrumbTrail $trail, $booking) {
+    $trail->parent('bookings.index');
+    $trail->push('Edit [' . $booking->booking_code . ']', route('bookings.edit', $booking));
+});
+
+// **************************** END BOOKINGS ***************************
+
 
 

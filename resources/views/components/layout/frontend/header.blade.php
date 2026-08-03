@@ -15,6 +15,10 @@
             <a href="{{ route('wisata.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('wisata.index') ? 'text-[#ca9e54] font-bold' : '' }}">Wisata Bali</a>
             <a href="{{ route('promo.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('promo.index') ? 'text-[#ca9e54] font-bold' : '' }}">Promo</a>
             <a href="{{ route('layanan.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('layanan.index') ? 'text-[#ca9e54] font-bold' : '' }}">Layanan</a>
+            
+            @auth
+                <a href="{{ route('user.bookings') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('user.bookings') ? 'text-[#ca9e54] font-bold' : '' }}">History Pemesanan</a>
+            @endauth
         </nav>
 
         <!-- Action Buttons & Mobile Toggle -->
@@ -29,9 +33,72 @@
             </button>
             
             @auth
-                <a href="{{ route('dashboard') }}" class="bg-[#ca9e54] hover:bg-[#b88c43] text-white font-satoshi text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition duration-300 shadow-sm hover:shadow-md">
-                    Dashboard
-                </a>
+                @php
+                    $authUser = auth()->user();
+                    $userAvatar = $authUser->foto && \Illuminate\Support\Str::startsWith($authUser->foto, ['http://', 'https://'])
+                        ? $authUser->foto
+                        : ($authUser->foto && \Illuminate\Support\Str::startsWith($authUser->foto, 'avatar-')
+                            ? asset('assets/img/avatar/' . $authUser->foto)
+                            : ($authUser->foto 
+                                ? asset('storage/uploads/users/' . $authUser->foto) 
+                                : null));
+                @endphp
+
+                <!-- User Profile Dropdown -->
+                <div class="relative">
+                    <button type="button" 
+                            onclick="toggleUserDropdown(event)"
+                            class="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden transition duration-300 flex items-center justify-center cursor-pointer shrink-0 hover:scale-105 focus:outline-none" 
+                            id="user-menu-btn"
+                            title="{{ $authUser->name }}">
+                        @if($userAvatar)
+                            <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-xs sm:text-sm">
+                                {{ strtoupper(substr($authUser->name, 0, 1)) }}
+                            </div>
+                        @endif
+                    </button>
+
+                    <!-- Dropdown Menu Box -->
+                    <div id="user-dropdown-menu" 
+                         class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50 text-slate-800 font-satoshi text-xs hidden transition-all duration-200">
+                        <div class="px-3 py-2 border-b border-slate-100 flex items-center gap-2.5">
+                            @if($userAvatar)
+                                <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0">
+                            @else
+                                <div class="w-9 h-9 rounded-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                    {{ strtoupper(substr($authUser->name, 0, 1)) }}
+                                </div>
+                            @endif
+                            <div class="min-w-0 flex-1">
+                                <span class="font-bold text-slate-900 block truncate">{{ $authUser->name }}</span>
+                                <span class="text-[10px] text-slate-400 block truncate">{{ $authUser->email }}</span>
+                            </div>
+                        </div>
+
+                        <div class="py-1">
+                            <a href="{{ route('user.account') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-700 font-bold transition">
+                                <i class="ri-user-settings-line text-[#ca9e54] text-sm"></i> Kelola Akun
+                            </a>
+
+                            @if(method_exists($authUser, 'hasRole') && $authUser->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
+                                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 text-slate-700 font-bold transition border-t border-slate-100 mt-1">
+                                    <i class="ri-dashboard-line text-[#152c4e] text-sm"></i> Admin Panel
+                                </a>
+                            @endif
+                        </div>
+
+                        <div class="pt-1 border-t border-slate-100">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 font-bold transition text-left cursor-pointer">
+                                    <i class="ri-logout-box-r-line text-sm"></i> Keluar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             @else
                 <a href="{{ route('login') }}" id="nav-login-btn" class="border border-white/40 hover:border-white bg-white/10 hover:bg-[#152c4e] text-white font-satoshi text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition duration-300">
                     Masuk
@@ -81,13 +148,35 @@
                 <span>Layanan Concierge</span>
                 <i class="ri-arrow-right-s-line text-slate-500"></i>
             </a>
+            @auth
+                <a href="{{ route('user.bookings') }}" class="mobile-nav-link text-white/90 hover:text-[#ca9e54] transition-colors py-2 border-b border-white/5 flex items-center justify-between">
+                    <span>History Pemesanan</span>
+                    <i class="ri-arrow-right-s-line text-slate-500"></i>
+                </a>
+            @endauth
         </nav>
 
         <div class="space-y-4 pt-6 border-t border-white/10 text-center">
             @auth
-                <a href="{{ route('dashboard') }}" class="block w-full bg-[#ca9e54] text-white font-semibold uppercase text-xs tracking-wider py-3.5 rounded-full shadow-lg">
-                    Ke Dashboard
-                </a>
+                <div class="space-y-2">
+                    <a href="{{ route('user.bookings') }}" class="block w-full bg-[#ca9e54] text-white font-semibold uppercase text-xs tracking-wider py-3 rounded-full shadow-lg">
+                        <i class="ri-calendar-event-line mr-1"></i> My Bookings & Riwayat
+                    </a>
+                    <a href="{{ route('user.account') }}" class="block w-full bg-white/10 border border-white/20 text-white font-semibold uppercase text-xs tracking-wider py-3 rounded-full">
+                        <i class="ri-user-settings-line mr-1"></i> Kelola Akun
+                    </a>
+                    @if(method_exists(auth()->user(), 'hasRole') && auth()->user()->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
+                        <a href="{{ route('dashboard') }}" class="block w-full bg-white/10 text-white font-semibold uppercase text-xs tracking-wider py-2.5 rounded-full">
+                            Admin Panel
+                        </a>
+                    @endif
+                    <form method="POST" action="{{ route('logout') }}" class="pt-1">
+                        @csrf
+                        <button type="submit" class="w-full text-rose-400 hover:text-rose-300 text-xs font-bold py-2">
+                            Keluar
+                        </button>
+                    </form>
+                </div>
             @else
                 <a href="{{ route('login') }}" class="block w-full bg-[#ca9e54] text-white font-semibold uppercase text-xs tracking-wider py-3.5 rounded-full shadow-lg">
                     Masuk ke Akun
@@ -234,5 +323,106 @@
         if (langToggleBtn) langToggleBtn.addEventListener('click', toggleLanguage);
         if (mobileLangBtn) mobileLangBtn.addEventListener('click', toggleLanguage);
     });
+
+    // User Profile Dropdown Toggle Function
+    window.toggleUserDropdown = function(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('user-dropdown-menu');
+        const arrow = document.getElementById('user-menu-arrow');
+        if (!menu) return;
+
+        const isHidden = menu.classList.contains('hidden');
+        if (isHidden) {
+            menu.classList.remove('hidden');
+            if (arrow) arrow.classList.add('rotate-180');
+        } else {
+            menu.classList.add('hidden');
+            if (arrow) arrow.classList.remove('rotate-180');
+        }
+    };
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('user-dropdown-menu');
+        const btn = document.getElementById('user-menu-btn');
+        const arrow = document.getElementById('user-menu-arrow');
+        if (menu && !menu.classList.contains('hidden') && btn && !btn.contains(event.target) && !menu.contains(event.target)) {
+            menu.classList.add('hidden');
+            if (arrow) arrow.classList.remove('rotate-180');
+        }
+    });
+
+    // Global Require Login Modal Functions
+    window.openRequireLoginModal = function(redirectTarget = null) {
+        const modal = document.getElementById('require-login-modal');
+        const box = document.getElementById('require-login-box');
+        const loginLink = document.getElementById('modal-login-btn-link');
+
+        if (redirectTarget && loginLink) {
+            loginLink.href = "{{ route('login') }}?redirect=" + encodeURIComponent(redirectTarget);
+        } else if (loginLink) {
+            loginLink.href = "{{ route('login') }}";
+        }
+
+        if (modal) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                if (box) box.classList.remove('scale-95');
+            }, 10);
+        }
+    };
+
+    window.closeRequireLoginModal = function() {
+        const modal = document.getElementById('require-login-modal');
+        const box = document.getElementById('require-login-box');
+        if (modal) {
+            modal.classList.add('opacity-0');
+            if (box) box.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    };
 </script>
+
+<!-- REQUIRE LOGIN MODAL BOX -->
+<div id="require-login-modal" onclick="closeRequireLoginModal()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[90] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 font-satoshi">
+    <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-100 p-6 sm:p-8 text-center transform scale-95 transition-transform duration-300 relative space-y-5" id="require-login-box" onclick="event.stopPropagation()">
+        
+        <!-- Close Button -->
+        <button type="button" onclick="closeRequireLoginModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer">
+            <i class="ri-close-line text-lg"></i>
+        </button>
+
+        <!-- Lock Icon Header -->
+        <div class="w-16 h-16 rounded-full bg-amber-50 text-[#ca9e54] border border-amber-200 flex items-center justify-center text-3xl mx-auto shadow-sm">
+            <i class="ri-lock-2-line"></i>
+        </div>
+
+        <div>
+            <span class="text-[10px] uppercase font-bold tracking-[0.2em] text-[#ca9e54] block mb-1">Akses Pemesanan Terbatas</span>
+            <h3 class="font-serif-title text-2xl font-bold text-slate-900">Login Diperlukan</h3>
+            <p class="text-xs text-slate-500 font-medium leading-relaxed mt-2">
+                Silakan masuk ke akun Anda atau daftar sebagai pengguna baru terlebih dahulu untuk melanjutkan proses reservasi villa ini.
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-2.5 pt-2">
+            <a href="{{ route('login') }}" id="modal-login-btn-link" class="block w-full bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-3.5 px-4 rounded-2xl text-xs uppercase tracking-wider transition shadow-md">
+                <i class="ri-login-box-line mr-1 text-sm"></i> Masuk Ke Akun Anda
+            </a>
+            
+            <a href="{{ route('register') }}" class="block w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3.5 px-4 rounded-2xl text-xs uppercase tracking-wider border border-slate-200 transition">
+                <i class="ri-user-add-line mr-1 text-sm"></i> Buat Akun Baru
+            </a>
+        </div>
+
+        <button type="button" onclick="closeRequireLoginModal()" class="text-[11px] text-slate-400 hover:text-slate-600 font-semibold block mx-auto pt-1">
+            Nanti Saja / Kembalikan Ke Detail Villa
+        </button>
+
+    </div>
+</div>
+
 

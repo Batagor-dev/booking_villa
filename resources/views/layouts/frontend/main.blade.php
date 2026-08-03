@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
 
+    <!-- Alpine.js -->
+    <script defer src="{{ asset('assets/vendor/alpine/alpine.min.js') }}"></script>
+
     <!-- Vite CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -188,25 +191,20 @@
             
             if (progressBar) {
                 progressBar.style.width = '100%';
-                setTimeout(() => {
-                    progressBar.style.opacity = '0';
-                    setTimeout(() => progressBar.remove(), 400);
-                }, 200);
+                progressBar.style.opacity = '0';
+                setTimeout(() => progressBar.remove(), 200);
             }
 
             if (skeletonLoader) {
-                setTimeout(() => {
-                    skeletonLoader.style.opacity = '0';
-                    setTimeout(() => skeletonLoader.remove(), 450);
-                }, 150);
+                skeletonLoader.remove();
             }
         }
 
-        if (document.readyState === 'complete') {
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
             dismissSkeletonPageLoader();
         } else {
+            document.addEventListener('DOMContentLoaded', dismissSkeletonPageLoader);
             window.addEventListener('load', dismissSkeletonPageLoader);
-            document.addEventListener('DOMContentLoaded', () => setTimeout(dismissSkeletonPageLoader, 300));
         }
     </script>
 
