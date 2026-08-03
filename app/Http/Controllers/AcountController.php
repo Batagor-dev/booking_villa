@@ -23,8 +23,8 @@ class AcountController extends Controller
         $user = Auth::user();
         $validatedData = $request->validated();
 
-        // Update data selain foto
-        $user->fill(Arr::except($validatedData, ['foto']));
+        // Update data selain foto & identity_image
+        $user->fill(Arr::except($validatedData, ['foto', 'identity_image']));
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -39,6 +39,20 @@ class AcountController extends Controller
             }
 
             $user->foto = $filename;
+        }
+
+        if ($request->hasFile('identity_image')) {
+            $file = $request->file('identity_image');
+            $compressed = $imageService->compress($file);
+            $filename = 'identity_' . time() . '_' . uniqid() . '.jpg';
+
+            Storage::disk('public')->put('uploads/identities/' . $filename, $compressed);
+
+            if ($user->identity_image && Storage::disk('public')->exists('uploads/identities/' . $user->identity_image)) {
+                Storage::disk('public')->delete('uploads/identities/' . $user->identity_image);
+            }
+
+            $user->identity_image = $filename;
         }
 
         $user->save();

@@ -26,14 +26,16 @@
         </a>
     </div>
 
-    <!-- Main Card -->
-    <x-ui.card>
-        <form id="formAccountSettings"
-              method="POST"
-              action="{{ route('acount.store') }}"
-              enctype="multipart/form-data"
-              class="space-y-6">
-            @csrf
+    <form id="formAccountSettings"
+          method="POST"
+          action="{{ route('acount.store') }}"
+          enctype="multipart/form-data"
+          class="space-y-6">
+        @csrf
+
+        <!-- Personal Profile Card -->
+        <x-ui.card>
+            <h5 class="text-lg font-satoshi-bold text-slate-900 mb-6">Personal Profile</h5>
 
             {{-- Reusable Image Cropper Component with 1:1 ratio and Reset --}}
             <x-ui.image-cropper 
@@ -49,7 +51,7 @@
             />
 
             {{-- Fields Grid --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <div>
                     <x-ui.input 
                         name="name" 
@@ -106,15 +108,37 @@
                     </div>
                 </div>
             </div>
+        </x-ui.card>
 
-            {{-- Submit --}}
-            <div class="flex justify-end pt-4 border-t border-slate-100">
-                <x-ui.button type="submit" size="md">
-                    Save changes
-                </x-ui.button>
+        <!-- Identity Verification Card -->
+        <x-ui.card>
+            <h5 class="text-lg font-satoshi-bold text-slate-900 mb-6">Identity Verification</h5>
+
+            <div class="space-y-6">
+                <x-ui.select2 
+                    name="identity_type" 
+                    label="Identity Type" 
+                    placeholder="-- Choose Identity Type --" 
+                    :options="['ktp' => 'KTP', 'paspor' => 'Passport', 'sim' => 'SIM']" 
+                    :value="old('identity_type', Auth::user()->identity_type)" 
+                />
+
+                <x-ui.dropzone
+                    name="identity_image"
+                    label="Identity Document"
+                    accept="image/*"
+                    :previewUrl="Auth::user()->identity_image ? asset('storage/uploads/identities/' . Auth::user()->identity_image) : null"
+                />
             </div>
-        </form>
-    </x-ui.card>
+        </x-ui.card>
+
+        {{-- Submit --}}
+        <div class="flex justify-end">
+            <x-ui.button type="submit" size="md">
+                Save changes
+            </x-ui.button>
+        </div>
+    </form>
 </div>
 @endsection
 

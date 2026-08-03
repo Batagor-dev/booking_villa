@@ -30,6 +30,8 @@ class UpdateAcountRequest extends FormRequest
             'gender' => 'nullable|in:L,P',
             'phone' => 'nullable|numeric',
             'address' => 'nullable|string',
+            'identity_type' => 'nullable|in:ktp,paspor,sim',
+            'identity_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
         ];
     }
 }
