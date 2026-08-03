@@ -93,6 +93,9 @@
         @yield('content')
     </main>
 
+    <!-- UI TOAST NOTIFICATIONS (ADMIN PANEL COMPATIBLE) -->
+    <x-ui.notification />
+
     <!-- FOOTER -->
     <x-layout.frontend.footer />
 
@@ -204,7 +207,6 @@
             dismissSkeletonPageLoader();
         } else {
             document.addEventListener('DOMContentLoaded', dismissSkeletonPageLoader);
-            window.addEventListener('load', dismissSkeletonPageLoader);
         }
     </script>
 

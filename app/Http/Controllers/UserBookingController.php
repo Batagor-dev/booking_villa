@@ -6,6 +6,9 @@ use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+use App\Services\ImageService;
+use App\Http\Requests\UpdateUserAccountRequest;
 
 class UserBookingController extends Controller
 {
@@ -61,40 +64,55 @@ class UserBookingController extends Controller
     /**
      * Update user profile information or password.
      */
-    public function updateAccount(Request $request)
+    public function updateAccount(UpdateUserAccountRequest $request, ImageService $imageService)
     {
         $user = auth()->user();
-
-        $validated = $request->validate([
-            'name'             => 'required|string|max:255',
-            'email'            => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone'            => 'nullable|string|max:50',
-            'address'          => 'nullable|string|max:500',
-            'current_password' => 'nullable|string|required_with:new_password',
-            'new_password'     => 'nullable|string|min:8|confirmed',
-        ], [
-            'name.required'             => 'Nama lengkap wajib diisi.',
-            'email.required'            => 'Alamat email wajib diisi.',
-            'email.unique'              => 'Email ini sudah digunakan oleh akun lain.',
-            'current_password.required_with' => 'Masukkan kata sandi lama Anda untuk mengubah kata sandi.',
-            'new_password.min'          => 'Kata sandi baru minimal harus 8 karakter.',
-            'new_password.confirmed'    => 'Konfirmasi kata sandi baru tidak cocok.',
-        ]);
+        $validated = $request->validated();
 
         // If changing password, verify current password
         if ($request->filled('new_password')) {
             if (!Hash::check($request->current_password, $user->password)) {
-                return redirect()->back()->withErrors(['current_password' => 'Kata sandi saat ini tidak cocok.'])->withInput();
+                return redirect()->back()->with('error', 'Kata sandi saat ini tidak cocok.')->withErrors(['current_password' => 'Kata sandi saat ini tidak cocok.'])->withInput();
             }
             $user->password = Hash::make($request->new_password);
         }
 
-        $user->name    = $validated['name'];
-        $user->email   = $validated['email'];
-        $user->phone   = $validated['phone'] ?? $user->phone;
-        $user->address = $validated['address'] ?? $user->address;
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $compressed = $imageService->compress($file);
+            $fileName = time() . '_' . uniqid() . '.jpg';
+
+            Storage::disk('public')->put('uploads/users/' . $fileName, $compressed);
+
+            if ($user->foto && !str_starts_with($user->foto, 'avatar-') && Storage::disk('public')->exists('uploads/users/' . $user->foto)) {
+                Storage::disk('public')->delete('uploads/users/' . $user->foto);
+            }
+
+            $user->foto = $fileName;
+        }
+
+        if ($request->hasFile('identity_image')) {
+            $file = $request->file('identity_image');
+            $compressed = $imageService->compress($file);
+            $fileName = 'identity_' . time() . '_' . uniqid() . '.jpg';
+
+            Storage::disk('public')->put('uploads/identities/' . $fileName, $compressed);
+
+            if ($user->identity_image && Storage::disk('public')->exists('uploads/identities/' . $user->identity_image)) {
+                Storage::disk('public')->delete('uploads/identities/' . $user->identity_image);
+            }
+
+            $user->identity_image = $fileName;
+        }
+
+        $user->name          = $validated['name'];
+        $user->email         = $validated['email'];
+        $user->phone         = $validated['phone'] ?? $user->phone;
+        $user->gender        = $validated['gender'] ?? $user->gender;
+        $user->identity_type = $validated['identity_type'] ?? $user->identity_type;
+        $user->address       = $validated['address'] ?? $user->address;
         $user->save();
 
-        return redirect()->back()->with('success_account', 'Profil dan informasi akun Anda berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Profil dan informasi akun Anda berhasil diperbarui.');
     }
 }

@@ -22,7 +22,7 @@
     @if ($type && $message)
         <div 
             id="toast-notification-session"
-            class="toast-notification flex w-full transform items-start gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-xl shadow-slate-200/50 transition-all duration-300 pointer-events-auto"
+            class="toast-notification flex w-full transform items-start gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-300 pointer-events-auto"
             data-toast-duration="4000"
         >
             {{-- Icon --}}
@@ -104,7 +104,7 @@
             const displayType = type === 'danger' ? 'error' : type;
 
             const toast = document.createElement("div");
-            toast.className = "toast-notification flex w-full transform items-start gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-xl shadow-slate-200/50 transition-all duration-300 pointer-events-auto opacity-0 -translate-y-2";
+            toast.className = "toast-notification flex w-full transform items-start gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-md transition-all duration-300 pointer-events-auto opacity-0 -translate-y-2";
             
             toast.innerHTML = `
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.bg}">

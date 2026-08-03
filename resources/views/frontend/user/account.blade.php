@@ -3,209 +3,287 @@
 @section('title', 'Kelola Akun & Profil - Palma Luxury')
 
 @section('content')
-    <!-- HERO HEADER -->
-    <section class="relative pt-32 pb-12 px-4 sm:px-6 md:px-12 bg-[#152c4e] text-white font-satoshi overflow-hidden">
+    @php
+        $avatarUrl = $user->foto && str_starts_with($user->foto, 'http')
+            ? $user->foto
+            : ($user->foto && str_starts_with($user->foto, 'avatar-')
+                ? asset('assets/img/avatar/' . $user->foto)
+                : ($user->foto && Storage::disk('public')->exists('uploads/users/' . $user->foto)
+                    ? asset('storage/uploads/users/' . $user->foto)
+                    : asset('assets/img/avatar/avatar-1.jpg')));
+    @endphp
+
+    <!-- 1. TOP BANNER HEADER -->
+    <section class="relative pt-32 pb-24 px-4 sm:px-6 md:px-12 bg-gradient-to-r from-[#152c4e] via-[#1a3862] to-[#152c4e] text-white font-satoshi overflow-hidden">
         <div class="absolute inset-0 opacity-15 pointer-events-none">
             <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80" alt="Villa Sanctuary" class="w-full h-full object-cover">
         </div>
-        <div class="max-w-7xl mx-auto relative z-10">
-            <!-- Breadcrumbs -->
-            <div class="flex items-center gap-2 text-xs text-white/70 mb-3 font-medium">
-                <a href="{{ route('home') }}" class="hover:text-[#ca9e54] transition-colors">Beranda</a>
-                <span>/</span>
-                <a href="{{ route('user.bookings') }}" class="hover:text-[#ca9e54] transition-colors">My Bookings</a>
-                <span>/</span>
-                <span class="text-white font-semibold">Kelola Akun</span>
-            </div>
-
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">Pengaturan Profil Pengguna</span>
-                    <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-normal text-white">
-                        Kelola Informasi Akun
-                    </h1>
-                </div>
-                <a href="{{ route('user.bookings') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition border border-white/20 shrink-0 w-fit">
-                    <i class="ri-history-line text-sm"></i> Lihat Riwayat Booking
-                </a>
-            </div>
-        </div>
     </section>
 
-    <!-- MAIN CONTAINER -->
-    <section class="py-10 sm:py-14 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto font-satoshi">
+    <!-- 2. OVERLAPPING AVATAR & USER PROFILE CONTAINER -->
+    <section class="px-4 sm:px-6 md:px-12 max-w-6xl mx-auto font-satoshi -mt-16 relative z-20 pb-16"
+             x-data="{ activeTab: '{{ $errors->has('current_password') || $errors->has('new_password') ? 'security' : 'account' }}' }">
         
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-2xl shadow-slate-300/40 space-y-8">
             
-            <!-- LEFT COLUMN: USER PROFILE OVERVIEW (4 Cols) -->
-            <div class="lg:col-span-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6 text-center">
-                
-                <div class="relative inline-block mx-auto">
-                    <div class="w-24 h-24 rounded-full bg-[#152c4e] text-[#e5c382] flex items-center justify-center font-serif-title text-3xl font-bold shadow-lg mx-auto border-4 border-white">
-                        {{ strtoupper(substr($user->name, 0, 2)) }}
+            <!-- HEADER TOP ROW: OVERLAPPING AVATAR + NAME + TOP RIGHT UPLOAD PHOTO BUTTON -->
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-slate-100">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                    <!-- Overlapping Avatar (Clicking triggers Image Cropper Modal) -->
+                    <div class="relative -mt-16 sm:-mt-20 shrink-0 cursor-pointer" onclick="document.getElementById('user-profile-cropper-upload').click()">
+                        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-white shadow-2xl border-2 border-slate-100 overflow-hidden">
+                            <img src="{{ $avatarUrl }}" id="user-profile-cropper-preview" alt="{{ $user->name }}" class="w-full h-full rounded-full object-cover">
+                        </div>
+                    </div>
+
+                    <!-- Name & Subtitle -->
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-2xl sm:text-3xl font-serif-title font-bold text-slate-900">{{ $user->name }}</h2>
+                            <i class="ri-checkbox-circle-fill text-blue-500 text-xl" title="Terverifikasi"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 font-medium mt-0.5">{{ $user->email }}</p>
                     </div>
                 </div>
 
-                <div>
-                    <h3 class="font-serif-title text-xl font-bold text-slate-900">{{ $user->name }}</h3>
-                    <p class="text-xs text-slate-500 font-medium mt-0.5">{{ $user->email }}</p>
-                    <span class="inline-block mt-2 px-3 py-1 bg-amber-50 text-amber-800 text-[10px] font-bold uppercase rounded-full border border-amber-200">
-                        {{ $user->roles->first()->name ?? 'Pelanggan VVIP' }}
-                    </span>
+                <!-- Top Right "Upload Photo" Button (Replaces My Bookings, triggers Cropper Modal) -->
+                <div class="flex items-center gap-3">
+                    <label for="user-profile-cropper-upload" class="px-5 py-2.5 rounded-2xl bg-[#152c4e] text-white hover:bg-[#0f1d32] text-xs font-satoshi-bold shadow-sm transition cursor-pointer">
+                        Upload Photo
+                    </label>
+                    <button type="button" 
+                            id="user-profile-cropper-reset-btn" 
+                            class="px-4 py-2.5 rounded-2xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-satoshi-bold transition cursor-pointer"
+                            style="display: none;">
+                        Reset
+                    </button>
                 </div>
-
-                <div class="pt-4 border-t border-slate-100 space-y-3 text-xs text-left">
-                    <div class="flex items-center justify-between text-slate-600">
-                        <span>Status Verifikasi Email:</span>
-                        @if($user->hasVerifiedEmail())
-                            <span class="text-emerald-600 font-bold flex items-center gap-1"><i class="ri-checkbox-circle-fill"></i> Terverifikasi</span>
-                        @else
-                            <span class="text-amber-600 font-bold flex items-center gap-1"><i class="ri-error-warning-fill"></i> Belum Verifikasi</span>
-                        @endif
-                    </div>
-                    <div class="flex items-center justify-between text-slate-600">
-                        <span>Bergabung Sejak:</span>
-                        <strong class="text-slate-900">{{ $user->created_at->format('M Y') }}</strong>
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-slate-100 space-y-2">
-                    <a href="{{ route('user.bookings') }}" class="block w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
-                        <i class="ri-calendar-event-line mr-1"></i> My Bookings
-                    </a>
-                    
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition cursor-pointer">
-                            <i class="ri-logout-box-r-line mr-1"></i> Keluar Dari Akun
-                        </button>
-                    </form>
-                </div>
-
             </div>
 
-            <!-- RIGHT COLUMN: EDIT PROFILE & SECURITY FORMS (8 Cols) -->
-            <div class="lg:col-span-8 space-y-8">
-                
-                <!-- PROFILE INFORMATION FORM -->
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                    
-                    <div class="border-b border-slate-100 pb-4">
-                        <h2 class="font-serif-title text-xl font-bold text-slate-900">Informasi Data Diri</h2>
-                        <p class="text-xs text-slate-500 mt-1">Perbarui informasi kontak dan alamat lengkap Anda.</p>
-                    </div>
-
-                    <form action="{{ route('user.account.update') }}" method="POST" class="space-y-4">
-                        @csrf
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <x-ui.input 
-                                name="name" 
-                                label="Nama Lengkap" 
-                                value="{{ old('name', $user->name) }}"
-                                required
-                            />
-
-                            <x-ui.input 
-                                type="email"
-                                name="email" 
-                                label="Alamat Email" 
-                                value="{{ old('email', $user->email) }}"
-                                required
-                            />
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <x-ui.input 
-                                name="phone" 
-                                label="Nomor Telepon / WhatsApp" 
-                                placeholder="+62 812 3456 7890"
-                                value="{{ old('phone', $user->phone) }}"
-                            />
-
-                            <div>
-                                <label class="block text-xs font-satoshi-medium text-slate-700 mb-1">
-                                    Alamat Lengkap (Opsional)
-                                </label>
-                                <textarea name="address" rows="2" placeholder="Alamat rumah atau domisili utama..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-satoshi-medium text-slate-900 focus:outline-none focus:border-slate-400 transition">{{ old('address', $user->address) }}</textarea>
-                            </div>
-                        </div>
-
-                        <div class="pt-2 flex justify-end">
-                            <button type="submit" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-3 px-6 rounded-2xl text-xs uppercase tracking-wider transition shadow-md flex items-center gap-2 cursor-pointer">
-                                <i class="ri-save-line"></i> Simpan Perubahan Profil
-                            </button>
-                        </div>
-                    </form>
+            <!-- METRICS / STATS ROW -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-2 border-b border-slate-100">
+                <!-- Stat 1 -->
+                <div class="pr-4 md:border-r border-slate-200">
+                    <span class="block text-xs text-slate-400 font-satoshi-medium">Verifikasi Email</span>
+                    <strong class="text-sm font-satoshi-bold text-slate-900 mt-1 block">
+                        @if($user->hasVerifiedEmail())
+                            <span class="text-emerald-600 flex items-center gap-1"><i class="ri-checkbox-circle-fill"></i> Terverifikasi</span>
+                        @else
+                            <span class="text-amber-600 flex items-center gap-1"><i class="ri-error-warning-fill"></i> Belum Verifikasi</span>
+                        @endif
+                    </strong>
                 </div>
 
-                <!-- CHANGE PASSWORD FORM -->
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                    
-                    <div class="border-b border-slate-100 pb-4">
-                        <h2 class="font-serif-title text-xl font-bold text-slate-900">Ubah Kata Sandi</h2>
-                        <p class="text-xs text-slate-500 mt-1">Pastikan akun Anda menggunakan kata sandi yang kuat dan aman.</p>
-                    </div>
-
-                    <form action="{{ route('user.account.update') }}" method="POST" class="space-y-4">
-                        @csrf
-                        <input type="hidden" name="name" value="{{ $user->name }}">
-                        <input type="hidden" name="email" value="{{ $user->email }}">
-
-                        <div>
-                            <x-ui.password 
-                                name="current_password" 
-                                label="Kata Sandi Saat Ini" 
-                                placeholder="Masukkan kata sandi lama Anda" 
-                            />
-                            @error('current_password') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <x-ui.password 
-                                    name="new_password" 
-                                    label="Kata Sandi Baru" 
-                                    placeholder="Minimal 8 karakter" 
-                                />
-                                @error('new_password') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div>
-                                <x-ui.password 
-                                    name="new_password_confirmation" 
-                                    label="Konfirmasi Kata Sandi Baru" 
-                                    placeholder="Ulangi kata sandi baru" 
-                                />
-                            </div>
-                        </div>
-
-                        <div class="pt-2 flex justify-end">
-                            <button type="submit" class="bg-[#ca9e54] hover:bg-[#b88c43] text-white font-bold py-3 px-6 rounded-2xl text-xs uppercase tracking-wider transition shadow-md flex items-center gap-2 cursor-pointer">
-                                <i class="ri-lock-password-line"></i> Perbarui Kata Sandi
-                            </button>
-                        </div>
-                    </form>
+                <!-- Stat 2 -->
+                <div class="pr-4 md:border-r border-slate-200">
+                    <span class="block text-xs text-slate-400 font-satoshi-medium">Status Identitas</span>
+                    <strong class="text-sm font-satoshi-bold text-slate-900 mt-1 block">
+                        @if($user->identity_image && $user->identity_type)
+                            <span class="text-emerald-600 uppercase">{{ strtoupper($user->identity_type) }}</span>
+                        @else
+                            <span class="text-slate-400 italic">Belum Diunggah</span>
+                        @endif
+                    </strong>
                 </div>
 
+                <!-- Stat 3 -->
+                <div>
+                    <span class="block text-xs text-slate-400 font-satoshi-medium">Bergabung Sejak</span>
+                    <strong class="text-sm font-satoshi-bold text-slate-900 mt-1 block">
+                        {{ $user->created_at ? $user->created_at->format('d M, Y') : '-' }}
+                    </strong>
+                </div>
+            </div>
+
+            <!-- TABS NAVIGATION BUTTONS -->
+            <!-- Enhanced Tabs Navigation with Gradient & Glass Effect -->
+            <div class="flex items-center gap-4 bg-white/10 backdrop-blur-lg rounded-2xl p-2">
+                <button type="button"
+                        @click="activeTab = 'account'"
+                        :class="activeTab === 'account' ? 'bg-[#152c4e] text-white' : 'bg-white/30 text-slate-700 hover:bg-white/50 '"
+                        class="px-4 py-2 rounded-lg flex shadow-lg items-center gap-2 transition-colors duration-200">
+                    <i class="ri-user-3-line"></i>
+                    <span>Account Settings</span>
+                </button>
+
+                <button type="button"
+                        @click="activeTab = 'security'"
+                        :class="activeTab === 'security' ? 'bg-[#152c4e] text-white shadow-lg' : 'bg-white/30 text-slate-700 hover:bg-white/50'"
+                        class="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200">
+                    <i class="ri-lock-line"></i>
+                    <span>Security & Password</span>
+                </button>
+            </div>
+
+            <!-- ACCOUNT TAB CONTENT -->
+            <div x-show="activeTab === 'account'" x-transition:enter="transition ease-out duration-200" class="space-y-8 pt-4">
+                <form id="formAccountSettings"
+                      method="POST"
+                      action="{{ route('user.account.update') }}"
+                      enctype="multipart/form-data"
+                      class="space-y-8">
+                    @csrf
+
+                    <!-- IMAGE CROPPER COMPONENT (Hides default container, keeps modal accessible for top avatar & button) -->
+                    <style>#user-profile-cropper-container { display: none !important; }</style>
+                    <x-ui.image-cropper 
+                        name="foto"
+                        id="user-profile-cropper"
+                        :value="$avatarUrl"
+                        :aspectRatio="1"
+                        :width="400"
+                        :height="400"
+                    />
+
+                    <!-- SECTION 1: PERSONAL INFORMATION -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start pb-8 border-b border-slate-100">
+                        <div class="md:col-span-4">
+                            <h4 class="text-base font-satoshi-bold text-slate-900">Personal Information</h4>
+                            <p class="text-xs text-slate-400 mt-1">Informasi lengkap kontak dan data diri Anda.</p>
+                        </div>
+                        <div class="md:col-span-8 space-y-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <x-ui.input 
+                                    name="name" 
+                                    id="name"
+                                    :value="old('name', $user->name)" 
+                                    label="Full Name" 
+                                    placeholder="Full Name" 
+                                />
+
+                                <x-ui.input 
+                                    type="email"
+                                    name="email" 
+                                    id="email"
+                                    :value="old('email', $user->email)" 
+                                    label="E-mail Address" 
+                                    placeholder="E-mail Address" 
+                                />
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <x-ui.select2 
+                                    name="gender" 
+                                    label="Gender" 
+                                    placeholder="-- Choose --" 
+                                    :options="['L' => 'Male', 'P' => 'Female']" 
+                                    :value="old('gender', $user->gender)" 
+                                />
+
+                                <x-ui.input 
+                                    name="phone" 
+                                    id="phone"
+                                    :value="old('phone', $user->phone)" 
+                                    label="Phone Number" 
+                                    placeholder="Phone Number" 
+                                />
+                            </div>
+
+                            <div>
+                                <label for="address" class="mb-2 block text-xs font-satoshi-medium text-slate-700">Address</label>
+                                <textarea 
+                                    id="address" 
+                                    name="address" 
+                                    rows="3" 
+                                    class="block w-full font-satoshi-medium rounded-2xl border px-4 py-3 text-xs outline-none transition focus:bg-white focus:ring-2 {{ $errors->has('address') ? 'border-red-400 bg-red-50/50 text-red-900 focus:border-red-500 focus:ring-red-100' : 'border-slate-200 bg-slate-50 text-slate-900 focus:border-slate-400 focus:ring-slate-200' }}"
+                                    placeholder="Address">{{ old('address', $user->address) }}</textarea>
+                                @error('address')
+                                    <span class="mt-1.5 block text-xs font-medium text-red-600">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: IDENTITY VERIFICATION -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start pb-8 border-b border-slate-100">
+                        <div class="md:col-span-4">
+                            <h4 class="text-base font-satoshi-bold text-slate-900">Identity Verification</h4>
+                            <p class="text-xs text-slate-400 mt-1">Dokumen resmi (KTP / Passport / SIM) untuk verifikasi reservasi.</p>
+                        </div>
+                        <div class="md:col-span-8 space-y-5">
+                            <x-ui.select2 
+                                name="identity_type" 
+                                label="Identity Type" 
+                                placeholder="-- Choose Identity Type --" 
+                                :options="['ktp' => 'KTP', 'paspor' => 'Passport', 'sim' => 'SIM']" 
+                                :value="old('identity_type', $user->identity_type)" 
+                            />
+
+                            <x-ui.dropzone
+                                name="identity_image"
+                                label="Identity Document"
+                                accept="image/*"
+                                :previewUrl="$user->identity_image ? asset('storage/uploads/identities/' . $user->identity_image) : null"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- SUBMIT ACTION -->
+                    <div class="flex justify-end pt-2" x-data="{ isSaving: false }">
+                        <button type="submit" 
+                                @click="isSaving = true" 
+                                class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-3.5 px-8 rounded-2xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer flex items-center gap-2">
+                            <span x-show="!isSaving">Save changes</span>
+                            <span x-show="isSaving" style="display: none;" class="flex items-center gap-2">
+                                <i class="ri-loader-4-line animate-spin text-sm"></i>
+                                <span>Saving...</span>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SECURITY TAB CONTENT -->
+            <div x-show="activeTab === 'security'" x-transition:enter="transition ease-out duration-200" class="space-y-8 pt-4" style="display: none;">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start pb-8 border-b border-slate-100">
+                    <div class="md:col-span-4">
+                        <h4 class="text-base font-satoshi-bold text-slate-900">Change Password</h4>
+                        <p class="text-xs text-slate-400 mt-1">Pastikan akun Anda menggunakan kata sandi yang kuat dan aman.</p>
+                    </div>
+                    <div class="md:col-span-8">
+                        <form action="{{ route('user.account.update') }}" method="POST" class="space-y-5">
+                            @csrf
+                            <input type="hidden" name="name" value="{{ $user->name }}">
+                            <input type="hidden" name="email" value="{{ $user->email }}">
+
+                            <div>
+                                <x-ui.password 
+                                    name="current_password" 
+                                    label="Current Password" 
+                                    placeholder="Enter your current password" 
+                                />
+                                @error('current_password') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <x-ui.password 
+                                        name="new_password" 
+                                        label="New Password" 
+                                        placeholder="At least 8 characters" 
+                                    />
+                                    @error('new_password') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div>
+                                    <x-ui.password 
+                                        name="new_password_confirmation" 
+                                        label="Confirm New Password" 
+                                        placeholder="Repeat new password" 
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-4">
+                                <button type="submit" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-3.5 px-8 rounded-2xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer">
+                                    Update Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
         </div>
-
     </section>
 @endsection
-
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @if(session('success_account'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: "{{ session('success_account') }}",
-                confirmButtonColor: '#152c4e',
-                customClass: { popup: 'rounded-3xl p-6 font-satoshi' }
-            });
-        </script>
-    @endif
-@endpush
