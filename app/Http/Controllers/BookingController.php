@@ -59,7 +59,23 @@ class BookingController extends Controller
 
         $paymentMethods = PaymentMethod::where('is_active', true)->get();
 
-        return view('frontend.booking.create', compact('properties', 'selectedProperty', 'paymentMethods'));
+        $bookedDates = [];
+        if ($selectedProperty) {
+            $existingBookings = Booking::where('property_id', $selectedProperty->id)
+                ->whereIn('status', ['confirmed', 'pending'])
+                ->get(['check_in', 'check_out']);
+                
+            foreach ($existingBookings as $b) {
+                if ($b->check_in && $b->check_out) {
+                    $bookedDates[] = [
+                        'from' => $b->check_in->format('Y-m-d'),
+                        'to'   => $b->check_out->format('Y-m-d'),
+                    ];
+                }
+            }
+        }
+
+        return view('frontend.booking.create', compact('properties', 'selectedProperty', 'paymentMethods', 'bookedDates'));
     }
 
     /**

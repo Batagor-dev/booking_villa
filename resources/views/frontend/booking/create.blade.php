@@ -178,31 +178,16 @@
                             <i class="ri-calendar-event-fill text-[#ca9e54]"></i> Tanggal Menginap
                         </h4>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">
-                                    TANGGAL CHECK-IN <span class="text-rose-500">*</span>
-                                </label>
-                                <input type="date" name="check_in" id="input-check-in" 
-                                       value="{{ old('check_in', date('Y-m-d', strtotime('+1 day'))) }}" 
-                                       min="{{ date('Y-m-d') }}"
-                                       class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-900 focus:outline-none focus:border-[#152c4e] transition" 
-                                       required onchange="calculateBookingTotal()">
-                                @error('check_in') <span class="text-red-500 text-[11px] block mt-1">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">
-                                    TANGGAL CHECK-OUT <span class="text-rose-500">*</span>
-                                </label>
-                                <input type="date" name="check_out" id="input-check-out" 
-                                       value="{{ old('check_out', date('Y-m-d', strtotime('+3 days'))) }}" 
-                                       min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                                       class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-900 focus:outline-none focus:border-[#152c4e] transition" 
-                                       required onchange="calculateBookingTotal()">
-                                @error('check_out') <span class="text-red-500 text-[11px] block mt-1">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
+                        <x-ui.date 
+                            type="range"
+                            checkinName="check_in"
+                            checkoutName="check_out"
+                            checkinValue="{{ old('check_in', date('Y-m-d', strtotime('+1 day'))) }}"
+                            checkoutValue="{{ old('check_out', date('Y-m-d', strtotime('+3 days'))) }}"
+                            :disabledDates="$bookedDates ?? []"
+                            :inline="true"
+                            showMonths="2"
+                        />
 
                         <!-- LIVE NIGHTS & TOTAL CALCULATION BOX -->
                         <div class="p-3.5 bg-white rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">

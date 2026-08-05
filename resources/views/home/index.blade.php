@@ -61,7 +61,7 @@
                         <label for="search-checkin-date" class="block text-[9px] sm:text-xs font-bold tracking-wider text-slate-500 uppercase mb-1">CHECK IN</label>
                         <div class="flex items-center gap-2 text-slate-900">
                             <i class="ri-calendar-event-line text-base sm:text-xl text-[#ca9e54]"></i>
-                            <input type="date" id="search-checkin-date" aria-label="Tanggal Check In" class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none cursor-pointer">
+                            <input type="text" id="search-checkin-date" placeholder="Pilih tanggal..." aria-label="Tanggal Check In" class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none cursor-pointer">
                         </div>
                     </div>
 
@@ -82,10 +82,6 @@
                     <div class="flex items-center gap-2 col-span-1 sm:col-span-2 md:col-span-1">
                         <button type="submit" class="flex-1 bg-[#152c4e] hover:bg-[#0f1e36] text-white font-semibold py-3.5 sm:py-4 px-5 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
                             <i class="ri-search-line text-base sm:text-lg"></i>
-                            <span>Cari</span>
-                        </button>
-                        <button type="button" class="p-3.5 sm:p-4 bg-slate-100 text-slate-700 rounded-xl sm:rounded-2xl hover:bg-slate-200 transition-colors border border-slate-200" title="Filter Tambahan" aria-label="Filter Tambahan">
-                            <i class="ri-equalizer-line text-base sm:text-lg"></i>
                         </button>
                     </div>
                 </form>
@@ -736,6 +732,25 @@
                 const x = e.pageX - destSlider.offsetLeft;
                 const walk = (x - startX) * 1.8;
                 destSlider.scrollLeft = scrollLeft - walk;
+            });
+        }
+
+        // Initialize flatpickr on search checkin date
+        const checkinInput = document.getElementById('search-checkin-date');
+        if (checkinInput && typeof flatpickr !== 'undefined') {
+            flatpickr(checkinInput, {
+                minDate: 'today',
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'j M Y',
+                locale: {
+                    firstDayOfWeek: 1,
+                    weekdays: { shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'] },
+                    months: {
+                        shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                        longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+                    }
+                }
             });
         }
     });
