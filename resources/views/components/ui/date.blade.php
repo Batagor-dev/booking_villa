@@ -26,8 +26,8 @@
     
     $hasError = ($name && $errors->has($name)) || ($checkinName && $errors->has($checkinName)) || ($checkoutName && $errors->has($checkoutName));
     $statusClasses = $hasError 
-        ? 'border-red-400 bg-red-50/50 text-red-900 focus:border-red-500 focus:ring-red-100' 
-        : 'border-slate-200 bg-white text-slate-900 focus:border-[#152c4e] focus:ring-slate-200';
+        ? 'border-red-400 bg-red-50/50 text-red-900 focus:border-red-500' 
+        : 'border-slate-200 bg-white text-slate-900 focus:border-slate-800';
     
     $inputId = $attributes->get('id', $isRange ? 'range_date_picker_' . uniqid() : ($name ?: 'date_picker_' . uniqid()));
 @endphp
@@ -36,25 +36,26 @@
     @push('styles')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <style>
-            /* Modern Luxury Flatpickr Styling (Matching Navy #152c4e & Gold #ca9e54 Palette) */
+            /* Clean Minimalist Flatpickr Styling */
             .flatpickr-calendar {
-                border-radius: 1.5rem !important;
+                border-radius: 1rem !important;
                 border: 1px solid #e2e8f0 !important;
-                box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.12), 0 10px 15px -3px rgba(15, 23, 42, 0.04) !important;
+                box-shadow: none !important;
                 font-family: 'Satoshi', sans-serif !important;
                 background: #ffffff !important;
-                padding: 1rem !important;
+                padding: 0.75rem !important;
                 width: 100% !important;
-                max-width: 330px !important;
+                max-width: 320px !important;
                 margin: 0 auto !important;
             }
 
             .flatpickr-calendar.multiMonth {
-                max-width: 660px !important;
+                max-width: 650px !important;
             }
 
             .flatpickr-calendar.inline {
-                box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05) !important;
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
                 width: 100% !important;
             }
 
@@ -62,7 +63,8 @@
                 display: flex !important;
                 flex-wrap: wrap !important;
                 justify-content: center !important;
-                gap: 1.25rem !important;
+                gap: 1rem !important;
+                width: 100% !important;
             }
 
             /* Month Header Bar & Controls */
@@ -70,7 +72,7 @@
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                padding: 0.25rem 0.5rem 0.75rem 0.5rem !important;
+                padding: 0.25rem 0.5rem 0.5rem 0.5rem !important;
                 position: relative !important;
             }
 
@@ -79,7 +81,7 @@
                 text-align: center !important;
                 height: auto !important;
                 background: transparent !important;
-                color: #152c4e !important;
+                color: #0f172a !important;
             }
 
             .flatpickr-current-month {
@@ -88,24 +90,23 @@
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                gap: 0.35rem !important;
-                font-size: 0.95rem !important;
+                gap: 0.25rem !important;
+                font-size: 0.9rem !important;
                 font-weight: 700 !important;
-                color: #152c4e !important;
+                color: #0f172a !important;
                 padding: 0 !important;
-                letter-spacing: -0.01em;
             }
 
             .flatpickr-current-month .flatpickr-monthDropdown-months,
             .flatpickr-current-month .numInputWrapper input.numInput {
                 font-family: 'Satoshi', sans-serif !important;
                 font-weight: 700 !important;
-                color: #152c4e !important;
+                color: #0f172a !important;
                 appearance: none !important;
                 -webkit-appearance: none !important;
                 border: none !important;
                 background: transparent !important;
-                font-size: 0.95rem !important;
+                font-size: 0.9rem !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 pointer-events: none !important;
@@ -120,37 +121,36 @@
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                width: 2.25rem !important;
-                height: 2.25rem !important;
-                border-radius: 9999px !important;
-                background-color: #f8fafc !important;
-                border: 1px solid #e2e8f0 !important;
-                color: #475569 !important;
-                transition: all 0.2s ease !important;
+                width: 1.75rem !important;
+                height: 1.75rem !important;
+                border-radius: 0.5rem !important;
+                background-color: transparent !important;
+                border: none !important;
+                color: #64748b !important;
+                transition: all 0.15s ease !important;
                 cursor: pointer !important;
                 z-index: 5 !important;
                 padding: 0 !important;
             }
 
             .flatpickr-prev-month:hover, .flatpickr-next-month:hover {
-                background-color: #152c4e !important;
-                color: #ffffff !important;
-                border-color: #152c4e !important;
+                background-color: #f1f5f9 !important;
+                color: #0f172a !important;
             }
 
             .flatpickr-prev-month svg, .flatpickr-next-month svg {
-                width: 0.85rem !important;
-                height: 0.85rem !important;
+                width: 0.75rem !important;
+                height: 0.75rem !important;
                 fill: currentColor !important;
             }
 
             /* Weekday Bar */
             .flatpickr-weekdays {
-                padding: 0.5rem 0 !important;
+                padding: 0.25rem 0 !important;
                 height: auto !important;
                 display: flex !important;
-                border-bottom: 1px dashed #f1f5f9 !important;
-                margin-bottom: 0.5rem !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                margin-bottom: 0.25rem !important;
                 width: 100% !important;
             }
 
@@ -165,10 +165,9 @@
 
             span.flatpickr-weekday {
                 color: #94a3b8 !important;
-                font-weight: 700 !important;
-                font-size: 0.725rem !important;
+                font-weight: 600 !important;
+                font-size: 0.7rem !important;
                 text-transform: uppercase !important;
-                letter-spacing: 0.03em !important;
                 font-family: 'Satoshi', sans-serif !important;
                 flex: 1 !important;
                 text-align: center !important;
@@ -195,17 +194,17 @@
 
             .flatpickr-day {
                 background: transparent !important;
-                border-radius: 9999px !important;
+                border-radius: 0.5rem !important;
                 font-family: 'Satoshi', sans-serif !important;
-                font-weight: 600 !important;
-                font-size: 0.85rem !important;
-                color: #1e293b !important;
+                font-weight: 500 !important;
+                font-size: 0.825rem !important;
+                color: #334155 !important;
                 border: 1px solid transparent !important;
-                height: 38px !important;
-                line-height: 38px !important;
-                width: 38px !important;
-                max-width: 38px !important;
-                flex-basis: 38px !important;
+                height: 36px !important;
+                line-height: 36px !important;
+                width: 36px !important;
+                max-width: 36px !important;
+                flex-basis: 36px !important;
                 margin: 0 !important;
                 box-shadow: none !important;
                 transition: background-color 0.15s ease, color 0.15s ease !important;
@@ -219,58 +218,61 @@
 
             .flatpickr-day:hover, .flatpickr-day:focus {
                 background-color: #f1f5f9 !important;
-                color: #152c4e !important;
+                color: #0f172a !important;
                 border-color: transparent !important;
             }
 
-            /* Today Date Style - Same as normal dates */
+            /* Today Date Style - Normal date */
             .flatpickr-day.today {
                 border-color: transparent !important;
                 background-color: transparent !important;
-                color: #1e293b !important;
-                font-weight: 600 !important;
+                color: #0f172a !important;
+                font-weight: 700 !important;
             }
 
             .flatpickr-day.today::after {
                 display: none !important;
             }
 
-            /* Selected Range Styling (Deep Navy & Soft Navy Tint) */
+            /* Selected Range Styling (Classic Range Ribbon Pill) */
             .flatpickr-day.selected,
             .flatpickr-day.startRange,
             .flatpickr-day.endRange {
-                background: #152c4e !important;
+                background: #0f172a !important;
                 color: #ffffff !important;
                 font-weight: 700 !important;
-                border-color: #152c4e !important;
-                box-shadow: 0 4px 12px rgba(21, 44, 78, 0.25) !important;
+                border-color: #0f172a !important;
+                box-shadow: none !important;
             }
 
+            /* Check-in (Start): Lengkung atas-kiri dan bawah-kiri */
             .flatpickr-day.startRange {
                 border-radius: 9999px 0 0 9999px !important;
             }
 
+            /* Check-out (End): Lengkung atas-kanan dan bawah-kanan */
             .flatpickr-day.endRange {
                 border-radius: 0 9999px 9999px 0 !important;
             }
 
+            /* 1 Hari Saja (Start sekaligus End) */
             .flatpickr-day.startRange.endRange {
                 border-radius: 9999px !important;
             }
 
-            /* Days inside selected range - Continuous Soft Navy Tint Ribbon */
+            /* Days inside selected range - Flat Subtle Slate Tint */
             .flatpickr-day.inRange {
-                background: #eef2ff !important;
-                color: #152c4e !important;
-                font-weight: 700 !important;
+                background: #f1f5f9 !important;
+                color: #0f172a !important;
+                font-weight: 600 !important;
                 border-radius: 0 !important;
                 border-color: transparent !important;
-                box-shadow: -2px 0 0 #eef2ff, 2px 0 0 #eef2ff !important;
+                box-shadow: -2px 0 0 #f1f5f9, 2px 0 0 #f1f5f9 !important;
             }
 
             .flatpickr-day.inRange:hover {
-                background: #e0e7ff !important;
-                box-shadow: -2px 0 0 #e0e7ff, 2px 0 0 #e0e7ff !important;
+                background: #e2e8f0 !important;
+                box-shadow: -2px 0 0 #e2e8f0, 2px 0 0 #e2e8f0 !important;
             }
 
             /* Booked / Disabled Dates Styling */
@@ -283,6 +285,36 @@
                 opacity: 0.4 !important;
                 border-color: transparent !important;
                 box-shadow: none !important;
+            }
+
+            /* Mobile Specific Optimizations (< 640px) */
+            @media (max-width: 640px) {
+                .flatpickr-calendar.multiMonth {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+
+                .flatpickr-calendar {
+                    padding: 0.5rem !important;
+                }
+
+                .flatpickr-weekdaycontainer,
+                .dayContainer {
+                    width: 100% !important;
+                    min-width: 100% !important;
+                    max-width: 100% !important;
+                    justify-content: flex-start !important;
+                }
+
+                span.flatpickr-weekday,
+                .flatpickr-day {
+                    max-width: calc(100% / 7 - 1px) !important;
+                    flex-basis: calc(100% / 7 - 1px) !important;
+                    width: calc(100% / 7 - 1px) !important;
+                    height: 36px !important;
+                    line-height: 36px !important;
+                    font-size: 0.8rem !important;
+                }
             }
         </style>
     @endpush
@@ -339,14 +371,14 @@
 
             const isRangeMode = {{ $isRange ? 'true' : 'false' }};
             const desiredMonths = {{ $numMonths }};
-            const responsiveMonths = (window.innerWidth < 768) ? 1 : desiredMonths;
+            const initialMonths = (window.innerWidth < 640) ? 1 : desiredMonths;
             
             let options = {
                 allowInput: true,
                 dateFormat: 'Y-m-d',
                 locale: indonesianL10n,
                 mode: isRangeMode ? 'range' : '{{ in_array($type, ['multiple', 'range']) ? $type : 'single' }}',
-                showMonths: responsiveMonths,
+                showMonths: initialMonths,
                 inline: {{ $inline ? 'true' : 'false' }},
                 position: 'auto',
             };
@@ -386,7 +418,6 @@
 
                     this.calculateNights();
 
-                    // Dispatch custom event & trigger calculateBookingTotal if available on window
                     $dispatch('date-range-selected', { checkin: this.checkin, checkout: this.checkout, nights: this.nights });
                     
                     if (typeof window.calculateBookingTotal === 'function') {
@@ -400,49 +431,44 @@
      }">
 
     @if($isRange)
-        <!-- DUAL CHECK-IN & CHECK-OUT CARDS IN ONE COMPONENT -->
+        <!-- CLEAN COMPACT CHECK-IN & CHECK-OUT INPUT CARDS (2 COLS ALWAYS) -->
         @if($label)
             <label class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
                 {{ $label }}
             </label>
         @endif
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-            <!-- CHECK-IN CARD -->
-            <div class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-[#ca9e54] transition-all cursor-pointer shadow-sm hover:shadow-md group"
-                 :class="{'border-[#152c4e] ring-2 ring-[#152c4e]/10 bg-slate-50/50': activeField === 'checkin'}"
+        <div class="grid grid-cols-2 gap-2 mb-3">
+            <!-- CHECK-IN -->
+            <div class="p-3 rounded-xl bg-slate-50/80 border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer"
                  @click="activeField = 'checkin'; fp && fp.open()">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
+                <div class="flex items-center justify-between mb-0.5">
+                    <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         {{ $checkinLabel }}
                     </span>
-                    <i class="ri-calendar-check-line text-base text-[#ca9e54] group-hover:scale-110 transition-transform"></i>
+                    <i class="ri-calendar-line text-xs text-slate-400"></i>
                 </div>
-                <div class="text-sm font-bold text-slate-900" x-text="formatDateIndo(checkin) || '{{ $checkinPlaceholder }}'"></div>
+                <div class="text-xs sm:text-sm font-semibold text-slate-800 truncate" x-text="formatDateIndo(checkin) || '{{ $checkinPlaceholder }}'"></div>
                 <input type="hidden" name="{{ $checkinName }}" id="input-check-in" x-model="checkin">
             </div>
 
-            <!-- CHECK-OUT CARD -->
-            <div class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-[#ca9e54] transition-all cursor-pointer shadow-sm hover:shadow-md group"
-                 :class="{'border-[#152c4e] ring-2 ring-[#152c4e]/10 bg-slate-50/50': activeField === 'checkout'}"
+            <!-- CHECK-OUT -->
+            <div class="p-3 rounded-xl bg-slate-50/80 border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer"
                  @click="activeField = 'checkout'; fp && fp.open()">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
+                <div class="flex items-center justify-between mb-0.5">
+                    <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                         {{ $checkoutLabel }}
                     </span>
-                    <div class="flex items-center gap-1.5">
-                        <template x-if="nights > 0">
-                            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#152c4e] text-white shadow-xs" x-text="nights + ' Malam'"></span>
-                        </template>
-                        <i class="ri-calendar-event-line text-base text-rose-500 group-hover:scale-110 transition-transform"></i>
-                    </div>
+                    <template x-if="nights > 0">
+                        <span class="text-[9px] font-bold text-slate-500 bg-slate-200/60 px-1.5 py-0.5 rounded" x-text="nights + 'm'"></span>
+                    </template>
                 </div>
-                <div class="text-sm font-bold text-slate-900" x-text="formatDateIndo(checkout) || '{{ $checkoutPlaceholder }}'"></div>
+                <div class="text-xs sm:text-sm font-semibold text-slate-800 truncate" x-text="formatDateIndo(checkout) || '{{ $checkoutPlaceholder }}'"></div>
                 <input type="hidden" name="{{ $checkoutName }}" id="input-check-out" x-model="checkout">
             </div>
         </div>
 
-        <!-- Hidden Flatpickr Trigger Target & Wrapper -->
+        <!-- Hidden Flatpickr Trigger Target & Responsive Calendar Wrapper -->
         <div class="flex justify-center w-full overflow-x-auto py-1">
             <input type="text" class="sr-only opacity-0 h-0 w-0 pointer-events-none" x-ref="dateInput">
         </div>
@@ -462,7 +488,7 @@
                     'name' => $name,
                     'value' => $value,
                     'placeholder' => $placeholder,
-                    'class' => 'block w-full font-satoshi-medium rounded-2xl border px-4 py-3.5 text-sm outline-none transition focus:bg-white focus:ring-2 ' . $statusClasses
+                    'class' => 'block w-full font-satoshi-medium rounded-xl border px-4 py-3.5 text-sm outline-none transition focus:bg-white ' . $statusClasses
                 ]) }} 
                 x-ref="dateInput"
             />
