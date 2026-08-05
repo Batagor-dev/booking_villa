@@ -309,7 +309,27 @@ Breadcrumbs::for('properties.edit', function (BreadcrumbTrail $trail, $property)
     $trail->push('Update [' . $property->name . ']', route('properties.edit', $property));
 });
 
-// **************************** END PROPERTIES ***************************
+// **************************** DESTINATIONS ***************************
+
+// Home > Destination
+Breadcrumbs::for('destination.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Destinations', route('destination.index'));
+});
+
+// Home > Destination > Create
+Breadcrumbs::for('destination.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('destination.index');
+    $trail->push('Create', route('destination.create'));
+});
+
+// Home > Destination > Edit
+Breadcrumbs::for('destination.edit', function (BreadcrumbTrail $trail, $destination) {
+    $trail->parent('destination.index');
+    $trail->push('Update [' . $destination->name . ']', route('destination.edit', $destination));
+});
+
+// **************************** END DESTINATIONS ***************************
 
 
 // **************************** FACILITIES ***************************

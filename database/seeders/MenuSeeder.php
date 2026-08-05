@@ -60,6 +60,18 @@ class MenuSeeder extends Seeder
         ]);
 
         // === Single Menus (Group: Property Management - ID 2) ===
+        Menu::updateOrCreate(
+            ['href' => '/destination'],
+            [
+                'menu_group_id'      => 2,
+                'nama_menu'          => 'Destinations',
+                'permission_group_id'=> 19,
+                'icon'               => 'ri-map-pin-2-line',
+                'status'             => '1',
+                'sort'               => '1',
+            ]
+        );
+
         Menu::create([
             'menu_group_id'      => 2,
             'nama_menu'          => 'Properties',
@@ -67,7 +79,7 @@ class MenuSeeder extends Seeder
             'icon'               => 'ri-building-4-line',
             'href'               => '/properties',
             'status'             => '1',
-            'sort'               => '1',
+            'sort'               => '2',
         ]);
 
         Menu::create([
@@ -77,7 +89,7 @@ class MenuSeeder extends Seeder
             'icon'               => 'ri-customer-service-2-line',
             'href'               => '/property_services',
             'status'             => '1',
-            'sort'               => '2',
+            'sort'               => '3',
         ]);
 
         Menu::create([
@@ -87,7 +99,7 @@ class MenuSeeder extends Seeder
             'icon'               => 'ri-building-2-line',
             'href'               => '/facilities',
             'status'             => '1',
-            'sort'               => '3',
+            'sort'               => '4',
         ]);
 
         Menu::create([
@@ -97,7 +109,7 @@ class MenuSeeder extends Seeder
             'icon'               => 'ri-bank-card-line',
             'href'               => '/payment_methods',
             'status'             => '1',
-            'sort'               => '4',
+            'sort'               => '5',
         ]);
 
         Menu::create([
@@ -107,7 +119,7 @@ class MenuSeeder extends Seeder
             'icon'               => 'ri-calendar-check-line',
             'href'               => '/bookings',
             'status'             => '1',
-            'sort'               => '5',
+            'sort'               => '6',
         ]);
 
         // === Menu 2: Setting (Group: Settings - ID 3) ===

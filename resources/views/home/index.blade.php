@@ -113,132 +113,43 @@
 
         <!-- Destination Cards Horizontal Touch & Drag Slider -->
         <div id="destinasi-slider" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth touch-pan-x cursor-grab active:cursor-grabbing select-none">
+            @php
+                $destList = $destinations ?? App\Models\Destination::where('status', true)->orderBy('sort')->get();
+            @endphp
 
-            <!-- Destination 1: Seminyak -->
-            <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
-                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=75" 
-                     alt="Seminyak" 
-                     draggable="false"
-                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none"></div>
-                
-                <div class="relative z-10 text-white space-y-2 pointer-events-none">
-                    <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-white tracking-wide">Seminyak</h3>
+            @foreach($destList as $dest)
+                @php
+                    $imgSrc = \Illuminate\Support\Str::startsWith($dest->image_path, ['http://', 'https://'])
+                        ? $dest->image_path
+                        : asset('storage/' . $dest->image_path);
+                    $tags = array_filter(array_map('trim', explode(',', $dest->tags ?? '')));
+                @endphp
+                <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
+                    <img src="{{ $imgSrc }}" 
+                         alt="{{ $dest->name }}" 
+                         draggable="false"
+                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none"></div>
                     
-                    <!-- Ada Apa Saja -->
-                    <div class="flex flex-wrap gap-1">
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Beach Club</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Kuliner</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Belanja</span>
+                    <div class="relative z-10 text-white space-y-2 pointer-events-none">
+                        <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-white tracking-wide">{{ $dest->name }}</h3>
+                        
+                        @if(count($tags) > 0)
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($tags as $t)
+                                    <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">{{ $t }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        
+                        @if(!empty($dest->attraction))
+                            <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-snug pt-1 border-t border-white/10">
+                                <strong class="text-[#e5c382] font-semibold">Daya Tarik:</strong> {{ $dest->attraction }}
+                            </p>
+                        @endif
                     </div>
-                    
-                    <!-- Daya Tarik Utama -->
-                    <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-snug pt-1 border-t border-white/10">
-                        <strong class="text-[#e5c382] font-semibold">Daya Tarik:</strong> Sunset spektakuler & gaya hidup pantai mewah.
-                    </p>
-                </div>
-            </a>
-
-            <!-- Destination 2: Ubud -->
-            <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
-                <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=600&q=75" 
-                     alt="Ubud" 
-                     draggable="false"
-                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none"></div>
-                
-                <div class="relative z-10 text-white space-y-2 pointer-events-none">
-                    <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-white tracking-wide">Ubud</h3>
-                    
-                    <!-- Ada Apa Saja -->
-                    <div class="flex flex-wrap gap-1">
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Hutan Tropis</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Sawah Siring</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Seni & Spa</span>
-                    </div>
-                    
-                    <!-- Daya Tarik Utama -->
-                    <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-snug pt-1 border-t border-white/10">
-                        <strong class="text-[#e5c382] font-semibold">Daya Tarik:</strong> Ketenangan alam tropis & pusat kebudayaan autentik Bali.
-                    </p>
-                </div>
-            </a>
-
-            <!-- Destination 3: Uluwatu -->
-            <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
-                <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=600&q=75" 
-                     alt="Uluwatu" 
-                     draggable="false"
-                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none"></div>
-                
-                <div class="relative z-10 text-white space-y-2 pointer-events-none">
-                    <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-white tracking-wide">Uluwatu</h3>
-                    
-                    <!-- Ada Apa Saja -->
-                    <div class="flex flex-wrap gap-1">
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Tebing Laut</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Pura Uluwatu</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Surfing</span>
-                    </div>
-                    
-                    <!-- Daya Tarik Utama -->
-                    <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-snug pt-1 border-t border-white/10">
-                        <strong class="text-[#e5c382] font-semibold">Daya Tarik:</strong> Pemandangan tebing samudra & pertunjukan Tari Kecak.
-                    </p>
-                </div>
-            </a>
-
-            <!-- Destination 4: Canggu -->
-            <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
-                <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=600&q=75" 
-                     alt="Canggu" 
-                     draggable="false"
-                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none"></div>
-                
-                <div class="relative z-10 text-white space-y-2 pointer-events-none">
-                    <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-white tracking-wide">Canggu</h3>
-                    
-                    <!-- Ada Apa Saja -->
-                    <div class="flex flex-wrap gap-1">
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Kafe Estetik</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Echo Beach</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Surfing</span>
-                    </div>
-                    
-                    <!-- Daya Tarik Utama -->
-                    <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-snug pt-1 border-t border-white/10">
-                        <strong class="text-[#e5c382] font-semibold">Daya Tarik:</strong> Gaya hidup santai, olahraga air & spot nongkrong modern.
-                    </p>
-                </div>
-            </a>
-
-            <!-- Destination 5: Nusa Dua -->
-            <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
-                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=75" 
-                     alt="Nusa Dua" 
-                     draggable="false"
-                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none"></div>
-                
-                <div class="relative z-10 text-white space-y-2 pointer-events-none">
-                    <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-white tracking-wide">Nusa Dua</h3>
-                    
-                    <!-- Ada Apa Saja -->
-                    <div class="flex flex-wrap gap-1">
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Resort Bintang 5</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Waterblow</span>
-                        <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">Pasir Putih</span>
-                    </div>
-                    
-                    <!-- Daya Tarik Utama -->
-                    <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-snug pt-1 border-t border-white/10">
-                        <strong class="text-[#e5c382] font-semibold">Daya Tarik:</strong> Kawasan resort eksklusif dengan pantai tenang nan berseri.
-                    </p>
-                </div>
-            </a>
-
+                </a>
+            @endforeach
         </div>
     </section>
 

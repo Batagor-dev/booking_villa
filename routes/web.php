@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $properties = App\Models\Properties::where('status', true)->latest()->get();
-    return view('home.index', compact('properties'));
+    $destinations = App\Models\Destination::where('status', true)->orderBy('sort')->get();
+    return view('home.index', compact('properties', 'destinations'));
 })->name('home');
 
 // Public Frontend Pages
@@ -99,6 +100,10 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
     Route::resource('/banner', App\Http\Controllers\BannerController::class)->parameters([
         'banner' => 'banner:uuid',
     ]);
+
+    Route::resource('/destination', App\Http\Controllers\DestinationController::class)->parameters([
+        'destination' => 'destination:uuid',
+    ])->except('show');
 
     Route::resource('/properties', App\Http\Controllers\PropertiesController::class)->parameters([
         'properties' => 'property:slug',

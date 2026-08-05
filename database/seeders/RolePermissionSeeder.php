@@ -35,10 +35,11 @@ class RolePermissionSeeder extends Seeder
             'Settings',             // 16
             'Payment Method',       // 17
             'Booking',              // 18
+            'Destination',          // 19
         ];
 
         foreach ($permissiongroups as $permissiongroup) {
-            PermissionGroup::create([
+            PermissionGroup::firstOrCreate([
                 'name' => $permissiongroup
             ]);
         }
@@ -118,24 +119,31 @@ class RolePermissionSeeder extends Seeder
             'Booking Create-18',
             'Booking Update-18',
             'Booking Delete-18',
+            'Destination Access-19',
+            'Destination Detail-19',
+            'Destination Create-19',
+            'Destination Update-19',
+            'Destination Delete-19',
         ];
 
         foreach ($permissions as $permission) {
             $permission_array = explode("-", $permission);
-            Permission::create([
+            Permission::firstOrCreate([
                 'name' => $permission_array[0],
+                'guard_name' => 'web'
+            ], [
                 'permission_group_id' => $permission_array[1]
             ]);
         }
 
-        $superAdmin = Role::create([
+        $superAdmin = Role::firstOrCreate([
             'name' => 'Super Admin',
             'guard_name' => 'web'
         ]);
 
         $superAdmin->givePermissionTo(Permission::all());
 
-        $role = Role::create([
+        $role = Role::firstOrCreate([
             'name' => 'User',
             'guard_name' => 'web'
         ]);
