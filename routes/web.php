@@ -108,6 +108,7 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
     Route::resource('/properties', App\Http\Controllers\PropertiesController::class)->parameters([
         'properties' => 'property:slug',
     ])->except('show');
+    Route::post('/resolve-maps-url', [App\Http\Controllers\PropertiesController::class, 'resolveMapsUrl'])->name('properties.resolve-maps');
 
     Route::resource('/property_services', App\Http\Controllers\PropertyServicesController::class)->parameters([
         'property_services' => 'property_service:uuid',

@@ -16,6 +16,10 @@
         ['value' => 'Private House', 'label' => 'Private House'],
     ];
 
+    $destinationOptions = isset($destinations) 
+        ? $destinations->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->toArray() 
+        : [];
+
     $groupedFacilities = $facilities->groupBy('category');
     $selectedFacilityIds = old('facilities', $selected_facilities ?? []);
     
@@ -78,9 +82,10 @@
                     <h5 class="text-lg font-satoshi-bold text-slate-900 mb-6">{{ $sub_title }}</h5>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Property Name -->
+                        <!-- Property Name Input -->
                         <div class="md:col-span-2">
                             <x-ui.input 
+                                id="property_name_input"
                                 name="name" 
                                 label="Property Name *" 
                                 placeholder="e.g. Villa Seminyak Sanctuary" 
@@ -89,16 +94,33 @@
                             />
                         </div>
 
-                        <!-- Code -->
-                        <x-ui.input 
-                            name="code" 
-                            label="Property Code (Optional)" 
-                            placeholder="e.g. VLA-SMY-01" 
-                            value="{{ old('code', $property_data->code ?? '') }}"
-                        />
+                        <!-- Property Code (Auto-generated from Name & Readonly) -->
+                        <div>
+                            <x-ui.input 
+                                id="property_code_input"
+                                name="code" 
+                                label="Property Code (Auto)" 
+                                placeholder="e.g. VSS" 
+                                value="{{ old('code', $property_data->code ?? '') }}"
+                                readonly
+                                class="bg-slate-100/80 text-slate-600 font-bold tracking-wider cursor-not-allowed border-slate-200"
+                            />
+                            <span class="text-[11px] text-slate-400 mt-1 block">Karakter inisial otomatis dari Nama Properti (Maks. 3 karakter)</span>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                        <!-- Destination Select2 Component -->
+                        <div>
+                            <x-ui.select2 
+                                name="destination_id" 
+                                label="Destinasi / Region" 
+                                placeholder="Select Destination..." 
+                                :options="$destinationOptions"
+                                :value="old('destination_id', $property_data->destination_id ?? '')"
+                            />
+                        </div>
+
                         <!-- Property Type Select2 Component -->
                         <div>
                             <x-ui.select2 
@@ -110,17 +132,17 @@
                             />
                         </div>
 
-                        <!-- Price Per Night -->
+                        <!-- Price Per Night (Auto Dot Separator) -->
                         <div>
                             <x-ui.input 
-                                type="number"
+                                type="text"
+                                id="price_input"
                                 name="price" 
                                 label="Harga Per Malam (IDR) *" 
-                                placeholder="e.g. 2500000" 
-                                min="0"
-                                step="1000"
-                                value="{{ old('price', $property_data->price ?? 0) }}"
+                                placeholder="e.g. 2.500.000" 
+                                value="{{ old('price', isset($property_data->price) ? number_format($property_data->price, 0, ',', '.') : '') }}"
                                 required
+                                inputmode="numeric"
                             />
                         </div>
                     </div>
@@ -357,13 +379,16 @@
                         <!-- Google Maps Embed Iframe Section -->
                         <div class="mt-6 p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4"
                              x-data="mapEmbedHandler(@js($savedMapLink), @js($savedLat), @js($savedLng))">
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between flex-wrap gap-2">
                                 <label class="text-base font-satoshi-medium text-slate-800 flex items-center gap-2">
-                                    <i class="ri-map-pin-2-fill text-slate-700"></i> Google Maps Embed (Tag &lt;iframe&gt;)
+                                    <i class="ri-map-pin-2-fill text-rose-500 text-lg"></i> Google Maps Embed &amp; Link Lokasi
                                 </label>
-                                <a href="https://www.google.com/maps" target="_blank" class="inline-flex items-center gap-1 text-xs font-satoshi-medium text-slate-700 hover:text-slate-950">
-                                    <i class="ri-external-link-line"></i> Buka Google Maps (Share -&gt; Embed a map)
-                                </a>
+
+                                <template x-if="!directMapsUrl">
+                                    <a href="https://www.google.com/maps" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-satoshi-medium text-slate-700 hover:text-slate-950">
+                                        <i class="ri-external-link-line"></i> Buka Google Maps (Share -&gt; Embed a map)
+                                    </a>
+                                </template>
                             </div>
 
                             <!-- Hidden inputs for Latitude & Longitude automatically extracted from iframe -->
@@ -371,16 +396,24 @@
                             <input type="hidden" name="longitude" :value="extractedCoords ? extractedCoords.lng : initialLng">
 
                             <div>
-                                <label class="mb-2 block text-xs font-satoshi-medium text-slate-500">
-                                    Salin &amp; tempel kode HTML Embed (&lt;iframe&gt;) dari Google Maps di bawah ini:
-                                </label>
+                                <div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                                    <label class="block text-xs font-satoshi-medium text-slate-700">
+                                        Link Google Maps (Bisa <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded">https://maps.app.goo.gl/...</code> atau Kode Embed <code class="text-slate-600 bg-slate-100 px-1 py-0.5 rounded">&lt;iframe&gt;</code>):
+                                    </label>
+                                    <button type="button" @click="generatePinEmbedFromAddress()" class="inline-flex items-center gap-1.5 text-xs font-satoshi-bold text-slate-700 hover:text-rose-600 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-3 py-1.5 rounded-xl transition-all shadow-2xs cursor-pointer">
+                                        <i class="ri-map-pin-2-fill text-rose-500"></i> Buat Pin Titik Otomatis dari Alamat
+                                    </button>
+                                </div>
                                 <textarea 
                                     name="map_link" 
                                     x-model="rawMapLink"
-                                    rows="3" 
+                                    rows="2" 
                                     class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-mono text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition placeholder:text-slate-400" 
-                                    placeholder='&lt;iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15840.301801745052!2d107.6096949!3d-7.000396995425448!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e969e201605d%3A0x346b722af9ec567b!2sPohon%20Mangga%20Resto!5e0!3m2!1sid!2sid!4v1785335749607!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"&gt;&lt;/iframe&gt;'
+                                    placeholder="Paste link Google Maps dari HP (misal: https://maps.app.goo.gl/tP1saEr4Q1CHLjFX7) ATAU kode <iframe>...</iframe>"
                                 ></textarea>
+                                <span class="text-[11px] text-slate-500 mt-1.5 block">
+                                    💡 <strong>Bebas Paste:</strong> Cukup salin &amp; tempel link bagikan langsung dari aplikasi Google Maps HP Anda (misal <code>https://maps.app.goo.gl/...</code>) atau kode HTML <code>&lt;iframe&gt;</code>.
+                                </span>
                             </div>
 
 
@@ -660,22 +693,101 @@
             initialLat: initialLat || '',
             initialLng: initialLng || '',
             extractedCoords: null,
+            resolvedEmbedUrl: '',
+            resolvedDirectUrl: '',
+            isResolving: false,
 
             init() {
-                this.$watch('rawMapLink', () => this.extractCoords());
+                this.$watch('rawMapLink', (val) => {
+                    this.extractCoords();
+                    this.resolveShortLink(val);
+                });
                 this.extractCoords();
+                if (this.rawMapLink) {
+                    this.resolveShortLink(this.rawMapLink);
+                }
+            },
+
+            async resolveShortLink(text) {
+                if (!text) {
+                    this.resolvedEmbedUrl = '';
+                    this.resolvedDirectUrl = '';
+                    return;
+                }
+
+                const trimmed = text.trim();
+
+                // If already an iframe tag, extract src
+                const match = trimmed.match(/src=["']([^"']+)["']/i);
+                if (match && match[1]) {
+                    this.resolvedEmbedUrl = match[1];
+                    this.resolvedDirectUrl = match[1];
+                    return;
+                }
+
+                // If it's a URL (http/https), call backend resolver to expand short links like maps.app.goo.gl
+                if (trimmed.startsWith('http')) {
+                    this.isResolving = true;
+                    try {
+                        const res = await fetch("{{ route('properties.resolve-maps') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ url: trimmed })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.resolvedEmbedUrl = data.embed_url;
+                            this.resolvedDirectUrl = data.direct_url || trimmed;
+                            if (data.lat && data.lng) {
+                                this.extractedCoords = { lat: data.lat, lng: data.lng };
+                            }
+                        }
+                    } catch (e) {
+                        this.resolvedEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(trimmed)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+                    } finally {
+                        this.isResolving = false;
+                    }
+                }
             },
 
             get embedUrl() {
+                if (this.resolvedEmbedUrl) return this.resolvedEmbedUrl;
                 if (!this.rawMapLink) return '';
-                const match = this.rawMapLink.match(/src=["']([^"']+)["']/i);
-                if (match && match[1]) {
-                    return match[1];
+                const text = this.rawMapLink.trim();
+
+                const matchIframe = text.match(/src=["']([^"']+)["']/i);
+                if (matchIframe && matchIframe[1]) return matchIframe[1];
+
+                return `https://maps.google.com/maps?q=${encodeURIComponent(text)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+            },
+
+            get directMapsUrl() {
+                if (this.resolvedDirectUrl) return this.resolvedDirectUrl;
+                if (this.rawMapLink && this.rawMapLink.trim().startsWith('http')) return this.rawMapLink.trim();
+                return 'https://www.google.com/maps';
+            },
+
+            generatePinEmbedFromAddress() {
+                const addressInput = document.querySelector('input[name="address"]');
+                const cityInput = document.querySelector('input[name="city"]');
+                const provInput = document.querySelector('input[name="province"]');
+                
+                const fullAddr = [
+                    addressInput ? addressInput.value : '',
+                    cityInput ? cityInput.value : '',
+                    provInput ? provInput.value : ''
+                ].filter(Boolean).join(', ');
+                
+                if (!fullAddr) {
+                    Swal.fire({ icon: 'warning', title: 'Alamat Kosong', text: 'Silakan isi Alamat atau Kota terlebih dahulu untuk membuat pin titik lokasi.' });
+                    return;
                 }
-                if (this.rawMapLink.trim().startsWith('http')) {
-                    return this.rawMapLink.trim();
-                }
-                return '';
+                
+                const query = encodeURIComponent(fullAddr);
+                this.rawMapLink = `<iframe src="https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`;
             },
 
             extractCoords() {
@@ -707,6 +819,89 @@
                 }
             }
         }));
+    });
+    </script>
+
+    <!-- 
+    ========================================================================
+    AUTO-GENERATE PROPERTY CODE FROM PROPERTY NAME INITIALS (MAX 3 CHARS)
+    ========================================================================
+    Aturan Pembuatan Kode:
+    1. Jika >= 3 Kata : Ambil huruf ke-1 dari kata 1, kata 2, dan kata 3 ("Villa Azure Sanctuary" => "VAS")
+    2. Jika == 2 Kata : Ambil huruf ke-1 kata ke-1 + 2 huruf pertama kata ke-2 ("Villa Seminyak" => "VSE")
+    3. Jika == 1 Kata : Ambil 3 huruf pertama dari kata tersebut ("Seminyak" => "SEM")
+    ========================================================================
+    -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nameInput = document.getElementById('property_name_input') || document.querySelector('input[name="name"]');
+        const codeInput = document.getElementById('property_code_input') || document.querySelector('input[name="code"]');
+
+        if (nameInput && codeInput) {
+            /**
+             * Fungsi untuk menghitung 3 karakter inisial dari string Nama Properti
+             */
+            function generateInitialsCode(nameString) {
+                if (!nameString) return '';
+
+                // Bersihkan karakter khusus dan pecah kata berdasarkan spasi
+                const cleanText = nameString.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+
+                let codeResult = '';
+
+                if (words.length >= 3) {
+                    // Kasus 3 kata atau lebih: Ambil huruf ke-1 dari kata 1, 2, dan 3
+                    codeResult = words[0][0] + words[1][0] + words[2][0];
+                } else if (words.length === 2) {
+                    // Kasus 2 kata: Ambil 1 huruf kata ke-1 + 2 huruf kata ke-2
+                    codeResult = words[0][0] + (words[1].length >= 2 ? words[1].substring(0, 2) : words[1]);
+                } else if (words.length === 1) {
+                    // Kasus 1 kata: Ambil 3 huruf pertama
+                    codeResult = words[0].substring(0, 3);
+                }
+
+                return codeResult.toUpperCase();
+            }
+
+            // Real-time listener: otomatis isi input code saat user mengetik di input name
+            nameInput.addEventListener('input', function () {
+                codeInput.value = generateInitialsCode(this.value);
+            });
+
+            // Set nilai awal jika membuat baru dan input nama terisi
+            if (nameInput.value && !codeInput.value) {
+                codeInput.value = generateInitialsCode(nameInput.value);
+            }
+        }
+
+        /**
+         * =========================================================================
+         * REAL-TIME PRICE THOUSAND SEPARATOR FORMATTER (.)
+         * =========================================================================
+         * Format otomatis input Harga Per Malam dengan pemisah titik (.)
+         * Contoh: 2500000 => 2.500.000
+         * =========================================================================
+         */
+        const priceInput = document.getElementById('price_input') || document.querySelector('input[name="price"]');
+        if (priceInput) {
+            function formatNumberWithDots(val) {
+                if (!val) return '';
+                const cleanDigits = val.toString().replace(/\D/g, '');
+                if (!cleanDigits) return '';
+                return new Intl.NumberFormat('id-ID').format(cleanDigits);
+            }
+
+            // Format nilai awal saat halaman dimuat
+            if (priceInput.value) {
+                priceInput.value = formatNumberWithDots(priceInput.value);
+            }
+
+            // Event listener real-time saat pengguna mengetik angka harga
+            priceInput.addEventListener('input', function () {
+                this.value = formatNumberWithDots(this.value);
+            });
+        }
     });
     </script>
 

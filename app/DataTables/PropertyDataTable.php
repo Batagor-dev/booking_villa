@@ -51,6 +51,11 @@ class PropertyDataTable extends DataTable
                     <span>' . e($city . $prov) . '</span>
                 </div>';
             })
+            ->addColumn('destination_name', function ($row) {
+                return $row->destination
+                    ? '<span class="inline-flex items-center gap-1 rounded-md bg-teal-50 px-2 py-0.5 text-xs font-satoshi-bold text-teal-700 border border-teal-200/60"><i class="ri-map-pin-2-line"></i> ' . e($row->destination->name) . '</span>'
+                    : '<span class="text-slate-400 text-xs">-</span>';
+            })
             ->addColumn('rating_info', function ($row) {
                 $rating = number_format($row->rating ?? 0, 2);
                 return '<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-satoshi-bold border border-amber-200/60">
@@ -96,7 +101,7 @@ class PropertyDataTable extends DataTable
 
                 return '<div class="flex items-center space-x-1 justify-center">' . $edit . ' ' . $delete . '</div>';
             })
-            ->rawColumns(['image_preview', 'property_info', 'price_info', 'specs', 'location', 'rating_info', 'status', 'action']);
+            ->rawColumns(['image_preview', 'property_info', 'destination_name', 'price_info', 'specs', 'location', 'rating_info', 'status', 'action']);
     }
 
     /**
@@ -104,7 +109,7 @@ class PropertyDataTable extends DataTable
      */
     public function query(Properties $model)
     {
-        return $model->newQuery()->withCount('facilities');
+        return $model->newQuery()->with(['destination'])->withCount('facilities');
     }
 
     /**
@@ -147,6 +152,7 @@ class PropertyDataTable extends DataTable
             Column::make('DT_RowIndex')->title('No')->searchable(false)->orderable(false)->width(40)->addClass('text-center px-3 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-500 border-b border-slate-200'),
             Column::make('image_preview')->title('Cover')->orderable(false)->searchable(false)->width(90)->addClass('text-center px-3 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
             Column::make('property_info')->title('Informasi Properti')->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
+            Column::make('destination_name')->title('Destinasi')->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
             Column::make('price_info')->title('Harga Per Malam')->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
             Column::make('specs')->title('Spesifikasi')->orderable(false)->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),
             Column::make('location')->title('Lokasi')->addClass('px-4 py-3.5 bg-slate-50/80 font-satoshi-bold text-slate-700 border-b border-slate-200'),

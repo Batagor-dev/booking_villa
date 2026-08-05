@@ -9,6 +9,7 @@ use App\Models\Properties;
 use App\Models\PropertySettings;
 use App\Models\PropertyGallery;
 use App\Models\Facilities;
+use App\Models\Destination;
 use App\Services\ImageService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +29,7 @@ class PropertiesController extends Controller
      */
     public function create()
     {
+        $this->data['destinations'] = Destination::where('status', true)->orderBy('sort')->get();
         $this->data['facilities'] = Facilities::where('status', true)->orderBy('sort')->get();
         $this->data['action'] = route('properties.store');
         return view('property.form', $this->data);
@@ -43,11 +45,23 @@ class PropertiesController extends Controller
             $data['status'] = $request->has('status') ? 1 : 0;
             $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
-            // Auto generate 3-letter code if empty
-            if (empty($data['code'])) {
-                $cleanName = preg_replace('/[^A-Za-z]/', '', $data['name']);
-                $code = strtoupper(substr($cleanName, 0, 3));
-                $data['code'] = str_pad($code, 3, 'V');
+            // Auto generate max 3-character code from property name initials
+            $cleanText = preg_replace('/[^a-zA-Z0-9\s]/', '', $data['name']);
+            $words = array_values(array_filter(explode(' ', trim($cleanText))));
+            $codeResult = '';
+
+            if (count($words) >= 3) {
+                $codeResult = substr($words[0], 0, 1) . substr($words[1], 0, 1) . substr($words[2], 0, 1);
+            } elseif (count($words) === 2) {
+                $codeResult = substr($words[0], 0, 1) . (strlen($words[1]) >= 2 ? substr($words[1], 0, 2) : $words[1]);
+            } elseif (count($words) === 1) {
+                $codeResult = substr($words[0], 0, 3);
+            }
+            $data['code'] = strtoupper($codeResult);
+
+            // Auto format map_link into embed iframe if user pasted short link or URL
+            if (!empty($data['map_link'])) {
+                $data['map_link'] = $this->formatMapLinkToIframe($data['map_link']);
             }
 
             // 1. Upload Cover Image
@@ -103,8 +117,9 @@ class PropertiesController extends Controller
      */
     public function edit(Properties $property)
     {
-        $property->load(['settings', 'galleries', 'facilities']);
+        $property->load(['settings', 'galleries', 'facilities', 'destination']);
         $this->data['property_data'] = $property;
+        $this->data['destinations'] = Destination::where('status', true)->orderBy('sort')->get();
         $this->data['facilities'] = Facilities::where('status', true)->orderBy('sort')->get();
         $this->data['selected_facilities'] = $property->facilities->pluck('id')->toArray();
         $this->data['action'] = route('properties.update', $property->slug);
@@ -120,6 +135,25 @@ class PropertiesController extends Controller
             $data = $request->validated();
             $data['status'] = $request->has('status') ? 1 : 0;
             $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
+
+            // Auto generate max 3-character code from property name initials
+            $cleanText = preg_replace('/[^a-zA-Z0-9\s]/', '', $data['name']);
+            $words = array_values(array_filter(explode(' ', trim($cleanText))));
+            $codeResult = '';
+
+            if (count($words) >= 3) {
+                $codeResult = substr($words[0], 0, 1) . substr($words[1], 0, 1) . substr($words[2], 0, 1);
+            } elseif (count($words) === 2) {
+                $codeResult = substr($words[0], 0, 1) . (strlen($words[1]) >= 2 ? substr($words[1], 0, 2) : $words[1]);
+            } elseif (count($words) === 1) {
+                $codeResult = substr($words[0], 0, 3);
+            }
+            $data['code'] = strtoupper($codeResult);
+
+            // Auto format map_link into embed iframe if user pasted short link or URL
+            if (!empty($data['map_link'])) {
+                $data['map_link'] = $this->formatMapLinkToIframe($data['map_link']);
+            }
 
             // 1. Cover Image Update
             if ($request->hasFile('main_image')) {
@@ -207,5 +241,135 @@ class PropertiesController extends Controller
         });
 
         return redirect()->route('properties.index')->with('success', 'Property has been deleted successfully!');
+    }
+
+    /**
+     * Helper to format any URL or short link into a working Google Maps embed iframe string.
+     */
+    protected function formatMapLinkToIframe(?string $url): ?string
+    {
+        if (empty($url)) return null;
+
+        $url = trim($url);
+
+        // If already iframe tag, return as is
+        if (str_contains($url, '<iframe')) {
+            return $url;
+        }
+
+        $fullUrl = $url;
+        // Resolve shortened URLs
+        if (str_contains($url, 'goo.gl') || str_contains($url, 'maps.app.goo.gl')) {
+            try {
+                $headers = @get_headers($url, 1);
+                if (isset($headers['Location'])) {
+                    $fullUrl = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
+                }
+            } catch (\Exception $e) {}
+        }
+
+        $placeName = '';
+        $lat = null;
+        $lng = null;
+
+        if (preg_match('/maps\/place\/([^\/@]+)/', $fullUrl, $m)) {
+            $placeName = urldecode(str_replace('+', ' ', $m[1]));
+        }
+
+        if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $fullUrl, $m)) {
+            $lat = $m[1];
+            $lng = $m[2];
+        }
+
+        if ($placeName && $lat && $lng) {
+            $query = urlencode($placeName) . "@{$lat},{$lng}";
+        } elseif ($placeName) {
+            $query = urlencode($placeName);
+        } elseif ($lat && $lng) {
+            $query = "{$lat},{$lng}";
+        } else {
+            $query = urlencode($fullUrl);
+        }
+
+        return '<iframe src="https://maps.google.com/maps?q=' . $query . '&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
+    }
+
+    /**
+     * Resolve short Google Maps URL (e.g. maps.app.goo.gl) to embed iframe & location details.
+     */
+    public function resolveMapsUrl(\Illuminate\Http\Request $request)
+    {
+        $url = trim($request->input('url', ''));
+
+        if (empty($url)) {
+            return response()->json(['error' => 'URL Kosong'], 422);
+        }
+
+        // If it's already an iframe HTML tag
+        if (str_contains($url, '<iframe')) {
+            preg_match('/src=["\']([^"\']+)["\']/i', $url, $m);
+            $embedUrl = $m[1] ?? '';
+            return response()->json([
+                'success' => true,
+                'iframe' => $url,
+                'embed_url' => $embedUrl,
+                'direct_url' => $embedUrl,
+            ]);
+        }
+
+        $fullUrl = $url;
+        // Resolve shortened URLs (maps.app.goo.gl / goo.gl)
+        if (str_contains($url, 'goo.gl') || str_contains($url, 'maps.app.goo.gl')) {
+            try {
+                $headers = @get_headers($url, 1);
+                if (isset($headers['Location'])) {
+                    $fullUrl = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
+                }
+            } catch (\Exception $e) {}
+        }
+
+        $placeName = '';
+        $lat = null;
+        $lng = null;
+
+        // Try extracting place name from fullUrl
+        if (preg_match('/maps\/place\/([^\/@]+)/', $fullUrl, $matches)) {
+            $placeName = urldecode(str_replace('+', ' ', $matches[1]));
+        }
+
+        // Try extracting coordinates
+        if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $fullUrl, $matches)) {
+            $lat = $matches[1];
+            $lng = $matches[2];
+        }
+
+        if (empty($placeName) && preg_match('/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/', $fullUrl, $matches)) {
+            $lat = $matches[1];
+            $lng = $matches[2];
+        }
+
+        // Build query string for Google Maps embed with RED MARKER PIN
+        if ($placeName && $lat && $lng) {
+            $query = urlencode($placeName) . "@{$lat},{$lng}";
+        } elseif ($placeName) {
+            $query = urlencode($placeName);
+        } elseif ($lat && $lng) {
+            $query = "{$lat},{$lng}";
+        } else {
+            $query = urlencode($fullUrl);
+        }
+
+        $embedSrc = "https://maps.google.com/maps?q={$query}&t=&z=15&ie=UTF8&iwloc=&output=embed";
+        $iframeHtml = '<iframe src="' . $embedSrc . '" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
+
+        return response()->json([
+            'success' => true,
+            'iframe' => $iframeHtml,
+            'embed_url' => $embedSrc,
+            'direct_url' => $fullUrl,
+            'place_name' => $placeName,
+            'lat' => $lat,
+            'lng' => $lng,
+        ]);
     }
 }

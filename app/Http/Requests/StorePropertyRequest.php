@@ -15,6 +15,18 @@ class StorePropertyRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('price')) {
+            $this->merge([
+                'price' => str_replace('.', '', $this->price),
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
@@ -22,8 +34,9 @@ class StorePropertyRequest extends FormRequest
         return [
             // Main property rules
             'name'                  => 'required|string|max:255',
+            'destination_id'        => 'nullable|exists:destinations,id',
             'slug'                  => 'nullable|string|max:255|unique:properties,slug',
-            'code'                  => 'nullable|string|max:50|unique:properties,code',
+            'code'                  => 'nullable|string|max:50',
             'type'                  => 'required|string|max:100',
             'price'                 => 'required|numeric|min:0',
             'bedrooms'              => 'required|integer|min:1',

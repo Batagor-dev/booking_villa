@@ -22,4 +22,9 @@ class Destination extends Model
     {
         return 'uuid';
     }
+
+    public function properties()
+    {
+        return $this->hasMany(Properties::class, 'destination_id');
+    }
 }
