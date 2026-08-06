@@ -12,6 +12,7 @@ use App\Models\Facilities;
 use App\Models\Destination;
 use App\Services\ImageService;
 use App\Services\GoogleMapsService;
+use App\Services\GenerateCodeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -40,26 +41,15 @@ class PropertiesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePropertyRequest $request, ImageService $imageService, GoogleMapsService $mapsService)
+    public function store(StorePropertyRequest $request, ImageService $imageService, GoogleMapsService $mapsService, GenerateCodeService $codeService)
     {
-        DB::transaction(function () use ($request, $imageService, $mapsService) {
+        DB::transaction(function () use ($request, $imageService, $mapsService, $codeService) {
             $data = $request->validated();
             $data['status'] = $request->has('status') ? 1 : 0;
             $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
-            // Auto generate max 3-character code from property name initials
-            $cleanText = preg_replace('/[^a-zA-Z0-9\s]/', '', $data['name']);
-            $words = array_values(array_filter(explode(' ', trim($cleanText))));
-            $codeResult = '';
-
-            if (count($words) >= 3) {
-                $codeResult = substr($words[0], 0, 1) . substr($words[1], 0, 1) . substr($words[2], 0, 1);
-            } elseif (count($words) === 2) {
-                $codeResult = substr($words[0], 0, 1) . (strlen($words[1]) >= 2 ? substr($words[1], 0, 2) : $words[1]);
-            } elseif (count($words) === 1) {
-                $codeResult = substr($words[0], 0, 3);
-            }
-            $data['code'] = strtoupper($codeResult);
+            // Auto generate max 3-character code from property name initials using GenerateCodeService
+            $data['code'] = $codeService->generate($data['name']);
 
             // Auto format map_link into embed iframe if user pasted short link or URL
             if (!empty($data['map_link'])) {
@@ -131,26 +121,15 @@ class PropertiesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePropertyRequest $request, Properties $property, ImageService $imageService, GoogleMapsService $mapsService)
+    public function update(UpdatePropertyRequest $request, Properties $property, ImageService $imageService, GoogleMapsService $mapsService, GenerateCodeService $codeService)
     {
-        DB::transaction(function () use ($request, $property, $imageService, $mapsService) {
+        DB::transaction(function () use ($request, $property, $imageService, $mapsService, $codeService) {
             $data = $request->validated();
             $data['status'] = $request->has('status') ? 1 : 0;
             $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
-            // Auto generate max 3-character code from property name initials
-            $cleanText = preg_replace('/[^a-zA-Z0-9\s]/', '', $data['name']);
-            $words = array_values(array_filter(explode(' ', trim($cleanText))));
-            $codeResult = '';
-
-            if (count($words) >= 3) {
-                $codeResult = substr($words[0], 0, 1) . substr($words[1], 0, 1) . substr($words[2], 0, 1);
-            } elseif (count($words) === 2) {
-                $codeResult = substr($words[0], 0, 1) . (strlen($words[1]) >= 2 ? substr($words[1], 0, 2) : $words[1]);
-            } elseif (count($words) === 1) {
-                $codeResult = substr($words[0], 0, 3);
-            }
-            $data['code'] = strtoupper($codeResult);
+            // Auto generate max 3-character code from property name initials using GenerateCodeService
+            $data['code'] = $codeService->generate($data['name']);
 
             // Auto format map_link into embed iframe if user pasted short link or URL
             if (!empty($data['map_link'])) {
