@@ -833,47 +833,40 @@
     ========================================================================
     -->
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const nameInput = document.getElementById('property_name_input') || document.querySelector('input[name="name"]');
-        const codeInput = document.getElementById('property_code_input') || document.querySelector('input[name="code"]');
+        document.addEventListener('DOMContentLoaded', function () {
+            const nameInput = document.getElementById('property_name_input') || document.querySelector('input[name="name"]');
+            const codeInput = document.getElementById('property_code_input') || document.querySelector('input[name="code"]');
 
-        if (nameInput && codeInput) {
-            /**
-             * Fungsi untuk menghitung 3 karakter inisial dari string Nama Properti
-             */
-            function generateInitialsCode(nameString) {
-                if (!nameString) return '';
+            if (nameInput && codeInput) {
 
-                // Bersihkan karakter khusus dan pecah kata berdasarkan spasi
-                const cleanText = nameString.trim().replace(/[^a-zA-Z0-9\s]/g, '');
-                const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+                function generateInitialsCode(nameString) {
+                    if (!nameString) return '';
 
-                let codeResult = '';
+                    const cleanText = nameString.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+                    const words = cleanText.split(/\s+/).filter(w => w.length > 0);
 
-                if (words.length >= 3) {
-                    // Kasus 3 kata atau lebih: Ambil huruf ke-1 dari kata 1, 2, dan 3
-                    codeResult = words[0][0] + words[1][0] + words[2][0];
-                } else if (words.length === 2) {
-                    // Kasus 2 kata: Ambil 1 huruf kata ke-1 + 2 huruf kata ke-2
-                    codeResult = words[0][0] + (words[1].length >= 2 ? words[1].substring(0, 2) : words[1]);
-                } else if (words.length === 1) {
-                    // Kasus 1 kata: Ambil 3 huruf pertama
-                    codeResult = words[0].substring(0, 3);
+                    let codeResult = '';
+
+                    if (words.length >= 3) {
+                        codeResult = words[0][0] + words[1][0] + words[2][0];
+                    } else if (words.length === 2) {
+                        codeResult = words[0][0] + (words[1].length >= 2 ? words[1].substring(0, 2) : words[1]);
+                    } else if (words.length === 1) {
+                        codeResult = words[0].substring(0, 3);
+                    }
+
+                    return codeResult.toUpperCase();
                 }
 
-                return codeResult.toUpperCase();
+                nameInput.addEventListener('input', function () {
+                    codeInput.value = generateInitialsCode(this.value);
+                });
+
+                if (nameInput.value && !codeInput.value) {
+                    codeInput.value = generateInitialsCode(nameInput.value);
+                }
             }
-
-            // Real-time listener: otomatis isi input code saat user mengetik di input name
-            nameInput.addEventListener('input', function () {
-                codeInput.value = generateInitialsCode(this.value);
-            });
-
-            // Set nilai awal jika membuat baru dan input nama terisi
-            if (nameInput.value && !codeInput.value) {
-                codeInput.value = generateInitialsCode(nameInput.value);
-        }
-    });
+        });
     </script>
 
     {{-- SweetAlert otomatis --}}
