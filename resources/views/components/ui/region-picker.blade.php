@@ -162,12 +162,24 @@
             searchProv: '',
             searchCity: '',
 
+            toTitleCase(str) {
+                if (!str) return '';
+                return str.toLowerCase().replace(/(?:^|\s|-)\S/g, (m) => m.toUpperCase());
+            },
+
             async init() {
                 await this.fetchProvinces();
                 if (this.selectedProvince) {
                     const foundProv = this.provinces.find(p => p.name.toUpperCase() === this.selectedProvince.toUpperCase());
                     if (foundProv) {
+                        this.selectedProvince = foundProv.name;
                         await this.fetchRegencies(foundProv.id);
+                        if (this.selectedCity) {
+                            const foundCity = this.regencies.find(r => r.name.toUpperCase() === this.selectedCity.toUpperCase());
+                            if (foundCity) {
+                                this.selectedCity = foundCity.name;
+                            }
+                        }
                     }
                 }
             },
@@ -193,7 +205,10 @@
                 try {
                     const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
                     const data = await res.json();
-                    this.provinces = (data || []).sort((a, b) => a.name.localeCompare(b.name));
+                    this.provinces = (data || []).map(p => ({
+                        id: p.id,
+                        name: this.toTitleCase(p.name)
+                    })).sort((a, b) => a.name.localeCompare(b.name));
                 } catch (e) {
                     console.error('Error fetching provinces:', e);
                 } finally {
@@ -218,7 +233,10 @@
                 try {
                     const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provId}.json`);
                     const data = await res.json();
-                    this.regencies = (data || []).sort((a, b) => a.name.localeCompare(b.name));
+                    this.regencies = (data || []).map(r => ({
+                        id: r.id,
+                        name: this.toTitleCase(r.name)
+                    })).sort((a, b) => a.name.localeCompare(b.name));
                 } catch (e) {
                     console.error('Error fetching regencies:', e);
                 } finally {
