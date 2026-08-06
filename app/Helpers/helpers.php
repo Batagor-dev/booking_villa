@@ -49,3 +49,27 @@ if (!function_exists('settings')) {
         return $cachedSettings;
     }
 }
+
+if (!function_exists('format_rupiah')) {
+    function format_rupiah($value, $prefix = 'Rp ') {
+        if (is_null($value) || $value === '') {
+            return $prefix . '0';
+        }
+        $numericValue = filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        if (!is_numeric($numericValue)) {
+            return $prefix . '0';
+        }
+        return $prefix . number_format((float)$numericValue, 0, ',', '.');
+    }
+}
+
+if (!function_exists('parse_rupiah')) {
+    function parse_rupiah($value) {
+        if (empty($value)) {
+            return 0;
+        }
+        // Remove everything except numbers
+        $clean = preg_replace('/[^\d]/', '', $value);
+        return $clean !== '' ? (int)$clean : 0;
+    }
+}

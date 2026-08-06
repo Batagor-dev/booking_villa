@@ -63,15 +63,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Price -->
-                    <x-ui.input 
-                        type="number"
+                    <x-ui.price 
+                        type="input"
                         name="price" 
-                        label="Price (Rp)" 
-                        placeholder="0" 
-                        value="{{ old('price', $service_data->price ?? '0') }}"
+                        label="Price (Rp) *" 
+                        placeholder="e.g. 50.000" 
+                        :value="old('price', $service_data->price ?? '')"
                         required
-                        min="0"
-                        step="5000"
+                        inputmode="numeric"
                     />
 
                     @php

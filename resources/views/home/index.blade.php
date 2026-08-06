@@ -202,7 +202,7 @@
                             </div>
                             <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
                                 <div>
-                                    <span class="text-xl sm:text-2xl font-bold text-[#152c4e]">Rp {{ number_format($villa->price, 0, ',', '.') }}</span>
+                                    <x-ui.price :value="$villa->price" class="text-xl sm:text-2xl font-bold text-[#152c4e]" />
                                     <span class="text-xs font-normal text-slate-500">/ malam</span>
                                 </div>
                                 <a href="{{ route('villa.show', $villa->slug) }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors flex items-center gap-1">

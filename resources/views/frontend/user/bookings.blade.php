@@ -183,7 +183,7 @@
                             <div class="md:col-span-3 text-right space-y-2 border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-5 flex flex-col justify-between">
                                 <div>
                                     <span class="text-[10px] text-slate-400 uppercase font-bold block">Total Biaya:</span>
-                                    <span class="text-lg font-bold text-[#152c4e]">Rp {{ number_format($b->total_price, 0, ',', '.') }}</span>
+                                    <x-ui.price :value="$b->total_price" class="text-lg font-bold text-[#152c4e]" />
                                 </div>
 
                                 <div class="flex items-center justify-end gap-2 pt-1">
@@ -196,7 +196,7 @@
                                         'check_in' => $b->check_in ? $b->check_in->format('d M Y') : '-',
                                         'check_out' => $b->check_out ? $b->check_out->format('d M Y') : '-',
                                         'total_nights' => $b->total_nights,
-                                        'total_price' => 'Rp ' . number_format($b->total_price, 0, ',', '.'),
+                                        'total_price' => format_rupiah($b->total_price),
                                         'payment_method' => $b->paymentMethod->name ?? ($b->payment_type ?? '-'),
                                         'status' => ucfirst($b->status),
                                         'receipt' => $b->bukti_payment ? asset('storage/'.$b->bukti_payment) : null,

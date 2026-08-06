@@ -136,9 +136,7 @@
 
                         <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
                             <span class="text-slate-500 font-bold">Total Harga:</span>
-                            <span class="text-base font-satoshi-bold text-slate-900">
-                                Rp {{ number_format($booking->total_price, 0, ',', '.') }}
-                            </span>
+                            <x-ui.price :value="$booking->total_price" class="text-base font-satoshi-bold text-slate-900" containerClass="inline" />
                         </div>
                     </div>
                 </x-ui.card>

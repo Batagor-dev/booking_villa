@@ -134,13 +134,13 @@
 
                         <!-- Price Per Night (Auto Dot Separator) -->
                         <div>
-                            <x-ui.input 
-                                type="text"
+                            <x-ui.price 
+                                type="input"
                                 id="price_input"
                                 name="price" 
                                 label="Harga Per Malam (IDR) *" 
                                 placeholder="e.g. 2.500.000" 
-                                value="{{ old('price', isset($property_data->price) ? number_format($property_data->price, 0, ',', '.') : '') }}"
+                                :value="old('price', $property_data->price ?? '')"
                                 required
                                 inputmode="numeric"
                             />
@@ -872,35 +872,6 @@
             // Set nilai awal jika membuat baru dan input nama terisi
             if (nameInput.value && !codeInput.value) {
                 codeInput.value = generateInitialsCode(nameInput.value);
-            }
-        }
-
-        /**
-         * =========================================================================
-         * REAL-TIME PRICE THOUSAND SEPARATOR FORMATTER (.)
-         * =========================================================================
-         * Format otomatis input Harga Per Malam dengan pemisah titik (.)
-         * Contoh: 2500000 => 2.500.000
-         * =========================================================================
-         */
-        const priceInput = document.getElementById('price_input') || document.querySelector('input[name="price"]');
-        if (priceInput) {
-            function formatNumberWithDots(val) {
-                if (!val) return '';
-                const cleanDigits = val.toString().replace(/\D/g, '');
-                if (!cleanDigits) return '';
-                return new Intl.NumberFormat('id-ID').format(cleanDigits);
-            }
-
-            // Format nilai awal saat halaman dimuat
-            if (priceInput.value) {
-                priceInput.value = formatNumberWithDots(priceInput.value);
-            }
-
-            // Event listener real-time saat pengguna mengetik angka harga
-            priceInput.addEventListener('input', function () {
-                this.value = formatNumberWithDots(this.value);
-            });
         }
     });
     </script>

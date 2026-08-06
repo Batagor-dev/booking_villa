@@ -45,7 +45,7 @@ class BookingDataTable extends DataTable
                 </div>';
             })
             ->addColumn('total_price', function ($row) {
-                return '<span class="font-satoshi-bold text-slate-900 text-sm">Rp ' . number_format($row->total_price ?? 0, 0, ',', '.') . '</span>';
+                return '<span class="font-satoshi-bold text-slate-900 text-sm">' . format_rupiah($row->total_price ?? 0) . '</span>';
             })
             ->addColumn('payment_info', function ($row) {
                 $pmName = $row->paymentMethod->name ?? ($row->payment_type ?? 'Transfer');

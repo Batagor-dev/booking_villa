@@ -130,7 +130,7 @@ class BookingController extends Controller
             'booking_code' => $booking->booking_code,
             'guest_name'   => $booking->guest_name,
             'property_name'=> $property->name,
-            'total_price'  => number_format($booking->total_price, 0, ',', '.'),
+            'total_price'  => format_rupiah($booking->total_price),
         ]);
     }
 

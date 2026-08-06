@@ -33,7 +33,7 @@ class PropertyServiceDataTable extends DataTable
                     'fixed'      => 'Fixed',
                 ];
                 $type = $typeLabels[$row->price_type] ?? $row->price_type;
-                return '<span class="font-satoshi-bold text-slate-900">Rp ' . number_format($row->price, 0, ',', '.') . '</span> <span class="text-xs text-slate-500 font-satoshi-regular">' . $type . '</span>';
+                return '<span class="font-satoshi-bold text-slate-900">' . format_rupiah($row->price) . '</span> <span class="text-xs text-slate-500 font-satoshi-regular">' . $type . '</span>';
             })
             ->addColumn('category_badge', function ($row) {
                 return $row->category

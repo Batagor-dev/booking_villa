@@ -1,3 +1,5 @@
+import './components/price';
+
 window.togglePassword = function (inputId, button) {
     const input = document.getElementById(inputId);
     if (!input) return;

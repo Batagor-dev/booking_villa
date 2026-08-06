@@ -192,11 +192,11 @@
                 <!-- Left: Price & Strikethrough Discount Badge -->
                 <div class="space-y-0.5 min-w-0">
                     <div class="flex items-baseline gap-1.5 flex-wrap">
-                        <span class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight">Rp {{ number_format($propPrice, 0, ',', '.') }}</span>
+                        <x-ui.price :value="$propPrice" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
                         <span class="text-[11px] sm:text-xs text-slate-500 font-normal">/malam</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] sm:text-xs text-slate-400 line-through font-mono">Rp {{ number_format($propPrice * 1.3, 0, ',', '.') }}</span>
+                        <x-ui.price :value="$propPrice * 1.3" class="text-[10px] sm:text-xs text-slate-400 line-through font-mono" />
                         <span class="inline-flex items-center bg-[#ca9e54]/10 text-[#b88c43] border border-[#ca9e54]/30 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                             Hemat 30%
                         </span>
@@ -711,7 +711,7 @@
             
             <!-- Left Info: Minimalist Price & Rating -->
             <div class="flex items-center gap-2">
-                <span class="font-serif-title font-bold text-lg sm:text-xl text-white">Rp {{ number_format($propPrice, 0, ',', '.') }}</span>
+                <x-ui.price :value="$propPrice" class="font-serif-title font-bold text-lg sm:text-xl text-white" />
                 <span class="text-[10px] text-white/60 font-light">/ malam</span>
                 <span class="text-white/30 text-xs">•</span>
                 <div class="flex items-center gap-1 text-[11px] text-[#e5c382] font-semibold">
@@ -740,10 +740,6 @@
     const villaGalleryPhotos = {!! json_encode($galleryList) !!};
     const basePricePerNight = {{ (float) $propPrice }};
 
-    function formatRupiah(num) {
-        return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(num));
-    }
-
     // Set Default Booking Dates (Tomorrow to 3 days after)
     document.addEventListener('DOMContentLoaded', function() {
         const checkinInput = document.getElementById('book-checkin');
@@ -762,8 +758,6 @@
             if (!checkinInput.value) checkinInput.value = toYmd(tomorrow);
             if (!checkoutInput.value) checkoutInput.value = toYmd(dayAfter);
         }
-
-        calculateBookingTotal();
     });
 
     let currentPhotoIndex = 0;
@@ -1052,7 +1046,7 @@
                             <p><strong>Kode Booking:</strong> <span class="font-mono text-amber-600 font-bold">{{ session('success_booking.booking_code') }}</span></p>
                             <p><strong>Nama Tamu:</strong> {{ session('success_booking.guest_name') }}</p>
                             <p><strong>Properti:</strong> {{ session('success_booking.property_name') }}</p>
-                            <p><strong>Total Pembayaran:</strong> Rp {{ session('success_booking.total_price') }}</p>
+                            <p><strong>Total Pembayaran:</strong> {{ session('success_booking.total_price') }}</p>
                             <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200 mt-2">
                                 ✓ Bukti pembayaran Anda telah berhasil diunggah. Reservasi Anda sedang diverifikasi oleh admin.
                             </div>
@@ -1062,7 +1056,7 @@
                     confirmButtonText: 'Tutup'
                 });
             } else {
-                alert('Reservasi Berhasil!\nKode Booking: {{ session("success_booking.booking_code") }}\nTotal: Rp {{ session("success_booking.total_price") }}');
+                alert('Reservasi Berhasil!\nKode Booking: {{ session("success_booking.booking_code") }}\nTotal: {{ session("success_booking.total_price") }}');
             }
         });
     @endif
@@ -1074,7 +1068,7 @@
     <div>
         <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">Mulai dari</span>
         <div class="flex items-baseline gap-1">
-            <span class="text-xl font-extrabold text-[#152c4e] font-serif-title">Rp {{ number_format($propPrice, 0, ',', '.') }}</span>
+            <x-ui.price :value="$propPrice" class="text-xl font-extrabold text-[#152c4e] font-serif-title" />
             <span class="text-xs font-light text-slate-500">/ malam</span>
         </div>
     </div>

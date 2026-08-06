@@ -5,7 +5,7 @@
 @php
     $propertyOptions = [];
     foreach($properties as $pItem) {
-        $propertyOptions[$pItem->slug] = $pItem->name . ' (Rp ' . number_format($pItem->price, 0, ',', '.') . '/malam)';
+        $propertyOptions[$pItem->slug] = $pItem->name . ' (' . format_rupiah($pItem->price) . '/malam)';
     }
 
     $paymentOptions = [];
@@ -113,10 +113,7 @@
                         <!-- Price display -->
                         <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                             <span class="text-xs font-medium text-slate-500">Harga Per Malam</span>
-                            <div class="text-right">
-                                <span class="text-xl font-bold text-[#152c4e]">Rp {{ number_format($selectedProperty->price, 0, ',', '.') }}</span>
-                                <span class="text-xs text-slate-400">/malam</span>
-                            </div>
+                            <x-ui.price :value="$selectedProperty->price" suffix="/malam" class="text-xl font-bold text-[#152c4e]" containerClass="inline-block text-right" />
                         </div>
                     </div>
 
@@ -193,13 +190,11 @@
                         <div class="p-3.5 bg-white rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
                             <div class="flex items-center gap-2">
                                 <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 font-bold text-[11px]" id="calc-nights-badge">2 Malam</span>
-                                <span class="text-slate-500 text-[11px]">x Rp {{ number_format($selectedProperty->price ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-slate-500 text-[11px]">x {{ format_rupiah($selectedProperty->price ?? 0) }}</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-[10px] text-slate-400 uppercase font-bold block">Estimasi Subtotal</span>
-                                <strong class="text-base font-bold text-[#152c4e]" id="calc-total-price">
-                                    Rp {{ number_format(($selectedProperty->price ?? 0) * 2, 0, ',', '.') }}
-                                </strong>
+                                <x-ui.price :value="($selectedProperty->price ?? 0) * 2" class="text-base font-bold text-[#152c4e]" containerClass="inline" id="calc-total-price" />
                             </div>
                         </div>
                     </div>
@@ -408,7 +403,7 @@
             const total = propertyPrice * diffDays;
 
             document.getElementById('calc-nights-badge').innerText = diffDays + ' Malam';
-            document.getElementById('calc-total-price').innerText = 'Rp ' + total.toLocaleString('id-ID');
+            document.getElementById('calc-total-price').innerText = formatRupiah(total);
         }
 
         // Update payment method dynamic instruction box from paymentMethodsData

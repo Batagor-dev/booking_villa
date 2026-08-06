@@ -15,6 +15,18 @@ class UpdatePropertyServiceRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('price')) {
+            $this->merge([
+                'price' => str_replace('.', '', $this->price),
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array

@@ -35,7 +35,7 @@ class PropertyDataTable extends DataTable
                 </div>';
             })
             ->addColumn('price_info', function ($row) {
-                return '<div><span class="font-satoshi-bold text-slate-900 text-sm">Rp ' . number_format($row->price ?? 0, 0, ',', '.') . '</span> <span class="text-[10px] text-slate-400">/ malam</span></div>';
+                return '<div><span class="font-satoshi-bold text-slate-900 text-sm">' . format_rupiah($row->price ?? 0) . '</span> <span class="text-[10px] text-slate-400">/ malam</span></div>';
             })
             ->addColumn('specs', function ($row) {
                 return '<div class="flex flex-col gap-1 text-xs text-slate-600 font-satoshi-medium">
