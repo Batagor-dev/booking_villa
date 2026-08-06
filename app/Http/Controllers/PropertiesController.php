@@ -11,8 +11,10 @@ use App\Models\PropertyGallery;
 use App\Models\Facilities;
 use App\Models\Destination;
 use App\Services\ImageService;
+use App\Services\GoogleMapsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 class PropertiesController extends Controller
 {
@@ -38,9 +40,9 @@ class PropertiesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePropertyRequest $request, ImageService $imageService)
+    public function store(StorePropertyRequest $request, ImageService $imageService, GoogleMapsService $mapsService)
     {
-        DB::transaction(function () use ($request, $imageService) {
+        DB::transaction(function () use ($request, $imageService, $mapsService) {
             $data = $request->validated();
             $data['status'] = $request->has('status') ? 1 : 0;
             $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
@@ -61,7 +63,7 @@ class PropertiesController extends Controller
 
             // Auto format map_link into embed iframe if user pasted short link or URL
             if (!empty($data['map_link'])) {
-                $data['map_link'] = $this->formatMapLinkToIframe($data['map_link']);
+                $data['map_link'] = $mapsService->formatToIframe($data['map_link']);
             }
 
             // 1. Upload Cover Image
@@ -129,9 +131,9 @@ class PropertiesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePropertyRequest $request, Properties $property, ImageService $imageService)
+    public function update(UpdatePropertyRequest $request, Properties $property, ImageService $imageService, GoogleMapsService $mapsService)
     {
-        DB::transaction(function () use ($request, $property, $imageService) {
+        DB::transaction(function () use ($request, $property, $imageService, $mapsService) {
             $data = $request->validated();
             $data['status'] = $request->has('status') ? 1 : 0;
             $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
@@ -152,7 +154,7 @@ class PropertiesController extends Controller
 
             // Auto format map_link into embed iframe if user pasted short link or URL
             if (!empty($data['map_link'])) {
-                $data['map_link'] = $this->formatMapLinkToIframe($data['map_link']);
+                $data['map_link'] = $mapsService->formatToIframe($data['map_link']);
             }
 
             // 1. Cover Image Update
@@ -244,60 +246,9 @@ class PropertiesController extends Controller
     }
 
     /**
-     * Helper to format any URL or short link into a working Google Maps embed iframe string.
-     */
-    protected function formatMapLinkToIframe(?string $url): ?string
-    {
-        if (empty($url)) return null;
-
-        $url = trim($url);
-
-        // If already iframe tag, return as is
-        if (str_contains($url, '<iframe')) {
-            return $url;
-        }
-
-        $fullUrl = $url;
-        // Resolve shortened URLs
-        if (str_contains($url, 'goo.gl') || str_contains($url, 'maps.app.goo.gl')) {
-            try {
-                $headers = @get_headers($url, 1);
-                if (isset($headers['Location'])) {
-                    $fullUrl = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
-                }
-            } catch (\Exception $e) {}
-        }
-
-        $placeName = '';
-        $lat = null;
-        $lng = null;
-
-        if (preg_match('/maps\/place\/([^\/@]+)/', $fullUrl, $m)) {
-            $placeName = urldecode(str_replace('+', ' ', $m[1]));
-        }
-
-        if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $fullUrl, $m)) {
-            $lat = $m[1];
-            $lng = $m[2];
-        }
-
-        if ($placeName && $lat && $lng) {
-            $query = urlencode($placeName) . "@{$lat},{$lng}";
-        } elseif ($placeName) {
-            $query = urlencode($placeName);
-        } elseif ($lat && $lng) {
-            $query = "{$lat},{$lng}";
-        } else {
-            $query = urlencode($fullUrl);
-        }
-
-        return '<iframe src="https://maps.google.com/maps?q=' . $query . '&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
-    }
-
-    /**
      * Resolve short Google Maps URL (e.g. maps.app.goo.gl) to embed iframe & location details.
      */
-    public function resolveMapsUrl(\Illuminate\Http\Request $request)
+    public function resolveMapsUrl(Request $request, GoogleMapsService $mapsService)
     {
         $url = trim($request->input('url', ''));
 
@@ -305,71 +256,12 @@ class PropertiesController extends Controller
             return response()->json(['error' => 'URL Kosong'], 422);
         }
 
-        // If it's already an iframe HTML tag
-        if (str_contains($url, '<iframe')) {
-            preg_match('/src=["\']([^"\']+)["\']/i', $url, $m);
-            $embedUrl = $m[1] ?? '';
-            return response()->json([
-                'success' => true,
-                'iframe' => $url,
-                'embed_url' => $embedUrl,
-                'direct_url' => $embedUrl,
-            ]);
+        $result = $mapsService->resolve($url);
+
+        if (!$result['success']) {
+            return response()->json(['error' => $result['message'] ?? 'Error'], 422);
         }
 
-        $fullUrl = $url;
-        // Resolve shortened URLs (maps.app.goo.gl / goo.gl)
-        if (str_contains($url, 'goo.gl') || str_contains($url, 'maps.app.goo.gl')) {
-            try {
-                $headers = @get_headers($url, 1);
-                if (isset($headers['Location'])) {
-                    $fullUrl = is_array($headers['Location']) ? end($headers['Location']) : $headers['Location'];
-                }
-            } catch (\Exception $e) {}
-        }
-
-        $placeName = '';
-        $lat = null;
-        $lng = null;
-
-        // Try extracting place name from fullUrl
-        if (preg_match('/maps\/place\/([^\/@]+)/', $fullUrl, $matches)) {
-            $placeName = urldecode(str_replace('+', ' ', $matches[1]));
-        }
-
-        // Try extracting coordinates
-        if (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $fullUrl, $matches)) {
-            $lat = $matches[1];
-            $lng = $matches[2];
-        }
-
-        if (empty($placeName) && preg_match('/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/', $fullUrl, $matches)) {
-            $lat = $matches[1];
-            $lng = $matches[2];
-        }
-
-        // Build query string for Google Maps embed with RED MARKER PIN
-        if ($placeName && $lat && $lng) {
-            $query = urlencode($placeName) . "@{$lat},{$lng}";
-        } elseif ($placeName) {
-            $query = urlencode($placeName);
-        } elseif ($lat && $lng) {
-            $query = "{$lat},{$lng}";
-        } else {
-            $query = urlencode($fullUrl);
-        }
-
-        $embedSrc = "https://maps.google.com/maps?q={$query}&t=&z=15&ie=UTF8&iwloc=&output=embed";
-        $iframeHtml = '<iframe src="' . $embedSrc . '" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
-
-        return response()->json([
-            'success' => true,
-            'iframe' => $iframeHtml,
-            'embed_url' => $embedSrc,
-            'direct_url' => $fullUrl,
-            'place_name' => $placeName,
-            'lat' => $lat,
-            'lng' => $lng,
-        ]);
+        return response()->json($result);
     }
 }
