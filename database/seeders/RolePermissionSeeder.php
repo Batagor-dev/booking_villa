@@ -36,6 +36,7 @@ class RolePermissionSeeder extends Seeder
             'Payment Method',       // 17
             'Booking',              // 18
             'Destination',          // 19
+            'Promotion',            // 20
         ];
 
         foreach ($permissiongroups as $permissiongroup) {
@@ -124,6 +125,11 @@ class RolePermissionSeeder extends Seeder
             'Destination Create-19',
             'Destination Update-19',
             'Destination Delete-19',
+            'Promotion Access-20',
+            'Promotion Detail-20',
+            'Promotion Create-20',
+            'Promotion Update-20',
+            'Promotion Delete-20',
         ];
 
         foreach ($permissions as $permission) {

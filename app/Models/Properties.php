@@ -46,4 +46,9 @@ class Properties extends Model
     {
         return $this->hasMany(PropertyServices::class, 'property_id');
     }
+
+    public function promotions()
+    {
+        return $this->belongsToMany(Promotion::class, 'promotion_properties', 'property_id', 'promotion_id')->withTimestamps();
+    }
 }

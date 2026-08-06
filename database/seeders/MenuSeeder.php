@@ -122,6 +122,16 @@ class MenuSeeder extends Seeder
             'sort'               => '6',
         ]);
 
+        Menu::create([
+            'menu_group_id'      => 2,
+            'nama_menu'          => 'Promotions',
+            'permission_group_id'=> 20,
+            'icon'               => 'ri-coupon-3-line',
+            'href'               => '/promotion',
+            'status'             => '1',
+            'sort'               => '7',
+        ]);
+
         // === Menu 2: Setting (Group: Settings - ID 3) ===
         $setting = Menu::create([
             'menu_group_id'      => 3,

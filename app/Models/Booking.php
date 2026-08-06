@@ -18,6 +18,8 @@ class Booking extends Model
     protected $casts = [
         'check_in'  => 'date',
         'check_out' => 'date',
+        'subtotal' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
     ];
 
     public function getRouteKeyName()
@@ -28,6 +30,11 @@ class Booking extends Model
     public function property()
     {
         return $this->belongsTo(Properties::class, 'property_id');
+    }
+
+    public function promotion()
+    {
+        return $this->belongsTo(Promotion::class, 'promotion_id');
     }
 
     public function paymentMethod()

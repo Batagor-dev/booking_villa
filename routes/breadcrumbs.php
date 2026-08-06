@@ -394,5 +394,27 @@ Breadcrumbs::for('bookings.edit', function (BreadcrumbTrail $trail, $booking) {
 
 // **************************** END BOOKINGS ***************************
 
+// **************************** PROMOTIONS ***************************
+
+// Home > Promotions
+Breadcrumbs::for('promotion.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Promotions', route('promotion.index'));
+});
+
+// Home > Promotions > Create
+Breadcrumbs::for('promotion.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('promotion.index');
+    $trail->push('Create', route('promotion.create'));
+});
+
+// Home > Promotions > Edit
+Breadcrumbs::for('promotion.edit', function (BreadcrumbTrail $trail, $promotion) {
+    $trail->parent('promotion.index');
+    $trail->push('Update [' . $promotion->name . ']', route('promotion.edit', $promotion));
+});
+
+// **************************** END PROMOTIONS ***************************
+
 
 

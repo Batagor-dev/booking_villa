@@ -122,6 +122,8 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
         'payment_methods' => 'payment_method:uuid',
     ])->except('show');
 
+    Route::resource('/promotion', App\Http\Controllers\PromotionController::class)->except('show');
+
     Route::resource('/bookings', App\Http\Controllers\BookingController::class)->parameters([
         'bookings' => 'booking:uuid',
     ])->only(['index', 'show', 'edit', 'update', 'destroy']);

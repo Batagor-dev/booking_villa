@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->string('booking_code')->unique();
             $table->foreignId('property_id')->constrained('properties')->cascadeOnDelete();
+            $table->foreignId('promotion_id')->nullable()->constrained('promotions')->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             
             // Guest Information
@@ -27,6 +28,8 @@ return new class extends Migration
             $table->date('check_in');
             $table->date('check_out');
             $table->integer('total_nights')->default(1);
+            $table->decimal('subtotal', 15, 2)->default(0);
+            $table->decimal('discount_amount', 15, 2)->default(0);
             $table->decimal('total_price', 15, 2)->default(0);
             
             // Payment Information
