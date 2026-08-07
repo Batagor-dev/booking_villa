@@ -321,114 +321,18 @@
 @endonce
 
 <div class="w-full text-left font-satoshi" 
-     x-data="{
-        checkin: '{{ $checkinValue }}',
-        checkout: '{{ $checkoutValue }}',
-        singleValue: '{{ $value }}',
-        nights: 0,
-        fp: null,
-        activeField: 'checkin',
-        
-        calculateNights() {
-            if (this.checkin && this.checkout) {
-                const d1 = new Date(this.checkin);
-                const d2 = new Date(this.checkout);
-                const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
-                this.nights = diff > 0 ? diff : 0;
-            } else {
-                this.nights = 0;
-            }
-        },
-
-        formatDateIndo(dateStr) {
-            if (!dateStr) return '';
-            const parts = dateStr.split('-');
-            if (parts.length !== 3) return dateStr;
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            const day = parseInt(parts[2], 10);
-            const monthIdx = parseInt(parts[1], 10) - 1;
-            const year = parts[0];
-            const dateObj = new Date(year, monthIdx, day);
-            const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-            const dayName = days[dateObj.getDay()];
-            return `${dayName}, ${day} ${months[monthIdx]} ${year}`;
-        },
-
-        init() {
-            this.calculateNights();
-
-            const indonesianL10n = {
-                firstDayOfWeek: 1,
-                weekdays: {
-                    shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
-                },
-                months: {
-                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
-                }
-            };
-
-            const isRangeMode = {{ $isRange ? 'true' : 'false' }};
-            const desiredMonths = {{ $numMonths }};
-            const initialMonths = (window.innerWidth < 640) ? 1 : desiredMonths;
-            
-            let options = {
-                allowInput: true,
-                dateFormat: 'Y-m-d',
-                locale: indonesianL10n,
-                mode: isRangeMode ? 'range' : '{{ in_array($type, ['multiple', 'range']) ? $type : 'single' }}',
-                showMonths: initialMonths,
-                inline: {{ $inline ? 'true' : 'false' }},
-                position: 'auto',
-            };
-
-            @if(!empty($disabledDates))
-                options.disable = {!! json_encode($disabledDates) !!};
-            @endif
-
-            @if($minDate)
-                options.minDate = '{{ $minDate }}';
-            @endif
-
-            @if($maxDate)
-                options.maxDate = '{{ $maxDate }}';
-            @endif
-
-            if (isRangeMode) {
-                let defaultDates = [];
-                if (this.checkin) defaultDates.push(this.checkin);
-                if (this.checkout) defaultDates.push(this.checkout);
-                if (defaultDates.length > 0) {
-                    options.defaultDate = defaultDates;
-                }
-
-                options.onChange = (selectedDates, dateStr, instance) => {
-                    if (selectedDates.length >= 1) {
-                        this.checkin = instance.formatDate(selectedDates[0], 'Y-m-d');
-                    } else {
-                        this.checkin = '';
-                    }
-
-                    if (selectedDates.length >= 2) {
-                        this.checkout = instance.formatDate(selectedDates[1], 'Y-m-d');
-                    } else {
-                        this.checkout = '';
-                    }
-
-                    this.calculateNights();
-
-                    $dispatch('date-range-selected', { checkin: this.checkin, checkout: this.checkout, nights: this.nights });
-                    
-                    if (typeof window.calculateBookingTotal === 'function') {
-                        window.calculateBookingTotal();
-                    }
-                };
-            }
-
-            this.fp = flatpickr(this.$refs.dateInput, options);
-        }
-     }">
+     x-data="datePickerComponent({
+        checkin: @js($checkinValue),
+        checkout: @js($checkoutValue),
+        singleValue: @js($value),
+        isRange: {{ $isRange ? 'true' : 'false' }},
+        numMonths: {{ $numMonths }},
+        type: @js($type),
+        inline: {{ $inline ? 'true' : 'false' }},
+        disabledDates: @js($disabledDates ?? []),
+        minDate: @js($minDate),
+        maxDate: @js($maxDate)
+     })">
 
     @if($isRange)
         <!-- CLEAN COMPACT CHECK-IN & CHECK-OUT INPUT CARDS (2 COLS ALWAYS) -->
@@ -515,5 +419,127 @@
 @once
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            function registerDatePickerComponent() {
+                if (typeof Alpine !== 'undefined') {
+                    Alpine.data('datePickerComponent', (config) => ({
+                        checkin: config.checkin || '',
+                        checkout: config.checkout || '',
+                        singleValue: config.singleValue || '',
+                        nights: 0,
+                        fp: null,
+                        activeField: 'checkin',
+
+                        calculateNights() {
+                            if (this.checkin && this.checkout) {
+                                const d1 = new Date(this.checkin);
+                                const d2 = new Date(this.checkout);
+                                const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+                                this.nights = diff > 0 ? diff : 0;
+                            } else {
+                                this.nights = 0;
+                            }
+                        },
+
+                        formatDateIndo(dateStr) {
+                            if (!dateStr) return '';
+                            const parts = dateStr.split('-');
+                            if (parts.length !== 3) return dateStr;
+                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                            const day = parseInt(parts[2], 10);
+                            const monthIdx = parseInt(parts[1], 10) - 1;
+                            const year = parts[0];
+                            const dateObj = new Date(year, monthIdx, day);
+                            const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+                            const dayName = days[dateObj.getDay()];
+                            return `${dayName}, ${day} ${months[monthIdx]} ${year}`;
+                        },
+
+                        init() {
+                            this.calculateNights();
+
+                            const indonesianL10n = {
+                                firstDayOfWeek: 1,
+                                weekdays: {
+                                    shorthand: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                                    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+                                },
+                                months: {
+                                    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                                    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+                                }
+                            };
+
+                            const initialMonths = (window.innerWidth < 640) ? 1 : config.numMonths;
+                            
+                            let options = {
+                                allowInput: true,
+                                dateFormat: 'Y-m-d',
+                                locale: indonesianL10n,
+                                mode: config.isRange ? 'range' : (['multiple', 'range'].includes(config.type) ? config.type : 'single'),
+                                showMonths: initialMonths,
+                                inline: config.inline,
+                                position: 'auto',
+                            };
+
+                            if (config.disabledDates && config.disabledDates.length > 0) {
+                                options.disable = config.disabledDates;
+                            }
+
+                            if (config.minDate) {
+                                options.minDate = config.minDate;
+                            }
+
+                            if (config.maxDate) {
+                                options.maxDate = config.maxDate;
+                            }
+
+                            if (config.isRange) {
+                                let defaultDates = [];
+                                if (this.checkin) defaultDates.push(this.checkin);
+                                if (this.checkout) defaultDates.push(this.checkout);
+                                if (defaultDates.length > 0) {
+                                    options.defaultDate = defaultDates;
+                                }
+
+                                options.onChange = (selectedDates, dateStr, instance) => {
+                                    if (selectedDates.length >= 1) {
+                                        this.checkin = instance.formatDate(selectedDates[0], 'Y-m-d');
+                                    } else {
+                                        this.checkin = '';
+                                    }
+
+                                    if (selectedDates.length >= 2) {
+                                        this.checkout = instance.formatDate(selectedDates[1], 'Y-m-d');
+                                    } else {
+                                        this.checkout = '';
+                                    }
+
+                                    this.calculateNights();
+
+                                    if (typeof this.$dispatch === 'function') {
+                                        this.$dispatch('date-range-selected', { checkin: this.checkin, checkout: this.checkout, nights: this.nights });
+                                    }
+                                    
+                                    this.$nextTick(() => {
+                                        if (typeof window.calculateBookingTotal === 'function') {
+                                            window.calculateBookingTotal();
+                                        }
+                                    });
+                                };
+                            }
+
+                            this.fp = flatpickr(this.$refs.dateInput, options);
+                        }
+                    }));
+                }
+            }
+
+            if (window.Alpine) {
+                registerDatePickerComponent();
+            } else {
+                document.addEventListener('alpine:init', registerDatePickerComponent);
+            }
+        </script>
     @endpush
 @endonce

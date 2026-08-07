@@ -381,6 +381,14 @@
             }
         });
 
+        // Helper to format currency
+        function formatRupiah(amount) {
+            if (typeof window.formatRupiah === 'function') {
+                return window.formatRupiah(amount);
+            }
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount || 0);
+        }
+
         // Calculate nights and total price
         function calculateBookingTotal() {
             const checkInInput = document.getElementById('input-check-in');
@@ -402,9 +410,14 @@
 
             const total = propertyPrice * diffDays;
 
-            document.getElementById('calc-nights-badge').innerText = diffDays + ' Malam';
-            document.getElementById('calc-total-price').innerText = formatRupiah(total);
+            const nightsBadge = document.getElementById('calc-nights-badge');
+            const totalPriceEl = document.getElementById('calc-total-price');
+
+            if (nightsBadge) nightsBadge.innerText = diffDays + ' Malam';
+            if (totalPriceEl) totalPriceEl.innerText = formatRupiah(total);
         }
+
+        window.calculateBookingTotal = calculateBookingTotal;
 
         // Update payment method dynamic instruction box from paymentMethodsData
         function updatePaymentMethodBox(paymentMethodId) {
