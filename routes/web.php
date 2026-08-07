@@ -19,17 +19,9 @@ Route::get('/', function () {
     return view('home.index', compact('properties', 'destinations'));
 })->name('home');
 
-// Public Frontend Pages
-Route::get('/villa', function () {
-    $properties = App\Models\Properties::where('status', true)->latest()->get();
-    return view('villa.index', compact('properties'));
-})->name('villa.index');
-
-Route::get('/villa/{property:slug}', function (App\Models\Properties $property) {
-    $property->load(['settings', 'galleries', 'facilities']);
-    $paymentMethods = App\Models\PaymentMethod::where('is_active', true)->get();
-    return view('villa.show', compact('property', 'paymentMethods'));
-})->name('villa.show');
+// Public Frontend Villa Pages
+Route::get('/villa', [App\Http\Controllers\VillaController::class, 'index'])->name('villa.index');
+Route::get('/villa/{property:slug}', [App\Http\Controllers\VillaController::class, 'show'])->name('villa.show');
 
 // User Frontend Account & Booking Portal (Requires Auth)
 Route::middleware(['auth'])->group(function () {

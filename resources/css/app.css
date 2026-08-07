@@ -1,13 +1,5 @@
 @import "tailwindcss";
-
-/* Satoshi Variable Font */
-@font-face {
-    font-family: "Satoshi";
-    src: url("/assets/font/satoshi/Satoshi-Variable.ttf") format("truetype");
-    font-weight: 300 900;
-    font-style: normal;
-    font-display: swap;
-}
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap");
 
 @theme {
     --font-sans: "Satoshi", system-ui, sans-serif;

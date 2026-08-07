@@ -1,56 +1,6 @@
-@php
-    $prop = $property ?? null;
-    $propName = $prop->name ?? 'Villa Sanctuary';
-    $propAddress = $prop->address ?? 'Seminyak, Bali, Indonesia';
-    $propCity = $prop->city ?? 'Seminyak';
-    $propProvince = $prop->province ?? 'Bali';
-    $propPrice = (float) ($prop->price ?? 4500000);
-    $propRating = number_format($prop->rating ?? 4.95, 2);
-    $propBedrooms = $prop->bedrooms ?? 2;
-    $propCapacity = $prop->capacity ?? 4;
-    $propDescription = $prop->description ?? 'Nikmati keindahan dan kenyamanan menginap di villa mewah ini.';
-    $propMainImage = isset($prop->main_image) 
-        ? (\Illuminate\Support\Str::startsWith($prop->main_image, ['http://', 'https://']) ? $prop->main_image : asset('storage/'.$prop->main_image)) 
-        : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=85';
-
-    // Construct unified gallery list for Lightbox & Grid
-    $galleryList = [];
-    if ($propMainImage) {
-        $galleryList[] = [
-            'url' => $propMainImage,
-            'title' => $propName . ' - Utama'
-        ];
-    }
-    if ($prop && $prop->galleries && $prop->galleries->count() > 0) {
-        foreach($prop->galleries as $g) {
-            $galleryList[] = [
-                'url' => asset('storage/' . $g->image_path),
-                'title' => $g->caption ?: $propName
-            ];
-        }
-    }
-    // Fallback if gallery count is under 5
-    if (count($galleryList) < 5) {
-        $fallbacks = [
-            'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80'
-        ];
-        foreach($fallbacks as $fUrl) {
-            if (count($galleryList) >= 5) break;
-            $galleryList[] = [
-                'url' => $fUrl,
-                'title' => $propName . ' - Suasana'
-            ];
-        }
-    }
-@endphp
-
 @extends('layouts.frontend.main')
 
-@section('title', $propName . ' - ' . $propCity . ', ' . $propProvince . ' | Palma Luxury')
+@section('title', ($property->name ?? 'Villa Sanctuary') . ' - ' . ($property->city ?? 'Seminyak') . ', ' . ($property->province ?? 'Bali') . ' | Palma Luxury')
 
 @section('content')
     <!-- BREADCRUMB & HEADER -->
@@ -62,7 +12,7 @@
                 <span>/</span>
                 <a href="{{ route('villa.index') }}" class="hover:text-[#ca9e54] transition-colors">Villa</a>
                 <span>/</span>
-                <span class="text-slate-700 font-semibold truncate">{{ $propName }}</span>
+                <span class="text-slate-700 font-semibold truncate">{{ $property->name ?? 'Villa Sanctuary' }}</span>
             </div>
 
             <!-- Elegant Minimalist Back Button (Pure Text) -->
@@ -79,18 +29,18 @@
                         <i class="ri-vip-crown-2-fill text-[#ca9e54]"></i> Superhost
                     </span>
                     <span class="inline-flex items-center gap-1 bg-[#152c4e]/5 text-[#152c4e] border border-[#152c4e]/10 text-[10px] sm:text-xs font-semibold px-3 py-0.5 rounded-full uppercase tracking-wider">
-                        {{ $prop->type ?? 'Villa Sanctuary' }}
+                        {{ $property->type ?? 'Villa Sanctuary' }}
                     </span>
                 </div>
                 <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
-                    {{ $propName }}
+                    {{ $property->name ?? 'Villa Sanctuary' }}
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-600 font-medium flex items-center gap-2 mt-2 flex-wrap">
                     <i class="ri-map-pin-2-fill text-[#ca9e54]"></i>
-                    <span>{{ $propAddress }}</span>
+                    <span>{{ $property->address ?? 'Seminyak, Bali, Indonesia' }}</span>
                     <span>•</span>
                     <span class="flex items-center gap-1 font-bold text-slate-900">
-                        <i class="ri-star-fill text-[#ca9e54]"></i> {{ $propRating }}
+                        <i class="ri-star-fill text-[#ca9e54]"></i> {{ number_format($property->rating ?? 4.95, 2) }}
                     </span>
                 </p>
             </div>
@@ -109,29 +59,35 @@
 
     <!-- PHOTO GALLERY GRID SECTION -->
     <section class="px-4 sm:px-6 md:px-12 max-w-7xl mx-auto font-satoshi mb-12">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3 overflow-hidden relative p-1.5 group/gallery">
-            
-            <!-- Main Featured Image -->
-            <div class="col-span-2 md:col-span-2 md:row-span-2 h-52 sm:h-72 md:h-[460px] relative overflow-hidden rounded-2xl group cursor-pointer" onclick="openLightbox(0)">
-                <img src="{{ $galleryList[0]['url'] }}" alt="{{ $galleryList[0]['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
-            </div>
+        <div class="relative group/gallery">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3 overflow-hidden p-1.5">
+                
+                <!-- Main Featured Image -->
+                <div class="col-span-2 md:col-span-2 md:row-span-2 h-52 sm:h-72 md:h-[460px] relative overflow-hidden rounded-2xl group/img cursor-pointer" onclick="openLightbox(0, 'slide')">
+                    <img src="{{ $galleryList[0]['url'] ?? '' }}" alt="{{ $galleryList[0]['title'] ?? 'Utama' }}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-black/10 group-hover/img:bg-black/0 transition-colors"></div>
+                </div>
 
-            <!-- Side 4 Gallery Images -->
-            @for($i = 1; $i <= 4; $i++)
-                @if(isset($galleryList[$i]))
-                    <div class="col-span-1 h-32 sm:h-44 md:h-[224px] relative overflow-hidden rounded-2xl group cursor-pointer" onclick="openLightbox({{ $i }})">
-                        <img src="{{ $galleryList[$i]['url'] }}" alt="{{ $galleryList[$i]['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
-                        @if($i === 4 && count($galleryList) > 5)
-                            <div class="absolute inset-0 bg-black/60 backdrop-blur-xs flex flex-col items-center justify-center text-white font-bold text-xs sm:text-sm">
-                                <span>+{{ count($galleryList) - 5 }} Foto</span>
-                                <span class="text-[10px] font-normal text-slate-300">Lihat Semua</span>
+                <!-- Side Gallery Images (Up to 6 side images) -->
+                @foreach(array_slice($galleryList, 1, 6) as $index => $item)
+                    @php $photoIndex = $index + 1; @endphp
+                    @if($loop->last && count($galleryList) > 7)
+                        <div class="col-span-1 h-32 sm:h-44 md:h-[224px] relative overflow-hidden rounded-2xl group/img cursor-pointer" onclick="openLightbox(6, 'grid')">
+                            <img src="{{ $item['url'] }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 rounded-2xl bg-slate-950/60 group-hover/img:bg-slate-950/75 backdrop-blur-xs transition-all duration-300 flex flex-col items-center justify-center text-white text-center p-2">
+                                <i class="ri-grid-fill text-2xl sm:text-3xl text-[#ca9e54] mb-1 group-hover/img:scale-110 transition-transform"></i>
+                                <span class="font-bold text-sm sm:text-base tracking-wide text-white drop-shadow-md">+{{ count($galleryList) - 7 }} Foto</span>
+                                <span class="text-[10px] sm:text-xs font-medium text-slate-200 mt-0.5 drop-shadow-sm">Lihat Semua Foto</span>
                             </div>
-                        @endif
-                    </div>
-                @endif
-            @endfor
+                        </div>
+                    @else
+                        <div class="col-span-1 h-32 sm:h-44 md:h-[224px] relative overflow-hidden rounded-2xl group/img cursor-pointer" onclick="openLightbox({{ $photoIndex }}, 'slide')">
+                            <img src="{{ $item['url'] }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-black/10 group-hover/img:bg-black/0 transition-colors"></div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
         </div>
     </section>
 
@@ -146,11 +102,11 @@
                         Dipandu oleh Concierge Tim Palma VIP
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-500">
-                        {{ $propCapacity }} Tamu • {{ $propBedrooms }} Kamar Tidur • {{ $prop->type ?? 'Villa' }} Sanctuary
+                        {{ $property->capacity ?? 4 }} Tamu • {{ $property->bedrooms ?? 2 }} Kamar Tidur • {{ $property->type ?? 'Villa' }} Sanctuary
                     </p>
                 </div>
                 <div class="w-14 h-14 rounded-full bg-[#152c4e] text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0 uppercase">
-                    {{ $prop->code ?? 'PLM' }}
+                    {{ $property->code ?? 'PLM' }}
                 </div>
             </div>
 
@@ -192,26 +148,20 @@
                 <!-- Left: Price & Strikethrough Discount Badge -->
                 <div class="space-y-0.5 min-w-0">
                     <div class="flex items-baseline gap-1.5 flex-wrap">
-                        <x-ui.price :value="$propPrice" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
+                        <x-ui.price :value="(float) ($property->price ?? 4500000)" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
                         <span class="text-[11px] sm:text-xs text-slate-500 font-normal">/malam</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <x-ui.price :value="$propPrice * 1.3" class="text-[10px] sm:text-xs text-slate-400 line-through font-mono" />
-                        <span class="inline-flex items-center bg-[#ca9e54]/10 text-[#b88c43] border border-[#ca9e54]/30 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                            Hemat 30%
-                        </span>
                     </div>
                 </div>
 
                 <!-- Right: Clean Sharp Action Button (Always inline on mobile) -->
                 <div class="shrink-0">
                     @auth
-                        <a href="{{ route('booking.create', $prop->slug ?? '') }}" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                        <a href="{{ route('booking.create', $property->slug ?? '') }}" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <span>Lanjut Pesan</span>
                             <i class="ri-arrow-right-line text-sm"></i>
                         </a>
                     @else
-                        <button type="button" onclick="openRequireLoginModal('{{ route('booking.create', $prop->slug ?? '') }}')" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                        <button type="button" onclick="openRequireLoginModal('{{ route('booking.create', $property->slug ?? '') }}')" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <span>Lanjut Pesan</span>
                             <i class="ri-arrow-right-line text-sm"></i>
                         </button>
@@ -223,7 +173,7 @@
             <div class="space-y-4 pb-8 border-b border-slate-200/80">
                 <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">Tentang Villa Ini</h3>
                 <div class="text-xs sm:text-sm text-slate-600 font-light leading-relaxed space-y-3">
-                    {!! nl2br(e($propDescription)) !!}
+                    {!! nl2br(e($property->description ?? '')) !!}
                 </div>
             </div>
 
@@ -231,9 +181,9 @@
             <div class="space-y-6 pb-8 border-b border-slate-200/80">
                 <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">Fasilitas Properti</h3>
                 
-                @if($prop && $prop->facilities->count() > 0)
+                @if($property && $property->facilities && $property->facilities->count() > 0)
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-xs sm:text-sm font-medium text-slate-800">
-                        @foreach($prop->facilities as $fac)
+                        @foreach($property->facilities as $fac)
                             <div class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-100">
                                 <i class="{{ $fac->icon ?: 'ri-checkbox-circle-fill' }} text-lg text-[#ca9e54]"></i>
                                 <span>{{ $fac->name }}</span>
@@ -254,17 +204,17 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-[10px] font-bold tracking-widest text-[#ca9e54] uppercase block">LOKASI & PETA VILLA</span>
-                        <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">{{ $propCity }}, {{ $propProvince }}</h3>
+                        <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">{{ $property->city ?? 'Seminyak' }}, {{ $property->province ?? 'Bali' }}</h3>
                     </div>
                 </div>
                 <p class="text-xs text-slate-500 flex items-center gap-1.5">
-                    <i class="ri-map-pin-line text-slate-400"></i> {{ $propAddress }}
+                    <i class="ri-map-pin-line text-slate-400"></i> {{ $property->address ?? 'Seminyak, Bali, Indonesia' }}
                 </p>
 
                 <!-- Embedded Interactive Google Maps Container -->
                 <div class="w-full h-72 sm:h-96 overflow-hidden border border-slate-200/80 relative rounded-2xl">
-                    @if(!empty($prop->map_link))
-                        {!! $prop->map_link !!}
+                    @if(!empty($property->map_link))
+                        {!! $property->map_link !!}
                     @else
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3944.0261331776955!2d115.1541315!3d-8.6834164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd24752dfaa1585%3A0xe54d306b3a09e0eb!2sSeminyak%2C%20Kuta%2C%20Badung%20Regency%2C%20Bali!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid" class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
                     @endif
@@ -272,7 +222,7 @@
             </div>
 
             <!-- Verified Reviews -->
-            <div class="space-y-6 pb-8 border-b border-slate-200/80">
+            {{-- <div class="space-y-6 pb-8 border-b border-slate-200/80">
                 <div class="flex items-center justify-between">
                     <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">Ulasan Tamu Terverifikasi</h3>
                     <span class="text-xs font-bold text-[#ca9e54] flex items-center gap-1">
@@ -324,7 +274,7 @@
                     <span>Lihat Semua Ulasan & Komentar Tamu</span>
                     <i class="ri-arrow-right-line group-hover:translate-x-1 transition-transform"></i>
                 </button>
-            </div>
+            </div> --}}
 
             <!-- PERATURAN & KETENTUAN PEMESANAN (MINIMALIST & PROFESSIONAL CARD-LESS LAYOUT) -->
             <div class="space-y-6 pt-4">
@@ -351,7 +301,7 @@
                         <div class="space-y-1">
                             <h4 class="font-bold text-slate-900 text-sm">Kapasitas & Batas Tamu</h4>
                             <p class="leading-relaxed">
-                                Kapasitas maksimal <strong class="text-slate-900 font-semibold">{{ $propCapacity }} tamu</strong> menginap. Tambahan tamu di luar kapasitas wajib dikonfirmasi sebelumnya.
+                                Kapasitas maksimal <strong class="text-slate-900 font-semibold">{{ $property->capacity ?? 2 }} tamu</strong> menginap. Tambahan tamu di luar kapasitas wajib dikonfirmasi sebelumnya.
                             </p>
                         </div>
                     </div>
@@ -380,12 +330,12 @@
                 </div>
 
                 <!-- Special Notes if available -->
-                @if($prop && $prop->settings && $prop->settings->cancellation_policy)
+                @if($property && $property->settings && $property->settings->cancellation_policy)
                     <div class="pt-4 border-t border-slate-200/60 flex items-center gap-2.5 text-xs text-slate-600">
                         <i class="ri-information-line text-[#ca9e54] text-base shrink-0"></i>
                         <p class="leading-relaxed text-slate-600">
                             <strong class="text-slate-900 font-semibold">Catatan Khusus Properti:</strong>
-                            <span class="ml-1">{!! strip_tags($prop->settings->cancellation_policy) !!}</span>
+                            <span class="ml-1">{!! strip_tags($property->settings->cancellation_policy) !!}</span>
                         </p>
                     </div>
                 @endif
@@ -412,7 +362,7 @@
             <!-- Modal Body (Form Submission) -->
             <form action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data" class="p-6 sm:p-8 overflow-y-auto space-y-5 flex-1" id="pov-modal-form">
                 @csrf
-                <input type="hidden" name="property_id" value="{{ $prop->id ?? 1 }}">
+                <input type="hidden" name="property_id" value="{{ $property->id ?? 1 }}">
                 <input type="hidden" name="check_in" id="modal-checkin" value="2026-08-15">
                 <input type="hidden" name="check_out" id="modal-checkout" value="2026-08-18">
 
@@ -420,7 +370,7 @@
                 <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between text-xs font-satoshi-medium">
                     <div>
                         <span class="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Properti:</span>
-                        <strong class="text-slate-900 font-bold">{{ $propName }}</strong>
+                        <strong class="text-slate-900 font-bold">{{ $property->name }}</strong>
                     </div>
                     <div class="text-right">
                         <span class="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Durasi:</span>
@@ -595,49 +545,92 @@
 
             </div>
         </div>
-    </div>
-
-    <!-- FULLSCREEN INTERACTIVE LIGHTBOX GALLERY MODAL (PURE IMAGES ONLY) -->
-    <div id="gallery-lightbox-modal" onclick="closeLightbox()" class="fixed inset-0 bg-[#0c182b]/85 backdrop-blur-2xl z-[100] flex flex-col justify-between p-3 sm:p-6 hidden opacity-0 transition-opacity duration-300 select-none">
+      <!-- FULLSCREEN INTERACTIVE LIGHTBOX GALLERY MODAL (PURE IMAGES & GRID LIST) -->
+    <div id="gallery-lightbox-modal" class="fixed inset-0 z-[100] flex flex-col justify-between p-3 sm:p-6 hidden opacity-0 transition-opacity duration-300 select-none">
         
-        <!-- Lightbox Top Control Bar -->
-        <div class="flex items-center justify-between text-white z-20 pb-2 border-b border-white/10" onclick="event.stopPropagation()">
-            <div class="flex items-center gap-2">
-                <span class="text-[#ca9e54] font-bold text-xs sm:text-sm uppercase tracking-wider font-mono" id="lightbox-counter-text">1 / 9</span>
-            </div>
-            <button onclick="closeLightbox()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer text-lg" title="Tutup (ESC)">
-                <i class="ri-close-line"></i>
-            </button>
-        </div>
-
-        <!-- Main Display Container (Image + Floating Arrows) -->
-        <div class="relative flex-1 flex items-center justify-center my-auto py-2">
+        <!-- Dark Backdrop Layer (Clicking backdrop closes lightbox) -->
+        <div class="absolute inset-0 bg-[#0c182b]/95 backdrop-blur-2xl" onclick="closeLightbox()"></div>
+        
+        <!-- Lightbox Content Wrapper -->
+        <div class="relative z-10 flex flex-col justify-between w-full h-full max-w-7xl mx-auto pointer-events-auto">
             
-            <!-- Floating Left Arrow Button -->
-            <button onclick="event.stopPropagation(); prevPhoto();" class="absolute left-2 sm:left-12 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/80 hover:bg-[#ca9e54] text-white flex items-center justify-center transition-all duration-300 shadow-2xl backdrop-blur-md cursor-pointer border border-white/20 hover:border-transparent active:scale-95">
-                <i class="ri-arrow-left-s-line text-2xl sm:text-3xl"></i>
-            </button>
+            <!-- Lightbox Top Control Bar -->
+            <div class="flex items-center justify-between text-white pb-3 border-b border-white/10 shrink-0">
+                <div class="flex items-center gap-3">
+                    <span class="text-[#ca9e54] font-bold text-xs sm:text-sm uppercase tracking-wider font-mono" id="lightbox-counter-text">1 / {{ count($galleryList) }}</span>
+                    
+                    <!-- View Mode Toggle Buttons -->
+                    <div class="flex items-center bg-white/10 p-1 rounded-full text-xs border border-white/10">
+                        <button type="button" id="lightbox-btn-slide" onclick="switchLightboxMode('slide')" class="px-3 py-1 rounded-full transition-all cursor-pointer flex items-center gap-1.5 bg-[#ca9e54] text-slate-950 font-bold shadow-sm">
+                            <i class="ri-slideshow-3-line text-sm"></i>
+                            <span class="hidden sm:inline">Slide</span>
+                        </button>
+                        <button type="button" id="lightbox-btn-grid" onclick="switchLightboxMode('grid')" class="px-3 py-1 rounded-full transition-all cursor-pointer flex items-center gap-1.5 bg-white/10 text-white hover:bg-white/20">
+                            <i class="ri-grid-fill text-sm text-[#ca9e54]"></i>
+                            <span>Grid List ({{ count($galleryList) }})</span>
+                        </button>
+                    </div>
+                </div>
 
-            <!-- Active Photo Frame -->
-            <div class="relative max-w-5xl max-h-[70vh] flex items-center justify-center" onclick="event.stopPropagation()">
-                <img id="lightbox-main-img" src="" alt="Gallery Active Photo" class="max-w-full max-h-[68vh] object-contain rounded-2xl shadow-2xl transition-all duration-300">
+                <button type="button" onclick="closeLightbox()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer text-lg" title="Tutup (ESC)">
+                    <i class="ri-close-line"></i>
+                </button>
             </div>
 
-            <!-- Floating Right Arrow Button -->
-            <button onclick="event.stopPropagation(); nextPhoto();" class="absolute right-2 sm:right-12 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/80 hover:bg-[#ca9e54] text-white flex items-center justify-center transition-all duration-300 shadow-2xl backdrop-blur-md cursor-pointer border border-white/20 hover:border-transparent active:scale-95">
-                <i class="ri-arrow-right-s-line text-2xl sm:text-3xl"></i>
-            </button>
+            <!-- 1. SLIDESHOW VIEW CONTAINER -->
+            <div id="lightbox-slide-view" class="flex-1 flex flex-col justify-between overflow-hidden my-auto">
+                <!-- Main Display Container (Image + Floating Arrows) -->
+                <div class="relative flex-1 flex items-center justify-center my-auto py-2">
+                    
+                    <!-- Floating Left Arrow Button -->
+                    <button type="button" onclick="prevPhoto()" class="absolute left-2 sm:left-12 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/80 hover:bg-[#ca9e54] text-white hover:text-slate-950 flex items-center justify-center transition-all duration-300 shadow-2xl backdrop-blur-md cursor-pointer border border-white/20 hover:border-transparent active:scale-95">
+                        <i class="ri-arrow-left-s-line text-2xl sm:text-3xl"></i>
+                    </button>
+
+                    <!-- Active Photo Frame -->
+                    <div class="relative max-w-5xl max-h-[70vh] flex items-center justify-center">
+                        <img id="lightbox-main-img" src="" alt="Gallery Active Photo" class="max-w-full max-h-[68vh] object-contain rounded-2xl shadow-2xl transition-all duration-300">
+                    </div>
+
+                    <!-- Floating Right Arrow Button -->
+                    <button type="button" onclick="nextPhoto()" class="absolute right-2 sm:right-12 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/80 hover:bg-[#ca9e54] text-white hover:text-slate-950 flex items-center justify-center transition-all duration-300 shadow-2xl backdrop-blur-md cursor-pointer border border-white/20 hover:border-transparent active:scale-95">
+                        <i class="ri-arrow-right-s-line text-2xl sm:text-3xl"></i>
+                    </button>
+
+                </div>
+
+                <!-- Bottom Thumbnail Strip -->
+                <div class="border-t border-white/10 pt-3 max-w-5xl mx-auto w-full shrink-0">
+                    <div class="flex items-center justify-center gap-2 overflow-x-auto py-1 no-scrollbar" id="lightbox-thumbnails">
+                        <!-- JS Rendered Thumbnail Items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. GRID LIST VIEW CONTAINER (ALL PHOTOS DISPLAYED IN GRID) -->
+            <div id="lightbox-grid-view" class="flex-1 overflow-y-auto py-4 max-w-6xl mx-auto w-full hidden">
+                <div class="mb-4 flex items-center justify-between px-2">
+                    <div>
+                        <h3 class="text-white font-bold text-base sm:text-lg flex items-center gap-2 font-serif-title">
+                            <i class="ri-gallery-fill text-[#ca9e54]"></i>
+                            <span>Semua Foto Properti</span>
+                        </h3>
+                        <p class="text-xs text-white/60 font-light mt-0.5">Menampilkan seluruh foto ({{ count($galleryList) }} foto). Klik foto mana saja untuk memperbesar.</p>
+                    </div>
+                    <span class="text-xs text-[#ca9e54] bg-[#ca9e54]/10 border border-[#ca9e54]/30 px-3 py-1 rounded-full font-mono font-bold">
+                        Total {{ count($galleryList) }} Foto
+                    </span>
+                </div>
+
+                <!-- All Photos Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 p-2" id="lightbox-grid-container">
+                    <!-- JS Rendered Grid Items -->
+                </div>
+            </div>
 
         </div>
 
-        <!-- Bottom Thumbnail Strip -->
-        <div class="border-t border-white/10 pt-3 max-w-5xl mx-auto w-full z-20" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-center gap-2 overflow-x-auto py-1 no-scrollbar" id="lightbox-thumbnails">
-                <!-- JS Rendered Thumbnail Items -->
-            </div>
-        </div>
-
-    </div>
+    </div>    </div>
 
     <!-- INTERACTIVE ALL REVIEWS MODAL -->
     <div id="all-reviews-modal" onclick="closeReviewsModal()" class="fixed inset-0 bg-[#0c182b]/80 backdrop-blur-md z-[80] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
@@ -711,22 +704,22 @@
             
             <!-- Left Info: Minimalist Price & Rating -->
             <div class="flex items-center gap-2">
-                <x-ui.price :value="$propPrice" class="font-serif-title font-bold text-lg sm:text-xl text-white" />
+                <x-ui.price :value="(float) ($property->price ?? 4500000)" class="font-serif-title font-bold text-lg sm:text-xl text-white" />
                 <span class="text-[10px] text-white/60 font-light">/ malam</span>
                 <span class="text-white/30 text-xs">•</span>
                 <div class="flex items-center gap-1 text-[11px] text-[#e5c382] font-semibold">
-                    <i class="ri-star-fill text-[11px]"></i> {{ $propRating }}
+                    <i class="ri-star-fill text-[11px]"></i> {{ number_format($property->rating ?? 4.95, 2) }}
                 </div>
             </div>
 
             <!-- Right CTA Button: Minimalist Gold Button -->
             @auth
-                <a href="{{ route('booking.create', $prop->slug ?? '') }}" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
+                <a href="{{ route('booking.create', $property->slug ?? '') }}" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
                     <span>Pesan Sekarang</span>
                     <i class="ri-arrow-right-line text-sm"></i>
                 </a>
             @else
-                <button onclick="openRequireLoginModal('{{ route('booking.create', $prop->slug ?? '') }}')" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
+                <button onclick="openRequireLoginModal('{{ route('booking.create', $property->slug ?? '') }}')" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
                     <span>Pesan Sekarang</span>
                     <i class="ri-arrow-right-line text-sm"></i>
                 </button>
@@ -738,7 +731,7 @@
 <script>
     // Villa Gallery Dataset (Dynamic from PHP)
     const villaGalleryPhotos = {!! json_encode($galleryList) !!};
-    const basePricePerNight = {{ (float) $propPrice }};
+    const basePricePerNight = {{ (float) ($property->price ?? 4500000) }};
 
     // Set Default Booking Dates (Tomorrow to 3 days after)
     document.addEventListener('DOMContentLoaded', function() {
@@ -761,22 +754,85 @@
     });
 
     let currentPhotoIndex = 0;
+    let lightboxViewMode = 'slide';
 
-    function openLightbox(index = 0) {
+    function openLightbox(index = 0, mode = 'slide') {
         const modal = document.getElementById('gallery-lightbox-modal');
         if (!modal) return;
         currentPhotoIndex = index % villaGalleryPhotos.length;
-        updateLightboxContent();
+        lightboxViewMode = mode;
+        
+        updateLightboxView();
+
         modal.classList.remove('hidden');
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             modal.classList.remove('opacity-0');
-        }, 10);
+            modal.classList.add('opacity-100');
+        });
         document.body.classList.add('overflow-hidden');
+    }
+
+    function switchLightboxMode(mode, index = null) {
+        if (index !== null) {
+            currentPhotoIndex = index % villaGalleryPhotos.length;
+        }
+        lightboxViewMode = mode;
+        updateLightboxView();
+    }
+
+    function updateLightboxView() {
+        const slideView = document.getElementById('lightbox-slide-view');
+        const gridView = document.getElementById('lightbox-grid-view');
+        const btnSlide = document.getElementById('lightbox-btn-slide');
+        const btnGrid = document.getElementById('lightbox-btn-grid');
+
+        if (lightboxViewMode === 'grid') {
+            if (slideView) slideView.classList.add('hidden');
+            if (gridView) gridView.classList.remove('hidden');
+            
+            if (btnSlide) {
+                btnSlide.className = 'px-3 py-1 rounded-full transition-all cursor-pointer flex items-center gap-1.5 bg-white/10 text-white hover:bg-white/20';
+            }
+            if (btnGrid) {
+                btnGrid.className = 'px-3 py-1 rounded-full transition-all cursor-pointer flex items-center gap-1.5 bg-[#ca9e54] text-slate-950 font-bold shadow-sm';
+            }
+            renderLightboxGrid();
+        } else {
+            if (gridView) gridView.classList.add('hidden');
+            if (slideView) slideView.classList.remove('hidden');
+            
+            if (btnGrid) {
+                btnGrid.className = 'px-3 py-1 rounded-full transition-all cursor-pointer flex items-center gap-1.5 bg-white/10 text-white hover:bg-white/20';
+            }
+            if (btnSlide) {
+                btnSlide.className = 'px-3 py-1 rounded-full transition-all cursor-pointer flex items-center gap-1.5 bg-[#ca9e54] text-slate-950 font-bold shadow-sm';
+            }
+            updateLightboxContent();
+        }
+    }
+
+    function renderLightboxGrid() {
+        const gridContainer = document.getElementById('lightbox-grid-container');
+        if (!gridContainer) return;
+        
+        gridContainer.innerHTML = villaGalleryPhotos.map((p, idx) => `
+            <div onclick="switchLightboxMode('slide', ${idx})" class="group relative rounded-2xl overflow-hidden cursor-pointer aspect-video bg-slate-900 border-2 transition-all duration-300 ${idx === currentPhotoIndex ? 'border-[#ca9e54] ring-2 ring-[#ca9e54]/50 scale-[1.02]' : 'border-white/10 hover:border-white/50 hover:scale-[1.02]'}">
+                <img src="${p.url}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity"></div>
+                <div class="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-white">
+                    <span class="text-[11px] font-bold tracking-wide flex items-center gap-1 truncate">
+                        <i class="ri-image-line text-[#ca9e54]"></i> ${p.title || ('Foto ' + (idx + 1))}
+                    </span>
+                    ${idx === currentPhotoIndex ? '<span class="text-[9px] bg-[#ca9e54] text-slate-950 font-bold px-2 py-0.5 rounded-full shrink-0">Aktif</span>' : ''}
+                </div>
+            </div>
+        `).join('');
     }
 
     function closeLightbox() {
         const modal = document.getElementById('gallery-lightbox-modal');
         if (!modal) return;
+        modal.classList.remove('opacity-100');
         modal.classList.add('opacity-0');
         setTimeout(() => {
             modal.classList.add('hidden');
@@ -823,8 +879,8 @@
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('gallery-lightbox-modal');
         if (modal && !modal.classList.contains('hidden')) {
-            if (e.key === 'ArrowRight') nextPhoto();
-            if (e.key === 'ArrowLeft') prevPhoto();
+            if (e.key === 'ArrowRight' && lightboxViewMode === 'slide') nextPhoto();
+            if (e.key === 'ArrowLeft' && lightboxViewMode === 'slide') prevPhoto();
             if (e.key === 'Escape') closeLightbox();
         }
     });
@@ -1033,6 +1089,8 @@
                 <p class="text-xs text-slate-600 font-light leading-relaxed">
                     "${r.comment}"
                 </p>
+            </div>
+        `).join('');
     }
 
     @if(session('success_booking'))
@@ -1068,7 +1126,7 @@
     <div>
         <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">Mulai dari</span>
         <div class="flex items-baseline gap-1">
-            <x-ui.price :value="$propPrice" class="text-xl font-extrabold text-[#152c4e] font-serif-title" />
+            <x-ui.price :value="(float) ($property->price ?? 4500000)" class="text-xl font-extrabold text-[#152c4e] font-serif-title" />
             <span class="text-xs font-light text-slate-500">/ malam</span>
         </div>
     </div>
