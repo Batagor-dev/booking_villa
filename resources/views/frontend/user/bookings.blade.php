@@ -24,9 +24,6 @@
                     </h1>
                 </div>
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('user.account') }}" class="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition border border-white/20 flex items-center gap-1.5">
-                        <i class="ri-user-settings-line text-sm"></i> Kelola Akun
-                    </a>
                     <a href="{{ route('villa.index') }}" class="px-5 py-2.5 rounded-full bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold transition shadow-md flex items-center gap-1.5">
                         <i class="ri-add-line text-sm"></i> Pesan Villa Baru
                     </a>
