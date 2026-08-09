@@ -32,40 +32,6 @@
 @endsection
 
 @push('scripts')
-    {{-- SweetAlert otomatis --}}
-    @if(session('success'))
-        <script>
-            Swal.fire({ icon: 'success', title: 'Success', text: "{{ session('success') }}" });
-        </script>
-    @endif
-
-    @if(session('error'))
-        <script>
-            Swal.fire({ icon: 'error', title: 'Error', text: "{{ session('error') }}" });
-        </script>
-    @endif
-
     {{-- Render DataTable --}}
     {!! $dataTable->scripts() !!}
-
-    <script>
-    $(document).on('click', '.delete-btn', function (e) {
-        e.preventDefault();
-        let form = $(this).closest('form');
-
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    });
-    </script>
 @endpush

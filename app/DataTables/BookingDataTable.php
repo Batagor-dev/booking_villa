@@ -78,10 +78,10 @@ class BookingDataTable extends DataTable
             ->addColumn('action', function ($row) {
                 $statusAction = '';
                 if ($row->status !== 'confirmed') {
-                    $statusAction .= '<button type="button" onclick="updateBookingStatus(\'' . $row->uuid . '\', \'confirmed\')" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-emerald-600 hover:bg-emerald-50 transition-colors font-satoshi-medium" title="Confirm Booking"><i class="ri ri-checkbox-circle-line text-lg"></i></button>';
+                    $statusAction .= '<button type="button" onclick="updateBookingStatus(\'' . $row->uuid . '\', \'confirmed\')" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors font-satoshi-medium" title="Confirm Booking"><i class="ri ri-checkbox-circle-line text-lg"></i></button>';
                 }
                 if ($row->status !== 'cancelled') {
-                    $statusAction .= '<button type="button" onclick="updateBookingStatus(\'' . $row->uuid . '\', \'cancelled\')" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-rose-600 hover:bg-rose-50 transition-colors font-satoshi-medium" title="Cancel Booking"><i class="ri ri-close-circle-line text-lg"></i></button>';
+                    $statusAction .= '<button type="button" onclick="updateBookingStatus(\'' . $row->uuid . '\', \'cancelled\')" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors font-satoshi-medium" title="Cancel Booking"><i class="ri ri-close-circle-line text-lg"></i></button>';
                 }
 
                 $editBtn = '';
@@ -97,7 +97,7 @@ class BookingDataTable extends DataTable
                         <form action="' . $deleteUrl . '" method="POST" class="inline-block delete-booking-form m-0">
                             ' . csrf_field() . '
                             ' . method_field('DELETE') . '
-                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors delete-btn font-satoshi-medium" title="Delete Booking">
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors delete-btn font-satoshi-medium" title="Delete Booking">
                                 <i class="ri ri-delete-bin-line text-lg"></i>
                             </button>
                         </form>

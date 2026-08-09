@@ -30,36 +30,21 @@
 @endsection
 
 @push('scripts')
-    {{-- SweetAlert session alerts --}}
-    @if(session('success'))
-        <script>
-            Swal.fire({ icon: 'success', title: 'Berhasil', text: "{{ session('success') }}" });
-        </script>
-    @endif
-
-    @if(session('error'))
-        <script>
-            Swal.fire({ icon: 'error', title: 'Gagal', text: "{{ session('error') }}" });
-        </script>
-    @endif
-
     {{-- Render DataTable --}}
     {!! $dataTable->scripts() !!}
 
     <script>
     function updateBookingStatus(uuid, newStatus) {
-        let statusLabel = newStatus === 'confirmed' ? 'menyetujui (Confirm)' : 'membatalkan (Cancel)';
+        let isConfirm = newStatus === 'confirmed';
+        let statusLabel = isConfirm ? 'menyetujui (Confirm)' : 'membatalkan (Cancel)';
         
-        Swal.fire({
+        openConfirmModal({
             title: 'Konfirmasi Perubahan Status',
-            text: `Apakah Anda yakin ingin ${statusLabel} reservasi ini?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: newStatus === 'confirmed' ? '#10b981' : '#ef4444',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, Ubah Status!'
-        }).then((result) => {
-            if (result.isConfirmed) {
+            message: `Apakah Anda yakin ingin ${statusLabel} reservasi ini?`,
+            variant: isConfirm ? 'success' : 'danger',
+            confirmText: isConfirm ? 'Ya, Setujui' : 'Ya, Batalkan',
+            icon: isConfirm ? 'ri-checkbox-circle-line text-2xl' : 'ri-close-circle-line text-2xl',
+            onConfirm: function() {
                 $.ajax({
                     url: `/bookings/${uuid}/status`,
                     type: 'PATCH',
@@ -68,34 +53,26 @@
                         status: newStatus
                     },
                     success: function(res) {
-                        Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message });
-                        window.LaravelDataTables['booking-table'].ajax.reload();
+                        if (typeof createToast === 'function') {
+                            createToast('success', res.message || 'Status reservasi berhasil diperbarui.');
+                        }
+                        if (window.LaravelDataTables && window.LaravelDataTables['booking-table']) {
+                            window.LaravelDataTables['booking-table'].ajax.reload();
+                        } else {
+                            location.reload();
+                        }
                     },
                     error: function(err) {
-                        Swal.fire({ icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan saat memperbarui status.' });
+                        let errMsg = (err.responseJSON && err.responseJSON.message) ? err.responseJSON.message : 'Terjadi kesalahan saat memperbarui status.';
+                        if (typeof createToast === 'function') {
+                            createToast('danger', errMsg);
+                        } else {
+                            alert(errMsg);
+                        }
                     }
                 });
             }
         });
     }
-
-    $(document).on('click', '.delete-btn', function (e) {
-        e.preventDefault();
-        let form = $(this).closest('form');
-
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: "Data booking ini akan dihapus dari sistem.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, hapus!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    });
     </script>
 @endpush

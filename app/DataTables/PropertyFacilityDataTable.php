@@ -51,7 +51,7 @@ class PropertyFacilityDataTable extends DataTable
                         <form action="' . route('property_facilities.destroy', $row->uuid) . '"
                               method="POST" style="display:inline-block;" class="delete-form m-0">
                             ' . csrf_field() . method_field('DELETE') . '
-                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors delete-btn font-satoshi-medium"
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors delete-btn font-satoshi-medium"
                                 data-id="' . $row->uuid . '"
                                 data-bs-toggle="tooltip" title="Delete">
                                 <i class="ri ri-delete-bin-line text-lg"></i>
