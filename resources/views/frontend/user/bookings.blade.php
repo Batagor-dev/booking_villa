@@ -34,50 +34,7 @@
 
     <!-- MAIN DASHBOARD CONTENT -->
     <section class="py-10 sm:py-14 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto font-satoshi">
-        
-        <!-- STATS OVERVIEW CARDS -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-slate-100 text-[#152c4e] flex items-center justify-center text-lg shrink-0">
-                    <i class="ri-file-list-3-line"></i>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase font-bold text-slate-400 block">Total Booking</span>
-                    <strong class="text-xl font-bold text-slate-900">{{ $totalCount }}</strong>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg shrink-0 border border-amber-200">
-                    <i class="ri-time-line"></i>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase font-bold text-slate-400 block">Pending Verifikasi</span>
-                    <strong class="text-xl font-bold text-amber-900">{{ $pendingCount }}</strong>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg shrink-0 border border-emerald-200">
-                    <i class="ri-checkbox-circle-line"></i>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase font-bold text-slate-400 block">Disetujui (Confirmed)</span>
-                    <strong class="text-xl font-bold text-emerald-900">{{ $confirmedCount }}</strong>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center text-lg shrink-0 border border-rose-200">
-                    <i class="ri-close-circle-line"></i>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase font-bold text-slate-400 block">Dibatalkan</span>
-                    <strong class="text-xl font-bold text-rose-900">{{ $cancelledCount }}</strong>
-                </div>
-            </div>
-        </div>
-
+    
         <!-- FILTER TABS -->
         <div class="flex items-center gap-2 mb-8 border-b border-slate-200 overflow-x-auto no-scrollbar pb-3">
             <a href="{{ route('user.bookings') }}" 
@@ -109,7 +66,7 @@
                             : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75';
                     @endphp
 
-                    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 shadow-xs hover:shadow-sm transition space-y-4">
                         
                         <!-- Header Row -->
                         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">

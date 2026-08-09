@@ -61,10 +61,6 @@
                             @endif
 
                         </div>
-                        <span class="hidden sm:block text-xs font-satoshi-semibold text-white max-w-[100px] truncate transition-colors duration-300" id="nav-user-name">
-                            {{ $authUser->name }}
-                        </span>
-                        <i class="ri-arrow-down-s-line text-white/70 text-sm hidden sm:block transition-transform duration-200" id="user-menu-arrow"></i>
                     </button>
 
                     <!-- Dropdown Card (Admin Panel Style) -->
