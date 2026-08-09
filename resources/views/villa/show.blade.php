@@ -31,6 +31,11 @@
                     <span class="inline-flex items-center gap-1 bg-[#152c4e]/5 text-[#152c4e] border border-[#152c4e]/10 text-[10px] sm:text-xs font-semibold px-3 py-0.5 rounded-full uppercase tracking-wider">
                         {{ $property->type ?? 'Villa Sanctuary' }}
                     </span>
+                    @if($headerPromo = $property->active_promo_details)
+                        <span class="inline-flex items-center gap-1 bg-[#ca9e54] text-white border border-[#ca9e54] text-[10px] sm:text-xs font-bold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                            <i class="ri-coupon-3-fill"></i> {{ $headerPromo['badge_text'] }}
+                        </span>
+                    @endif
                 </div>
                 <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
                     {{ $property->name ?? 'Villa Sanctuary' }}
@@ -105,8 +110,8 @@
                         {{ $property->capacity ?? 4 }} Tamu • {{ $property->bedrooms ?? 2 }} Kamar Tidur • {{ $property->type ?? 'Villa' }} Sanctuary
                     </p>
                 </div>
-                <div class="w-14 h-14 rounded-full bg-[#152c4e] text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0 uppercase">
-                    {{ $property->code ?? 'PLM' }}
+                <div class="w-14 h-14 rounded-full bg-[#152c4e] text-[#e5c382] flex items-center justify-center font-bold text-xl shadow-md shrink-0 border border-[#ca9e54]/30">
+                    <i class="ri-vip-crown-2-line"></i>
                 </div>
             </div>
 
@@ -144,24 +149,51 @@
             </div>
 
             <!-- MINIMALIST PRICE & LANJUT PESAN ROW (ALWAYS SIDE-BY-SIDE ON MOBILE & DESKTOP) -->
+            @php $promoDetails = $property->active_promo_details; @endphp
             <div class="flex items-center justify-between gap-3 py-4 border-b border-slate-200/80">
                 <!-- Left: Price & Strikethrough Discount Badge -->
-                <div class="space-y-0.5 min-w-0">
-                    <div class="flex items-baseline gap-1.5 flex-wrap">
-                        <x-ui.price :value="(float) ($property->price ?? 4500000)" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
-                        <span class="text-[11px] sm:text-xs text-slate-500 font-normal">/malam</span>
-                    </div>
+                <div class="space-y-1 min-w-0">
+                    @if($promoDetails)
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="line-through text-slate-400 text-xs sm:text-sm font-medium font-mono">
+                                {{ format_rupiah($promoDetails['original_price']) }}
+                            </span>
+                            <span class="bg-[#ca9e54] text-white text-[10px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                                {{ $promoDetails['badge_text'] }}
+                            </span>
+                        </div>
+                        <div class="flex items-baseline gap-1.5 flex-wrap">
+                            <x-ui.price :value="(float) $promoDetails['final_price']" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-normal">/malam</span>
+                        </div>
+                        @if(!empty($promoDetails['code']))
+                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium flex items-center gap-1.5 pt-0.5">
+                                <i class="ri-coupon-3-line text-[#ca9e54] text-sm"></i> Kode Promo: <strong class="font-mono bg-slate-100 text-slate-900 px-2 py-0.5 rounded border border-slate-200 uppercase font-bold text-xs">{{ $promoDetails['code'] }}</strong>
+                            </p>
+                        @endif
+                    @else
+                        <div class="flex items-baseline gap-1.5 flex-wrap">
+                            <x-ui.price :value="(float) ($property->price ?? 4500000)" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-normal">/malam</span>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Right: Clean Sharp Action Button (Always inline on mobile) -->
                 <div class="shrink-0">
+                    @php 
+                        $bookingUrl = route('booking.create', [
+                            'slug' => $property->slug ?? '',
+                            'promo' => $promoDetails['code'] ?? ''
+                        ]); 
+                    @endphp
                     @auth
-                        <a href="{{ route('booking.create', $property->slug ?? '') }}" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                        <a href="{{ $bookingUrl }}" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <span>Lanjut Pesan</span>
                             <i class="ri-arrow-right-line text-sm"></i>
                         </a>
                     @else
-                        <button type="button" onclick="openRequireLoginModal('{{ route('booking.create', $property->slug ?? '') }}')" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                        <button type="button" onclick="openRequireLoginModal('{{ $bookingUrl }}')" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                             <span>Lanjut Pesan</span>
                             <i class="ri-arrow-right-line text-sm"></i>
                         </button>

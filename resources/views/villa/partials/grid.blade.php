@@ -4,9 +4,12 @@
             <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
                 <div class="relative h-60 overflow-hidden bg-slate-100">
                     <img src="{{ $villa->main_image ? asset('storage/' . $villa->main_image) : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75' }}" alt="{{ $villa->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    <div class="absolute top-4 left-4 flex gap-2">
-                        <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md uppercase">{{ $villa->code ?? 'PLM' }}</span>
-                        <span class="bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-md">{{ $villa->type ?? 'Villa' }}</span>
+                    <div class="absolute top-4 left-4 flex gap-2 flex-wrap">
+                        @if($gridPromo = $villa->active_promo_details)
+                            <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm uppercase tracking-wider flex items-center gap-1">
+                                <i class="ri-coupon-3-fill text-xs"></i> {{ $gridPromo['badge_text'] }}
+                            </span>
+                        @endif
                     </div>
                 </div>
                 <div class="p-6 flex-1 flex flex-col justify-between">
@@ -26,12 +29,25 @@
                             <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> {{ $villa->capacity }} Tamu</span>
                         </div>
                     </div>
-                    <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                        <div>
-                            <x-ui.price :value="$villa->price" class="text-xl font-bold text-[#152c4e]" />
-                            <span class="text-xs font-normal text-slate-500">/ malam</span>
-                        </div>
-                        <a href="{{ route('villa.show', $villa->slug) }}" class="bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold px-4 py-2 rounded-full transition-colors">Pesan</a>
+                    <div class="flex items-end justify-between pt-3 border-t border-slate-100 min-h-[58px]">
+                        @if($gridPromo = $villa->active_promo_details)
+                            <div class="space-y-0.5">
+                                <span class="line-through text-slate-400 text-[11px] font-mono font-medium block leading-none">{{ format_rupiah($gridPromo['original_price']) }}</span>
+                                <div class="flex items-baseline gap-1">
+                                    <x-ui.price :value="$gridPromo['final_price']" class="text-xl font-bold text-[#152c4e]" />
+                                    <span class="text-xs font-normal text-slate-500">/malam</span>
+                                </div>
+                            </div>
+                        @else
+                            <div class="space-y-0.5">
+                                <span class="text-[11px] block leading-none opacity-0 select-none pointer-events-none">&nbsp;</span>
+                                <div class="flex items-baseline gap-1">
+                                    <x-ui.price :value="$villa->price" class="text-xl font-bold text-[#152c4e]" />
+                                    <span class="text-xs font-normal text-slate-500">/malam</span>
+                                </div>
+                            </div>
+                        @endif
+                        <a href="{{ route('villa.show', $villa->slug) }}" class="bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold px-5 py-2.5 rounded-full transition-colors shrink-0">Pesan</a>
                     </div>
                 </div>
             </div>

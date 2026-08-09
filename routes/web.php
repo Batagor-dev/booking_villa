@@ -27,6 +27,7 @@ Route::get('/villa/{property:slug}', [App\Http\Controllers\VillaController::clas
 Route::middleware(['auth'])->group(function () {
     Route::get('/booking/{property:slug?}', [App\Http\Controllers\BookingController::class, 'createPublic'])->name('booking.create');
     Route::post('/booking', [App\Http\Controllers\BookingController::class, 'store'])->name('booking.store');
+    Route::post('/booking/check-promo', [App\Http\Controllers\PromoController::class, 'checkPromo'])->name('booking.check-promo');
 
     Route::get('/my-bookings', [App\Http\Controllers\UserBookingController::class, 'bookings'])->name('user.bookings');
     Route::get('/my-account', [App\Http\Controllers\UserBookingController::class, 'account'])->name('user.account');

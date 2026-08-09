@@ -28,6 +28,7 @@ class StoreBookingRequest extends FormRequest
             'guest_phone'       => 'required|string|max:50',
             'payment_method_id' => 'required|exists:payment_methods,id',
             'bukti_payment'     => 'required|image|file|max:5120', // Max 5MB image
+            'promo_code'        => 'nullable|string|max:50',
             'notes'             => 'nullable|string',
         ];
     }

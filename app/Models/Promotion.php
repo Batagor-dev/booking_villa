@@ -20,6 +20,8 @@ class Promotion extends Model
         'status' => 'boolean',
         'discount_value' => 'decimal:2',
         'min_transaction' => 'decimal:2',
+        'max_uses' => 'integer',
+        'used_count' => 'integer',
     ];
 
     /**
@@ -56,5 +58,41 @@ class Promotion extends Model
     public function destinations()
     {
         return $this->belongsToMany(Destination::class, 'promotion_destinations', 'promotion_id', 'destination_id')->withTimestamps();
+    }
+
+    /**
+     * Check if promotion is applicable to a given property ID.
+     */
+    public function isApplicableToProperty(int $propertyId): bool
+    {
+        if ($this->target_type === 'all') {
+            return true;
+        }
+
+        if ($this->target_type === 'properties') {
+            return $this->properties()->where('properties.id', $propertyId)->exists();
+        }
+
+        if ($this->target_type === 'categories') {
+            $property = Properties::find($propertyId);
+            if (!$property || !$property->type) return false;
+            return $this->propertyTypes()->where('property_type', $property->type)->exists();
+        }
+
+        if ($this->target_type === 'destinations') {
+            $property = Properties::find($propertyId);
+            if (!$property || !$property->destination_id) return false;
+            return $this->destinations()->where('destinations.id', $property->destination_id)->exists();
+        }
+
+        return false;
+    }
+
+    /**
+     * Increment usage counter for promo.
+     */
+    public function incrementUsage(): void
+    {
+        $this->increment('used_count');
     }
 }

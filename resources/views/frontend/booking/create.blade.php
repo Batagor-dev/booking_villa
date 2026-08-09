@@ -69,9 +69,6 @@
                         <div class="relative h-56 rounded-2xl overflow-hidden bg-slate-100 group">
                             <img src="{{ $mainImg }}" alt="{{ $selectedProperty->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             <div class="absolute top-3 left-3 flex gap-2">
-                                <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                                    {{ $selectedProperty->code ?? 'VILLA' }}
-                                </span>
                                 <span class="bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">
                                     {{ $selectedProperty->type ?? 'Sanctuary' }}
                                 </span>
@@ -170,7 +167,7 @@
                     <input type="hidden" name="property_id" value="{{ $selectedProperty->id ?? 1 }}">
 
                     <!-- DATES & CALCULATOR SECTION -->
-                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-4">
+                    <div class="bg-slate-50 p-5 rounded-3xl border border-slate-200/80 space-y-4 font-satoshi">
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
                             <i class="ri-calendar-event-fill text-[#ca9e54]"></i> Tanggal Menginap
                         </h4>
@@ -186,15 +183,93 @@
                             showMonths="2"
                         />
 
-                        <!-- LIVE NIGHTS & TOTAL CALCULATION BOX -->
-                        <div class="p-3.5 bg-white rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 font-bold text-[11px]" id="calc-nights-badge">2 Malam</span>
-                                <span class="text-slate-500 text-[11px]">x {{ format_rupiah($selectedProperty->price ?? 0) }}</span>
+                        <!-- LIVE NIGHTS, SUBTOTAL, DISCOUNT & TOTAL CALCULATION BOX -->
+                        <div class="p-4 bg-white rounded-2xl border border-slate-200/80 space-y-3 font-satoshi">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 font-bold text-[11px]" id="calc-nights-badge">2 Malam</span>
+                                    <span class="text-slate-500 text-[11px]">x {{ format_rupiah($selectedProperty->price ?? 0) }}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Subtotal</span>
+                                    <span id="calc-subtotal-price" class="text-sm font-bold text-slate-800">{{ format_rupiah(($selectedProperty->price ?? 0) * 2) }}</span>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <span class="text-[10px] text-slate-400 uppercase font-bold block">Estimasi Subtotal</span>
-                                <x-ui.price :value="($selectedProperty->price ?? 0) * 2" class="text-base font-bold text-[#152c4e]" containerClass="inline" id="calc-total-price" />
+
+                            <!-- Discount Row (Hidden initially) -->
+                            <div id="calc-discount-row" class="flex items-center justify-between text-xs text-[#ca9e54] font-medium hidden">
+                                <span class="flex items-center gap-1 font-bold">
+                                    <i class="ri-coupon-3-fill text-[#ca9e54] text-sm"></i> Potongan Promo (<span id="calc-discount-code" class="font-mono font-bold uppercase">-</span>)
+                                </span>
+                                <strong id="calc-discount-price" class="font-bold text-[#ca9e54]">- Rp 0</strong>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+                                <span class="text-xs text-slate-500 font-bold uppercase">Total Pembayaran</span>
+                                <span id="calc-total-price" class="text-lg font-bold text-[#152c4e]">{{ format_rupiah(($selectedProperty->price ?? 0) * 2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROMO CODE & VOUCHER SECTION (LUXURY MINIMALIST PALMA THEME) -->
+                    <div class="bg-slate-50/80 p-5 rounded-3xl border border-slate-200/80 space-y-4 font-satoshi">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="ri-coupon-3-line text-[#ca9e54] text-base"></i> Kode Promo / Voucher Diskon
+                            </h4>
+                            <span class="text-[10px] bg-slate-200/70 text-slate-700 font-bold px-2.5 py-0.5 rounded-full">1 Promo / Transaksi</span>
+                        </div>
+
+                        <!-- Hidden input for validated promo code -->
+                        <input type="hidden" name="promo_code" id="input-validated-promo-code" value="{{ old('promo_code', $autoPromoCode ?? '') }}">
+
+                        <!-- Input Form Group -->
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex-1">
+                                <i class="ri-ticket-2-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <input type="text" 
+                                       id="input-promo-code" 
+                                       placeholder="Masukkan kode promo (contoh: VILLA-SEMINYAK / WELCOME100)" 
+                                       class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs uppercase font-mono font-bold text-slate-800 focus:outline-none focus:border-[#ca9e54] focus:ring-1 focus:ring-[#ca9e54] transition shadow-xs"
+                                       value="{{ old('promo_code', $autoPromoCode ?? '') }}"
+                                >
+                            </div>
+                            <button type="button" 
+                                    onclick="applyPromoCode()" 
+                                    id="btn-apply-promo"
+                                    class="px-5 py-2.5 bg-[#152c4e] hover:bg-[#ca9e54] text-[#e5c382] hover:text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
+                            >
+                                <i class="ri-check-line"></i>
+                                <span>Gunakan</span>
+                            </button>
+                        </div>
+
+                        <!-- Active Promo Badge (Initially Hidden unless active) -->
+                        <div id="active-promo-badge" class="p-3.5 bg-amber-50/80 rounded-2xl border border-amber-200/80 flex items-center justify-between text-xs hidden">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-[#ca9e54]/10 text-[#ca9e54] flex items-center justify-center shrink-0">
+                                    <i class="ri-checkbox-circle-fill text-lg"></i>
+                                </div>
+                                <div>
+                                    <strong id="active-promo-name" class="text-slate-900 font-bold block text-xs">Promo Aktif</strong>
+                                    <span id="active-promo-desc" class="text-[#ca9e54] text-[11px] font-medium">Hemat Rp 0</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="removePromoCode()" class="text-xs font-bold text-slate-500 hover:text-rose-600 underline px-2 py-1 transition-colors">
+                                Hapus
+                            </button>
+                        </div>
+
+                        <!-- Error Alert Message Box (Initially Hidden unless error) -->
+                        <div id="promo-error-box" class="p-3.5 bg-rose-50 rounded-2xl border border-rose-200/80 text-rose-900 text-xs font-medium space-y-1 @if(!session('error_promo')) hidden @endif">
+                            <div class="flex items-start gap-2">
+                                <i class="ri-error-warning-fill text-rose-500 text-base shrink-0 mt-0.5"></i>
+                                <div class="space-y-0.5">
+                                    <strong class="font-bold text-rose-950 block">Kode Promo Gagal Dipasang</strong>
+                                    <p id="promo-error-message" class="text-rose-800 text-[11px] leading-relaxed">
+                                        {{ session('error_promo') }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -379,7 +454,15 @@
             if (pmInput && pmInput.value) {
                 updatePaymentMethodBox(pmInput.value);
             }
+
+            // Auto-apply promo code if pre-filled on page load
+            const promoInputEl = document.getElementById('input-promo-code');
+            if (promoInputEl && promoInputEl.value.trim() !== '') {
+                applyPromoCode();
+            }
         });
+
+        let activePromoData = null;
 
         // Helper to format currency
         function formatRupiah(amount) {
@@ -389,7 +472,7 @@
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount || 0);
         }
 
-        // Calculate nights and total price
+        // Calculate nights, subtotal, discount, and final total price
         function calculateBookingTotal() {
             const checkInInput = document.getElementById('input-check-in');
             const checkOutInput = document.getElementById('input-check-out');
@@ -408,16 +491,147 @@
             const diffTime = Math.abs(new Date(checkOutInput.value) - new Date(checkInInput.value));
             const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
-            const total = propertyPrice * diffDays;
+            const subtotal = propertyPrice * diffDays;
+            let discountAmount = 0;
+
+            if (activePromoData) {
+                if (activePromoData.discount_type === 'percentage') {
+                    discountAmount = subtotal * (activePromoData.discount_value / 100);
+                } else {
+                    discountAmount = activePromoData.discount_value;
+                }
+                discountAmount = Math.min(subtotal, Math.max(0, discountAmount));
+            }
+
+            const finalTotal = Math.max(0, subtotal - discountAmount);
 
             const nightsBadge = document.getElementById('calc-nights-badge');
+            const subtotalPriceEl = document.getElementById('calc-subtotal-price');
+            const discountRowEl = document.getElementById('calc-discount-row');
+            const discountCodeEl = document.getElementById('calc-discount-code');
+            const discountPriceEl = document.getElementById('calc-discount-price');
             const totalPriceEl = document.getElementById('calc-total-price');
 
             if (nightsBadge) nightsBadge.innerText = diffDays + ' Malam';
-            if (totalPriceEl) totalPriceEl.innerText = formatRupiah(total);
+            if (subtotalPriceEl) subtotalPriceEl.innerText = formatRupiah(subtotal);
+
+            if (discountRowEl) {
+                if (discountAmount > 0 && activePromoData) {
+                    if (discountCodeEl) discountCodeEl.innerText = activePromoData.code;
+                    if (discountPriceEl) discountPriceEl.innerText = '- ' + formatRupiah(discountAmount);
+                    discountRowEl.classList.remove('hidden');
+                } else {
+                    discountRowEl.classList.add('hidden');
+                }
+            }
+
+            if (totalPriceEl) totalPriceEl.innerText = formatRupiah(finalTotal);
         }
 
         window.calculateBookingTotal = calculateBookingTotal;
+
+        // Apply & Validate Promo Code via AJAX
+        async function applyPromoCode() {
+            const promoInput = document.getElementById('input-promo-code');
+            const code = promoInput ? promoInput.value.trim() : '';
+            const errorBox = document.getElementById('promo-error-box');
+            const errorMessageEl = document.getElementById('promo-error-message');
+            const btnApply = document.getElementById('btn-apply-promo');
+
+            // Hide error box initially
+            if (errorBox) errorBox.classList.add('hidden');
+
+            if (!code) {
+                if (errorBox && errorMessageEl) {
+                    errorMessageEl.innerText = 'Silakan ketikkan kode promo terlebih dahulu.';
+                    errorBox.classList.remove('hidden');
+                }
+                return;
+            }
+
+            const checkInInput = document.getElementById('input-check-in');
+            const checkOutInput = document.getElementById('input-check-out');
+            const propertyId = "{{ $selectedProperty->id ?? 1 }}";
+
+            // SINGLE PROMO ENFORCEMENT: Check if trying to apply double promo
+            const currentActiveCode = activePromoData ? activePromoData.code : null;
+            if (currentActiveCode && currentActiveCode.toUpperCase() !== code.toUpperCase()) {
+                if (errorBox && errorMessageEl) {
+                    errorMessageEl.innerText = `Hanya bisa menggunakan 1 kode promo dalam satu pemesanan (tidak bisa digabung / double promo). Hapus promo '${currentActiveCode}' terlebih dahulu untuk menggantinya.`;
+                    errorBox.classList.remove('hidden');
+                }
+                return;
+            }
+
+            // Spinner state
+            btnApply.disabled = true;
+            btnApply.innerHTML = `<i class="ri-loader-4-line animate-spin"></i> <span>Mengecek...</span>`;
+
+            try {
+                const response = await fetch("{{ route('booking.check-promo') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        promo_code: code,
+                        property_id: propertyId,
+                        check_in: checkInInput ? checkInInput.value : '',
+                        check_out: checkOutInput ? checkOutInput.value : '',
+                        current_active_code: currentActiveCode
+                    })
+                });
+
+                const resData = await response.json();
+
+                if (response.ok && resData.success) {
+                    // Valid Promo Code
+                    activePromoData = resData.data;
+                    document.getElementById('input-validated-promo-code').value = resData.data.code;
+
+                    // Show active badge
+                    document.getElementById('active-promo-name').innerText = `Promo ${resData.data.code} (${resData.data.name})`;
+                    document.getElementById('active-promo-desc').innerText = `Hemat ${resData.data.discount_formatted}`;
+                    document.getElementById('active-promo-badge').classList.remove('hidden');
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: resData.message || 'Kode promo berhasil dipasang!',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+
+                    calculateBookingTotal();
+                } else {
+                    // Invalid Promo Code -> Show exact error message from backend
+                    if (errorBox && errorMessageEl) {
+                        errorMessageEl.innerText = resData.message || 'Kode promo tidak dapat digunakan.';
+                        errorBox.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                if (errorBox && errorMessageEl) {
+                    errorMessageEl.innerText = 'Terjadi kesalahan jaringan/sistem saat memverifikasi kode promo. Silakan coba lagi.';
+                    errorBox.classList.remove('hidden');
+                }
+            } finally {
+                btnApply.disabled = false;
+                btnApply.innerHTML = `<i class="ri-check-line"></i> <span>Gunakan</span>`;
+            }
+        }
+
+        function removePromoCode() {
+            activePromoData = null;
+            document.getElementById('input-validated-promo-code').value = '';
+            document.getElementById('input-promo-code').value = '';
+            document.getElementById('active-promo-badge').classList.add('hidden');
+            document.getElementById('promo-error-box').classList.add('hidden');
+            calculateBookingTotal();
+        }
 
         // Update payment method dynamic instruction box from paymentMethodsData
         function updatePaymentMethodBox(paymentMethodId) {
