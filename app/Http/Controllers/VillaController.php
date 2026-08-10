@@ -179,8 +179,12 @@ class VillaController extends Controller
      */
     public function show(Properties $property)
     {
-        $property->load(['settings', 'galleries', 'facilities']);
+        $property->load(['settings', 'galleries', 'facilities', 'approvedReviews.user']);
         $paymentMethods = PaymentMethod::where('is_active', true)->get();
+
+        $approvedReviews = $property->approvedReviews;
+        $totalReviews = $approvedReviews->count();
+        $propRating = $property->rating > 0 ? number_format($property->rating, 1) : ($totalReviews > 0 ? number_format($approvedReviews->avg('rating'), 1) : '5.0');
 
         // Construct unified gallery list purely from database
         $galleryList = [];
@@ -205,6 +209,17 @@ class VillaController extends Controller
             }
         }
 
-        return view('villa.show', compact('property', 'paymentMethods', 'galleryList'));
+        $userReview = auth()->check() 
+            ? $property->reviews()->where('user_id', auth()->id())->first() 
+            : null;
+
+        $userCanReview = auth()->check()
+            ? \App\Models\Booking::where('property_id', $property->id)
+                ->where('user_id', auth()->id())
+                ->where('status', 'confirmed')
+                ->exists()
+            : false;
+
+        return view('villa.show', compact('property', 'paymentMethods', 'galleryList', 'approvedReviews', 'totalReviews', 'propRating', 'userReview', 'userCanReview'));
     }
 }

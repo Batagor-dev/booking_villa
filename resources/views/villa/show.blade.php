@@ -253,60 +253,332 @@
                 </div>
             </div>
 
-            <!-- Verified Reviews -->
-            {{-- <div class="space-y-6 pb-8 border-b border-slate-200/80">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">Ulasan Tamu Terverifikasi</h3>
-                    <span class="text-xs font-bold text-[#ca9e54] flex items-center gap-1">
-                        <i class="ri-star-fill"></i> {{ $propRating }} / 5.0
-                    </span>
-                </div>
+            <!-- Verified Reviews (Authentic Shopee Mobile UI Style) -->
+            @php
+                $allReviewItems = collect();
+                if ($userReview) {
+                    $allReviewItems->push($userReview);
+                }
+                if ($approvedReviews) {
+                    foreach ($approvedReviews as $r) {
+                        if (!$userReview || $r->id !== $userReview->id) {
+                            $allReviewItems->push($r);
+                        }
+                    }
+                }
+                $cntAll = $allReviewItems->count();
+                $cnt5 = $allReviewItems->where('rating', 5)->count();
+                $cnt4 = $allReviewItems->where('rating', 4)->count();
+                $cnt3 = $allReviewItems->where('rating', 3)->count();
+                $cnt2 = $allReviewItems->where('rating', 2)->count();
+                $cnt1 = $allReviewItems->where('rating', 1)->count();
+                $cntReply = $allReviewItems->filter(fn($r) => !empty($r->admin_reply))->count();
+            @endphp
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="p-5 rounded-2xl bg-slate-50 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=75" alt="Sarah J." class="w-10 h-10 rounded-full object-cover">
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-900">Sarah Jenkins</h5>
-                                    <span class="text-[10px] text-slate-400">Australia • Juli 2026</span>
+            <div id="review-section" class="space-y-6 pb-8 border-b border-slate-200/80" x-data="{ reviewModalOpen: false, requireBookingModalOpen: false, selectedRating: {{ $userReview->rating ?? 5 }}, reviewComment: '{{ addslashes($userReview->comment ?? '') }}', activeFilter: 'all' }">
+                
+                <!-- Shopee Style Header & Rating Summary Bar -->
+                <div class="bg-slate-50/90 rounded-3xl p-5 sm:p-6 border border-slate-100 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-[10px] font-bold tracking-widest text-[#ca9e54] uppercase block">PENILAIAN VILLA</span>
+                            <div class="flex items-baseline gap-2 mt-0.5">
+                                <h3 class="font-serif-title text-2xl sm:text-3xl font-bold text-slate-900">{{ $propRating }}</h3>
+                                <span class="text-xs text-slate-500 font-medium">dari 5.0</span>
+                                <div class="flex text-[#ca9e54] text-sm ml-1">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="ri-star-fill"></i>
+                                    @endfor
                                 </div>
-                            </div>
-                            <div class="flex text-[#ca9e54] text-xs">
-                                <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+                                <span class="text-xs text-slate-400 font-medium ml-1">({{ $totalReviews }} Ulasan)</span>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-600 font-light leading-relaxed">
-                            "Pengalaman paling berkesan! Pemandangan sunset dari infinity pool sangat menakjubkan, dan layanan koki pribadinya luar biasa lezat."
-                        </p>
+
                     </div>
 
-                    <div class="p-5 rounded-2xl bg-slate-50 space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=75" alt="Michael R." class="w-10 h-10 rounded-full object-cover">
-                                <div>
-                                    <h5 class="text-xs font-bold text-slate-900">Michael Ross</h5>
-                                    <span class="text-[10px] text-slate-400">Singapura • Juni 2026</span>
-                                </div>
-                            </div>
-                            <div class="flex text-[#ca9e54] text-xs">
-                                <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+                    <!-- Shopee Style Interactive Touch-Scroll Rating Filter Pills -->
+                    <div class="relative pt-2 border-t border-slate-200/60">
+                        <div class="flex items-center gap-2 overflow-x-auto overflow-y-hidden touch-pan-x scroll-smooth no-scrollbar text-xs py-1">
+                            <button type="button" @click="activeFilter = 'all'" :class="activeFilter === 'all' ? 'bg-[#152c4e] text-white font-bold shadow-xs scale-[1.02]' : 'bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50'" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap shrink-0 cursor-pointer">
+                                Semua ({{ $cntAll }})
+                            </button>
+                            
+                            <button type="button" @click="activeFilter = '5'" :class="activeFilter === '5' ? 'bg-[#152c4e] text-white font-bold shadow-xs scale-[1.02]' : 'bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50'" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap shrink-0 flex items-center gap-1 cursor-pointer">
+                                <span>5 Bintang ({{ $cnt5 }})</span>
+                                <i class="ri-star-fill text-[#ca9e54] text-xs"></i>
+                            </button>
+
+                            <button type="button" @click="activeFilter = '4'" :class="activeFilter === '4' ? 'bg-[#152c4e] text-white font-bold shadow-xs scale-[1.02]' : 'bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50'" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap shrink-0 flex items-center gap-1 cursor-pointer">
+                                <span>4 Bintang ({{ $cnt4 }})</span>
+                                <i class="ri-star-fill text-[#ca9e54] text-xs"></i>
+                            </button>
+
+                            <button type="button" @click="activeFilter = '3'" :class="activeFilter === '3' ? 'bg-[#152c4e] text-white font-bold shadow-xs scale-[1.02]' : 'bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50'" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap shrink-0 flex items-center gap-1 cursor-pointer">
+                                <span>3 Bintang ({{ $cnt3 }})</span>
+                                <i class="ri-star-fill text-[#ca9e54] text-xs"></i>
+                            </button>
+
+                            <button type="button" @click="activeFilter = '2'" :class="activeFilter === '2' ? 'bg-[#152c4e] text-white font-bold shadow-xs scale-[1.02]' : 'bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50'" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap shrink-0 flex items-center gap-1 cursor-pointer">
+                                <span>2 Bintang ({{ $cnt2 }})</span>
+                                <i class="ri-star-fill text-[#ca9e54] text-xs"></i>
+                            </button>
+
+                            <button type="button" @click="activeFilter = '1'" :class="activeFilter === '1' ? 'bg-[#152c4e] text-white font-bold shadow-xs scale-[1.02]' : 'bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50'" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap shrink-0 flex items-center gap-1 cursor-pointer">
+                                <span>1 Bintang ({{ $cnt1 }})</span>
+                                <i class="ri-star-fill text-[#ca9e54] text-xs"></i>
+                            </button>
+
+                            <button type="button" @click="activeFilter = 'with_reply'" :class="activeFilter === 'with_reply' ? 'bg-[#152c4e] text-white font-bold shadow-xs scale-[1.02]' : 'bg-white text-slate-700 font-medium border border-slate-200 hover:bg-slate-50'" class="px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap shrink-0 cursor-pointer">
+                                Dengan Balasan ({{ $cntReply }})
+                            </button>
+
+                            <!-- Subtle Scroll Cue Indicator for Mobile -->
+                            <div class="shrink-0 flex items-center text-[10px] text-slate-400 font-medium gap-0.5 pl-1 pr-2 sm:hidden">
+                                <i class="ri-arrow-right-s-line text-sm text-[#ca9e54] animate-pulse"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-600 font-light leading-relaxed">
-                            "Sangat direkomendasikan untuk staycation keluarga. Anak-anak sangat menyukai kolam renangnya dan fasilitasnya amat lengkap."
-                        </p>
                     </div>
                 </div>
 
-                <!-- CTA BUTTON TO OPEN ALL REVIEWS MODAL -->
-                <button onclick="openReviewsModal()" class="w-full py-4 bg-slate-50 hover:bg-slate-100 text-[#152c4e] font-bold text-xs rounded-2xl border border-slate-200/80 hover:border-[#152c4e] transition-colors flex items-center justify-center gap-2 cursor-pointer group shadow-sm">
-                    <i class="ri-chat-smile-2-line text-base text-[#ca9e54]"></i>
-                    <span>Lihat Semua Ulasan & Komentar Tamu</span>
-                    <i class="ri-arrow-right-line group-hover:translate-x-1 transition-transform"></i>
-                </button>
-            </div> --}}
+                <!-- Flash Messages -->
+                @if(session('success'))
+                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-3">
+                        <i class="ri-checkbox-circle-fill text-emerald-500 text-lg"></i>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-3">
+                        <i class="ri-error-warning-fill text-rose-500 text-lg"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                @endif
+
+                <!-- SHOPEE MOBILE STYLE REVIEWS LIST -->
+                <div class="space-y-6 pt-2">
+                    
+                    <!-- User's Own Review (Highlighted Shopee Mobile Card) -->
+                    @if($userReview)
+                        @php
+                            $u = auth()->user();
+                            $userAvatar = ($u && $u->foto && str_starts_with($u->foto, 'http'))
+                                ? $u->foto
+                                : (($u && $u->foto && (str_starts_with($u->foto, 'avatar-') || str_contains($u->foto, '.')))
+                                    ? asset('assets/img/avatar/' . $u->foto)
+                                    : asset('assets/img/avatar/avatar-1.jpg'));
+                        @endphp
+                        <div x-show="activeFilter === 'all' || activeFilter == '{{ $userReview->rating }}' || (activeFilter === 'with_reply' && {{ !empty($userReview->admin_reply) ? 'true' : 'false' }})" class="pb-6 border-b border-slate-100 space-y-3 relative">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ $userAvatar }}" alt="{{ $u->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0">
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center gap-2">
+                                            <h5 class="text-xs font-bold text-slate-900">{{ $u->name }}</h5>
+                                            <span class="px-2 py-0.5 rounded-md bg-[#152c4e] text-white text-[9px] font-bold uppercase tracking-wider">Ulasan Anda</span>
+                                        </div>
+                                        <div class="flex text-[#ca9e54] text-xs">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="{{ $i <= $userReview->rating ? 'ri-star-fill' : 'ri-star-line text-slate-200' }}"></i>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] text-slate-400 font-medium">{{ $userReview->created_at->format('d M Y H:i') }}</span>
+                                    
+                                    <!-- 3-Dots Menu Dropdown -->
+                                    <div class="relative" x-data="{ actionMenuOpen: false }">
+                                        <button type="button" @click="actionMenuOpen = !actionMenuOpen" class="w-7 h-7 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition cursor-pointer" aria-label="Opsi Ulasan">
+                                            <i class="ri-more-2-fill text-base"></i>
+                                        </button>
+
+                                        <div x-show="actionMenuOpen"
+                                             @click.away="actionMenuOpen = false"
+                                             x-transition:enter="transition ease-out duration-100"
+                                             x-transition:enter-start="transform opacity-0 scale-95"
+                                             x-transition:enter-end="transform opacity-100 scale-100"
+                                             x-transition:leave="transition ease-in duration-75"
+                                             x-transition:leave-start="transform opacity-100 scale-100"
+                                             x-transition:leave-end="transform opacity-0 scale-95"
+                                             class="absolute right-0 mt-1 w-36 bg-white rounded-2xl shadow-xl border border-slate-100 p-1.5 z-30"
+                                             style="display: none;">
+                                            <form action="{{ route('reviews.destroy', $userReview->uuid) }}" method="POST" onsubmit="return confirm('Hapus ulasan Anda?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                                                    <i class="ri-delete-bin-line text-rose-500 text-sm"></i>
+                                                    <span>Hapus Ulasan</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                                {{ $userReview->comment }}
+                            </p>
+
+                            @if(!empty($userReview->admin_reply))
+                                <!-- Shopee Style Seller Reply Box (Balasan Penjual) -->
+                                <div class="p-3.5 rounded-2xl bg-slate-100/80 border border-slate-200/60 space-y-1 text-xs mt-2">
+                                    <div class="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                                        <i class="ri-reply-fill text-[#152c4e]"></i> Balasan Pengelola Villa:
+                                    </div>
+                                    <p class="text-slate-600 leading-relaxed text-xs pl-5 font-light">{{ $userReview->admin_reply }}</p>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    <!-- All Other Approved Reviews (Shopee Mobile Style List) -->
+                    @if($approvedReviews && $approvedReviews->count() > 0)
+                        @foreach($approvedReviews as $rev)
+                            @if($userReview && $rev->id === $userReview->id)
+                                @continue
+                            @endif
+                            @php
+                                $u = $rev->user;
+                                $userAvatar = ($u && $u->foto && str_starts_with($u->foto, 'http'))
+                                    ? $u->foto
+                                    : (($u && $u->foto && (str_starts_with($u->foto, 'avatar-') || str_contains($u->foto, '.')))
+                                        ? asset('assets/img/avatar/' . $u->foto)
+                                        : asset('assets/img/avatar/avatar-1.jpg'));
+                            @endphp
+                            <div x-show="activeFilter === 'all' || activeFilter == '{{ $rev->rating }}' || (activeFilter === 'with_reply' && {{ !empty($rev->admin_reply) ? 'true' : 'false' }})" class="pb-6 border-b border-slate-100 space-y-3">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <img src="{{ $userAvatar }}" alt="{{ $u->name ?? 'Tamu' }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0">
+                                        <div class="space-y-0.5">
+                                            <h5 class="text-xs font-bold text-slate-900">{{ $u->name ?? 'Tamu Terverifikasi' }}</h5>
+                                            <div class="flex text-[#ca9e54] text-xs">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="{{ $i <= $rev->rating ? 'ri-star-fill' : 'ri-star-line text-slate-200' }}"></i>
+                                                @endfor
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400 font-medium">{{ $rev->created_at->format('d M Y H:i') }}</span>
+                                </div>
+
+                                <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                                    {{ $rev->comment }}
+                                </p>
+
+                                @if(!empty($rev->admin_reply))
+                                    <!-- Shopee Style Seller Reply Box -->
+                                    <div class="p-3.5 rounded-2xl bg-slate-100/80 border border-slate-200/60 space-y-1 text-xs mt-2">
+                                        <div class="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                                            <i class="ri-reply-fill text-[#152c4e]"></i> Balasan Pengelola Villa:
+                                        </div>
+                                        <p class="text-slate-600 leading-relaxed text-xs pl-5 font-light">{{ $rev->admin_reply }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    @endif
+
+                    <!-- Empty Filter Results Message -->
+                    <div x-show="(activeFilter === 'all' && {{ $cntAll }} === 0) || (activeFilter === '5' && {{ $cnt5 }} === 0) || (activeFilter === '4' && {{ $cnt4 }} === 0) || (activeFilter === '3' && {{ $cnt3 }} === 0) || (activeFilter === '2' && {{ $cnt2 }} === 0) || (activeFilter === '1' && {{ $cnt1 }} === 0) || (activeFilter === 'with_reply' && {{ $cntReply }} === 0)" class="p-8 rounded-3xl bg-slate-50 border border-slate-100 text-center space-y-2">
+                        <i class="ri-chat-smile-2-line text-3xl text-slate-400"></i>
+                        <h4 class="text-xs font-bold text-slate-700">Tidak Ada Ulasan Kategori Ini</h4>
+                        <p class="text-[11px] text-slate-400">Belum ada ulasan yang sesuai dengan kategori filter yang Anda pilih.</p>
+                    </div>
+                </div>
+
+                <!-- MODAL FOR INLINE REVIEW SUBMISSION (SHOPEE STYLE - NO TITLE, COMMENT ONLY) -->
+                @auth
+                    @if($userCanReview)
+                        <div x-show="reviewModalOpen" 
+                             x-transition 
+                             class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+                             style="display: none;">
+                            <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative" @click.away="reviewModalOpen = false">
+                                <button type="button" @click="reviewModalOpen = false" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600">
+                                    <i class="ri-close-line text-2xl"></i>
+                                </button>
+
+                                <div>
+                                    <span class="text-[10px] font-bold text-[#ca9e54] tracking-widest uppercase">ULASAN VILLA</span>
+                                    <h3 class="font-serif-title text-2xl font-bold text-slate-900">{{ $property->name }}</h3>
+                                    <p class="text-xs text-slate-500 mt-1">Tuliskan komentar & ulasan pengalaman menginap Anda di villa ini.</p>
+                                </div>
+
+                                <form action="{{ route('reviews.store') }}" method="POST" class="space-y-4">
+                                    @csrf
+                                    <input type="hidden" name="property_id" value="{{ $property->id }}">
+
+                                    <!-- Rating Stars Selection -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Rating Bintang</label>
+                                        <div class="flex items-center gap-2 text-2xl text-[#ca9e54]">
+                                            <template x-for="star in 5">
+                                                <button type="button" @click="selectedRating = star" class="focus:outline-none cursor-pointer">
+                                                    <i :class="star <= selectedRating ? 'ri-star-fill' : 'ri-star-line text-slate-200'"></i>
+                                                </button>
+                                            </template>
+                                            <span class="text-xs font-bold text-slate-700 ml-2" x-text="selectedRating + ' / 5 Bintang'"></span>
+                                        </div>
+                                        <input type="hidden" name="rating" :value="selectedRating">
+                                    </div>
+
+                                    <!-- Comment -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Komentar / Pengalaman Menginap</label>
+                                        <textarea name="comment" rows="4" required x-model="reviewComment" placeholder="Tuliskan komentar pengalaman Anda menginap di villa ini..." class="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-[#152c4e]"></textarea>
+                                    </div>
+
+                                    <div class="flex items-center justify-end gap-3 pt-2">
+                                        <button type="button" @click="reviewModalOpen = false" class="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                                            Batal
+                                        </button>
+                                        <button type="submit" class="px-6 py-2.5 rounded-full bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold transition shadow-md cursor-pointer">
+                                            Kirim Ulasan
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        <!-- MODAL REQUIRE BOOKING (WHEN USER CLICKS TULIS ULASAN BUT HAS NOT BOOKED THIS PROPERTY) -->
+                        <div x-show="requireBookingModalOpen" 
+                             x-transition 
+                             class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+                             style="display: none;">
+                            <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-center" @click.away="requireBookingModalOpen = false">
+                                <button type="button" @click="requireBookingModalOpen = false" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600">
+                                    <i class="ri-close-line text-2xl"></i>
+                                </button>
+
+                                <div class="w-16 h-16 rounded-full bg-amber-50 text-[#ca9e54] border border-amber-200/80 flex items-center justify-center mx-auto text-3xl shadow-xs">
+                                    <i class="ri-calendar-check-line"></i>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <span class="text-[10px] font-bold text-[#ca9e54] tracking-widest uppercase block">RESERVASI DIPERLUKAN</span>
+                                    <h3 class="font-serif-title text-xl font-bold text-slate-900">Reservasi {{ $property->name }} Terlebih Dahulu</h3>
+                                    <p class="text-xs text-slate-600 leading-relaxed font-light">
+                                        Silakan lakukan pemesanan & reservasi untuk <strong class="text-slate-900 font-bold">{{ $property->name }}</strong> terlebih dahulu untuk dapat memberikan ulasan dan rating pengalaman Anda.
+                                    </p>
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                                    <button type="button" @click="requireBookingModalOpen = false" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                                        Tutup
+                                    </button>
+                                    <a href="{{ route('booking.create', ['slug' => $property->slug]) }}" class="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#152c4e] hover:bg-[#0f1d32] text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
+                                        <span>Pesan {{ $property->name }} Sekarang</span>
+                                        <i class="ri-arrow-right-line text-sm"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endauth
+
+            </div>
 
             <!-- PERATURAN & KETENTUAN PEMESANAN (MINIMALIST & PROFESSIONAL CARD-LESS LAYOUT) -->
             <div class="space-y-6 pt-4">

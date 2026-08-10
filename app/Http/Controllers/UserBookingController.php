@@ -22,7 +22,7 @@ class UserBookingController extends Controller
         $query = Booking::where(function ($q) use ($user) {
             $q->where('user_id', $user->id)
               ->orWhere('guest_email', $user->email);
-        })->with(['property', 'paymentMethod'])->latest();
+        })->with(['property', 'paymentMethod', 'review'])->latest();
 
         $statusFilter = $request->query('status');
         if ($statusFilter && in_array($statusFilter, ['pending', 'confirmed', 'cancelled'])) {

@@ -140,7 +140,29 @@
                                     <x-ui.price :value="$b->total_price" class="text-lg font-bold text-[#152c4e]" />
                                 </div>
 
-                                <div class="flex items-center justify-end gap-2 pt-1">
+                                <div class="flex flex-col gap-2 pt-1">
+                                    @if($b->status === 'confirmed' && isset($prop->id))
+                                        @php
+                                            $rev = $b->review;
+                                        @endphp
+                                        @if(!$rev)
+                                            <button type="button" 
+                                                    onclick="openReviewModal({{ json_encode([
+                                                        'property_id' => $prop->id,
+                                                        'booking_id' => $b->id,
+                                                        'prop_name' => $prop->name ?? 'Villa',
+                                                        'action' => route('reviews.store')
+                                                    ]) }})" 
+                                                    class="w-full px-4 py-2 rounded-xl bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
+                                                <i class="ri-star-smile-line"></i> Beri Ulasan Villa
+                                            </button>
+                                        @else
+                                            <a href="{{ route('villa.show', $prop->slug) }}#review-section" 
+                                               class="w-full px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200 shadow-2xs">
+                                                <i class="ri-checkbox-circle-fill text-emerald-500 text-sm"></i> Ulasan Diberikan
+                                            </a>
+                                        @endif
+                                    @endif
                                     <button type="button" onclick="showInvoiceModal({{ json_encode([
                                         'code' => $b->booking_code,
                                         'prop_name' => $prop->name ?? 'Villa',
@@ -288,5 +310,224 @@
             modal.classList.add('opacity-0');
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
+
+        // --- BOOKING REVIEW MODAL LOGIC ---
+        function openReviewModal(data) {
+            if (data.is_edit && !data.is_editable) {
+                alert('Ulasan hanya dapat diubah dalam batas waktu 3 jam setelah dikirim.');
+                return;
+            }
+
+            const modal = document.getElementById('booking-review-modal');
+            const modalContent = modal.querySelector('div');
+            const form = document.getElementById('rev-modal-form');
+            const methodInput = document.getElementById('rev-form-method');
+            const propName = document.getElementById('rev-modal-prop-name');
+            const propertyIdInput = document.getElementById('rev-form-property-id');
+            const bookingIdInput = document.getElementById('rev-form-booking-id');
+            const commentInput = document.getElementById('rev-form-comment');
+            const submitBtn = document.getElementById('rev-submit-btn');
+
+            propName.textContent = data.prop_name;
+            propertyIdInput.value = data.property_id;
+            bookingIdInput.value = data.booking_id;
+            commentInput.value = data.comment;
+            form.action = data.action;
+
+            if (data.is_edit) {
+                methodInput.value = 'PUT';
+                submitBtn.textContent = 'Perbarui Ulasan';
+            } else {
+                methodInput.value = 'POST';
+                submitBtn.textContent = 'Kirim Ulasan';
+            }
+
+            setReviewRating(data.rating || 5);
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function setReviewRating(rating) {
+            document.getElementById('rev-form-rating-value').value = rating;
+            document.getElementById('rev-rating-text').textContent = rating + ' / 5 Bintang';
+
+            for (let i = 1; i <= 5; i++) {
+                const starIcon = document.getElementById('star-icon-' + i);
+                if (i <= rating) {
+                    starIcon.className = 'ri-star-fill text-[#ca9e54]';
+                } else {
+                    starIcon.className = 'ri-star-line text-slate-300';
+                }
+            }
+        }
+
+        function closeReviewModal() {
+            const modal = document.getElementById('booking-review-modal');
+            const modalContent = modal.querySelector('div');
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // --- VIEW SUBMITTED REVIEW MODAL LOGIC ---
+        function openViewReviewModal(data) {
+            const modal = document.getElementById('view-review-modal');
+            const modalContent = modal.querySelector('div');
+            
+            document.getElementById('view-rev-prop-name').textContent = data.prop_name;
+            document.getElementById('view-rev-date').textContent = data.date;
+            document.getElementById('view-rev-comment').textContent = '"' + data.comment + '"';
+            document.getElementById('view-rev-prop-link').href = data.prop_url;
+
+            // Render Stars
+            const starsContainer = document.getElementById('view-rev-stars');
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= data.rating) {
+                    starsHtml += '<i class="ri-star-fill text-[#ca9e54] text-base"></i>';
+                } else {
+                    starsHtml += '<i class="ri-star-line text-slate-200 text-base"></i>';
+                }
+            }
+            starsHtml += '<span class="text-xs font-bold text-slate-800 ml-1.5">' + data.rating + '.0</span>';
+            starsContainer.innerHTML = starsHtml;
+
+            // Admin reply
+            const replyBox = document.getElementById('view-rev-reply-box');
+            const replyText = document.getElementById('view-rev-reply-text');
+            if (data.admin_reply) {
+                replyText.textContent = data.admin_reply;
+                replyBox.classList.remove('hidden');
+            } else {
+                replyBox.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeViewReviewModal() {
+            const modal = document.getElementById('view-review-modal');
+            const modalContent = modal.querySelector('div');
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
     </script>
+
+    <!-- REVIEW SUBMISSION MODAL FOR BOOKING HISTORY -->
+    <div id="booking-review-modal" onclick="closeReviewModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[80] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 font-satoshi">
+        <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 relative" onclick="event.stopPropagation()">
+            
+            <div class="p-5 bg-[#152c4e] text-white flex items-center justify-between">
+                <div>
+                    <span class="text-[9px] uppercase font-bold tracking-widest text-[#e5c382] block">ULASAN GUEST EXPERIENCE</span>
+                    <h3 class="font-serif-title text-lg font-bold" id="rev-modal-prop-name">Nama Villa</h3>
+                </div>
+                <button type="button" onclick="closeReviewModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+
+            <form id="rev-modal-form" method="POST" class="p-6 space-y-5 text-xs font-medium text-slate-700">
+                @csrf
+                <input type="hidden" name="_method" id="rev-form-method" value="POST">
+                <input type="hidden" name="property_id" id="rev-form-property-id">
+                <input type="hidden" name="booking_id" id="rev-form-booking-id">
+                <input type="hidden" name="rating" id="rev-form-rating-value" value="5">
+
+                <!-- Star Rating Picker -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-900 mb-2">Pilih Rating Bintang Anda</label>
+                    <div class="flex items-center gap-2 text-2xl text-[#ca9e54]" id="rev-star-container">
+                        @for($s = 1; $s <= 5; $s++)
+                            <button type="button" onclick="setReviewRating({{ $s }})" class="focus:outline-none cursor-pointer">
+                                <i class="ri-star-fill text-[#ca9e54]" id="star-icon-{{ $s }}"></i>
+                            </button>
+                        @endfor
+                        <span class="text-xs font-bold text-slate-800 ml-2" id="rev-rating-text">5 / 5 Bintang</span>
+                    </div>
+                </div>
+
+                <!-- Comment Input -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-900 mb-2">Komentar / Pengalaman Menginap</label>
+                    <textarea name="comment" id="rev-form-comment" rows="4" required placeholder="Tuliskan pengalaman Anda menginap di villa ini..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-[#152c4e]"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeReviewModal()" class="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="submit" id="rev-submit-btn" class="px-6 py-2.5 rounded-full bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold transition shadow-md cursor-pointer">
+                        Kirim Ulasan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- VIEW SUBMITTED REVIEW MODAL -->
+    <div id="view-review-modal" onclick="closeViewReviewModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[80] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 font-satoshi">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 relative" onclick="event.stopPropagation()">
+            
+            <div class="p-5 bg-[#152c4e] text-white flex items-center justify-between">
+                <div>
+                    <span class="text-[9px] uppercase font-bold tracking-widest text-[#e5c382] block">ULASAN ANDA</span>
+                    <h3 class="font-serif-title text-lg font-bold" id="view-rev-prop-name">Nama Villa</h3>
+                </div>
+                <button type="button" onclick="closeViewReviewModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4 text-xs font-medium text-slate-700">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-1.5" id="view-rev-stars">
+                        <!-- Stars injected dynamically -->
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-medium" id="view-rev-date">-</span>
+                </div>
+
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold block mb-1">Komentar Ulasan Anda:</span>
+                    <p class="text-slate-800 text-xs leading-relaxed italic bg-slate-50 p-4 rounded-2xl border border-slate-100" id="view-rev-comment">
+                        "-"
+                    </p>
+                </div>
+
+                <div id="view-rev-reply-box" class="hidden p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1 text-xs">
+                    <div class="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                        <i class="ri-reply-fill text-[#ca9e54]"></i> Balasan Pengelola Villa:
+                    </div>
+                    <p class="text-slate-700 leading-relaxed text-xs pl-5 font-light" id="view-rev-reply-text">-</p>
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <a id="view-rev-prop-link" href="#" class="text-[#152c4e] font-bold hover:underline text-xs flex items-center gap-1">
+                        <span>Lihat Di Halaman Villa</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                    <button type="button" onclick="closeViewReviewModal()" class="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

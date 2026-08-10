@@ -52,6 +52,16 @@ class Properties extends Model
         return $this->belongsToMany(Promotion::class, 'promotion_properties', 'property_id', 'promotion_id')->withTimestamps();
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'property_id');
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class, 'property_id')->where('status', 'approved')->latest();
+    }
+
     /**
      * Get active promotion specifically targeting this property or automatic promo.
      * Prevents general voucher codes (target_type = 'all') from decorating every villa card.

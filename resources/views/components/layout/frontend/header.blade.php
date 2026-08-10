@@ -92,6 +92,11 @@
                                 <span>Kelola Akun</span>
                             </a>
 
+                            <a href="{{ route('user.bookings') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                                <i class="ri-calendar-check-line text-lg text-slate-400"></i>
+                                <span>Reservasi Saya</span>
+                            </a>
+
                             @if(method_exists($authUser, 'hasRole') && $authUser->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
                                 <a href="{{ route('dashboard') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
                                     <i class="ri-dashboard-line text-lg text-slate-400"></i>

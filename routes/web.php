@@ -30,6 +30,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/booking/check-promo', [App\Http\Controllers\PromoController::class, 'checkPromo'])->name('booking.check-promo');
 
     Route::get('/my-bookings', [App\Http\Controllers\UserBookingController::class, 'bookings'])->name('user.bookings');
+    Route::post('/reviews', [App\Http\Controllers\UserReviewController::class, 'store'])->name('reviews.store');
+    Route::put('/reviews/{review}', [App\Http\Controllers\UserReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [App\Http\Controllers\UserReviewController::class, 'destroy'])->name('reviews.destroy');
+
     Route::get('/my-account', [App\Http\Controllers\UserBookingController::class, 'account'])->name('user.account');
     Route::post('/my-account', [App\Http\Controllers\UserBookingController::class, 'updateAccount'])->name('user.account.update');
 });
@@ -121,6 +125,10 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
         'bookings' => 'booking:uuid',
     ])->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::patch('/bookings/{booking}/status', [App\Http\Controllers\BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+
+    Route::resource('/reviews', App\Http\Controllers\ReviewController::class)->parameters([
+        'reviews' => 'review:uuid',
+    ])->only(['index', 'edit', 'update', 'destroy']);
 
 
 

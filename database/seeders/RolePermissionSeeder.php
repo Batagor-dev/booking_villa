@@ -37,12 +37,15 @@ class RolePermissionSeeder extends Seeder
             'Booking',              // 18
             'Destination',          // 19
             'Promotion',            // 20
+            'Review',               // 21
         ];
 
+        $groupMap = [];
         foreach ($permissiongroups as $permissiongroup) {
-            PermissionGroup::firstOrCreate([
+            $pg = PermissionGroup::firstOrCreate([
                 'name' => $permissiongroup
             ]);
+            $groupMap[$permissiongroup] = $pg->id;
         }
 
         $permissions = [
@@ -130,15 +133,23 @@ class RolePermissionSeeder extends Seeder
             'Promotion Create-20',
             'Promotion Update-20',
             'Promotion Delete-20',
+            'Review Access-21',
+            'Review Detail-21',
+            'Review Update-21',
+            'Review Delete-21',
         ];
 
         foreach ($permissions as $permission) {
             $permission_array = explode("-", $permission);
+            $groupIndex = (int)$permission_array[1] - 1;
+            $groupName = $permissiongroups[$groupIndex] ?? null;
+            $groupId = $groupName ? ($groupMap[$groupName] ?? (int)$permission_array[1]) : (int)$permission_array[1];
+
             Permission::firstOrCreate([
                 'name' => $permission_array[0],
                 'guard_name' => 'web'
             ], [
-                'permission_group_id' => $permission_array[1]
+                'permission_group_id' => $groupId
             ]);
         }
 

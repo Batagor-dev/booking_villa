@@ -132,6 +132,18 @@ class MenuSeeder extends Seeder
             'sort'               => '7',
         ]);
 
+        Menu::updateOrCreate(
+            ['href' => '/reviews'],
+            [
+                'menu_group_id'      => 2,
+                'nama_menu'          => 'Reviews',
+                'permission_group_id'=> \App\Models\PermissionGroup::where('name', 'Review')->first()?->id ?? 21,
+                'icon'               => 'ri-star-smile-line',
+                'status'             => '1',
+                'sort'               => '8',
+            ]
+        );
+
         // === Menu 2: Setting (Group: Settings - ID 3) ===
         $setting = Menu::create([
             'menu_group_id'      => 3,

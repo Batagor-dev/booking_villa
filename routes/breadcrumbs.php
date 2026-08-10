@@ -416,5 +416,21 @@ Breadcrumbs::for('promotion.edit', function (BreadcrumbTrail $trail, $promotion)
 
 // **************************** END PROMOTIONS ***************************
 
+// **************************** REVIEWS ***************************
+
+// Home > Reviews
+Breadcrumbs::for('reviews.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Reviews & Ulasan', route('reviews.index'));
+});
+
+// Home > Reviews > Edit
+Breadcrumbs::for('reviews.edit', function (BreadcrumbTrail $trail, $review) {
+    $trail->parent('reviews.index');
+    $trail->push('Moderasi Ulasan', route('reviews.edit', $review));
+});
+
+// **************************** END REVIEWS ***************************
+
 
 
