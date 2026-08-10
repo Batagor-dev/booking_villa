@@ -82,9 +82,6 @@
                     @foreach($reviews as $rev)
                         @php
                             $prop = $rev->property;
-                            $propImg = isset($prop->main_image) 
-                                ? (\Illuminate\Support\Str::startsWith($prop->main_image, ['http://', 'https://']) ? $prop->main_image : asset('storage/'.$prop->main_image)) 
-                                : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75';
                             $isEditable = $rev->isEditableByCustomer();
                         @endphp
 
@@ -93,7 +90,7 @@
                             <!-- Header Row: Property Info & Status -->
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                                 <div class="flex items-center gap-4">
-                                    <img src="{{ $propImg }}" alt="{{ $prop->name ?? 'Villa' }}" class="w-14 h-14 rounded-2xl object-cover border border-slate-100 shrink-0">
+                                    <img src="{{ $prop ? $prop->main_image_url : asset('images/no-image.png') }}" alt="{{ $prop->name ?? 'Villa' }}" class="w-14 h-14 rounded-2xl object-cover border border-slate-100 shrink-0">
                                     <div>
                                         <a href="{{ route('villa.show', $prop->slug ?? '') }}" class="font-serif-title text-base font-bold text-slate-900 hover:text-[#ca9e54] transition-colors">
                                             {{ $prop->name ?? 'Villa' }}

@@ -1397,30 +1397,65 @@
         `).join('');
     }
 
+    <!-- BOOKING SUCCESS MODAL (PALMA LUXURY THEME WITH SMOOTH ANIMATION) -->
     @if(session('success_booking'))
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Reservasi Berhasil!',
-                    html: `
-                        <div class="text-left space-y-2 text-xs text-slate-700 font-satoshi pt-2">
-                            <p><strong>Kode Booking:</strong> <span class="font-mono text-amber-600 font-bold">{{ session('success_booking.booking_code') }}</span></p>
-                            <p><strong>Nama Tamu:</strong> {{ session('success_booking.guest_name') }}</p>
-                            <p><strong>Properti:</strong> {{ session('success_booking.property_name') }}</p>
-                            <p><strong>Total Pembayaran:</strong> {{ session('success_booking.total_price') }}</p>
-                            <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200 mt-2">
-                                ✓ Bukti pembayaran Anda telah berhasil diunggah. Reservasi Anda sedang diverifikasi oleh admin.
-                            </div>
-                        </div>
-                    `,
-                    confirmButtonColor: '#152c4e',
-                    confirmButtonText: 'Tutup'
-                });
-            } else {
-                alert('Reservasi Berhasil!\nKode Booking: {{ session("success_booking.booking_code") }}\nTotal: {{ session("success_booking.total_price") }}');
+        @php $sData = session('success_booking'); @endphp
+        <div id="booking-success-modal" onclick="closeBookingSuccessModal()" class="fixed inset-0 bg-black/75 backdrop-blur-md z-[110] flex items-center justify-center p-4 font-satoshi opacity-0 pointer-events-none transition-all duration-500 ease-out">
+            <div id="booking-success-modal-card" class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-100 opacity-0 scale-90 translate-y-4 transition-all duration-500 ease-out relative" onclick="event.stopPropagation()">
+                <div class="p-6 bg-[#152c4e] text-white text-center space-y-2 relative overflow-hidden">
+                    <div class="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center mx-auto text-3xl shadow-inner transform transition-transform duration-700 ease-out">
+                        <i class="ri-checkbox-circle-fill"></i>
+                    </div>
+                    <span class="text-[9px] uppercase font-bold tracking-widest text-[#e5c382] block pt-1">RESERVASI BERHASIL</span>
+                    <h3 class="font-serif-title text-2xl sm:text-3xl font-bold text-white">Terima Kasih!</h3>
+                </div>
+
+                <div class="p-6 space-y-4 text-xs font-medium text-slate-700">
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 text-center space-y-1">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold block">Kode Booking Anda:</span>
+                        <strong class="text-xl font-mono font-bold text-[#ca9e54] block">#{{ is_array($sData) ? ($sData['booking_code'] ?? '') : ($sData->booking_code ?? '') }}</strong>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200 flex items-center gap-2">
+                        <i class="ri-information-fill text-emerald-600 text-base shrink-0"></i> 
+                        <span>Bukti pembayaran Anda telah berhasil diunggah. Reservasi Anda sedang diverifikasi oleh admin.</span>
+                    </div>
+
+                    <div class="pt-2 flex flex-col gap-2">
+                        <a href="{{ route('user.bookings') }}" class="w-full py-3 rounded-full bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold transition text-center uppercase tracking-wider shadow-md">
+                            Lihat Riwayat Reservasi Saya
+                        </a>
+                        <button type="button" onclick="closeBookingSuccessModal()" class="w-full py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('booking-success-modal');
+                const card = document.getElementById('booking-success-modal-card');
+                if (modal && card) {
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0', 'pointer-events-none');
+                        card.classList.remove('opacity-0', 'scale-90', 'translate-y-4');
+                        card.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                    }, 50);
+                }
+            });
+
+            function closeBookingSuccessModal() {
+                const modal = document.getElementById('booking-success-modal');
+                const card = document.getElementById('booking-success-modal-card');
+                if (modal && card) {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                    card.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                    card.classList.add('opacity-0', 'scale-95', 'translate-y-2');
+                    setTimeout(() => modal.remove(), 400);
+                }
             }
-        });
+        </script>
     @endif
 </script>
 @endpush

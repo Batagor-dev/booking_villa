@@ -59,8 +59,8 @@ class PromotionSeeder extends Seeder
             $promoPropertySpecific->properties()->sync([$firstProperty->id]);
         }
 
-        // 3. Automatic 20% Discount targeting Specific Properties
-        $properties = Properties::take(2)->get();
+        // 3. Automatic 20% Discount targeting Specific Properties (Skip 1st property to prevent collision with 250k voucher)
+        $properties = Properties::skip(1)->take(2)->get();
         if ($properties->isNotEmpty()) {
             $promo = Promotion::create([
                 'name' => 'Featured Villas Special 20%',

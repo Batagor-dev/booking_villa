@@ -85,8 +85,17 @@
 }
 
 /* --- Global Spinner Animasi untuk Tombol/Loading --- */
-.animate-spin,
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
 .btn-submit-spinner {
+    width: 1.125rem;
+    height: 1.125rem;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
     animation: spin 1s linear infinite;
 }
 

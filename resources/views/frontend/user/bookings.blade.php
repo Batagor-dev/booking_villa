@@ -61,9 +61,6 @@
                 @foreach($bookings as $b)
                     @php
                         $prop = $b->property;
-                        $propImg = isset($prop->main_image) 
-                            ? (\Illuminate\Support\Str::startsWith($prop->main_image, ['http://', 'https://']) ? $prop->main_image : asset('storage/'.$prop->main_image)) 
-                            : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75';
                     @endphp
 
                     <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 shadow-xs hover:shadow-sm transition space-y-4">
@@ -103,7 +100,7 @@
                             <!-- Property Image & Info (6 Cols) -->
                             <div class="md:col-span-6 flex gap-4 items-center">
                                 <div class="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-slate-100">
-                                    <img src="{{ $propImg }}" alt="{{ $prop->name ?? 'Villa' }}" class="w-full h-full object-cover">
+                                    <img src="{{ $prop ? $prop->main_image_url : asset('images/no-image.png') }}" alt="{{ $prop->name ?? 'Villa' }}" class="w-full h-full object-cover">
                                 </div>
                                 <div class="space-y-1">
                                     <span class="text-[10px] font-bold text-[#ca9e54] uppercase tracking-wider block">

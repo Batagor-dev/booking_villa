@@ -38,33 +38,37 @@
         <style>
             /* Clean Minimalist Flatpickr Styling */
             .flatpickr-calendar {
-                border-radius: 1rem !important;
+                border-radius: 1.25rem !important;
                 border: 1px solid #e2e8f0 !important;
                 box-shadow: none !important;
                 font-family: 'Satoshi', sans-serif !important;
                 background: #ffffff !important;
-                padding: 0.75rem !important;
+                padding: 1rem 1rem 1.25rem 1rem !important;
                 width: 100% !important;
-                max-width: 320px !important;
+                max-width: 330px !important;
                 margin: 0 auto !important;
+                overflow: visible !important;
             }
 
             .flatpickr-calendar.multiMonth {
-                max-width: 650px !important;
+                max-width: 680px !important;
             }
 
             .flatpickr-calendar.inline {
                 box-shadow: none !important;
                 border: 1px solid #e2e8f0 !important;
                 width: 100% !important;
+                padding: 1rem 1.25rem 1.5rem 1.25rem !important;
             }
 
             .flatpickr-innerContainer {
                 display: flex !important;
                 flex-wrap: wrap !important;
-                justify-content: center !important;
-                gap: 1rem !important;
+                justify-content: space-around !important;
+                gap: 1.5rem !important;
                 width: 100% !important;
+                padding-bottom: 0.5rem !important;
+                overflow: visible !important;
             }
 
             /* Month Header Bar & Controls */
@@ -176,20 +180,23 @@
 
             /* Day Grid */
             .flatpickr-days {
-                padding: 0 !important;
+                padding: 0.25rem 0 0.5rem 0 !important;
                 width: 100% !important;
                 display: flex !important;
                 justify-content: center !important;
+                overflow: visible !important;
             }
 
             .dayContainer {
                 width: 280px !important;
                 min-width: 280px !important;
                 max-width: 280px !important;
-                gap: 2px 0 !important;
+                gap: 4px 0 !important;
+                padding-bottom: 8px !important;
                 display: flex !important;
                 flex-wrap: wrap !important;
                 justify-content: flex-start !important;
+                overflow: visible !important;
             }
 
             .flatpickr-day {

@@ -170,7 +170,7 @@
                 @foreach($properties as $villa)
                     <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
                         <div class="relative h-56 sm:h-64 overflow-hidden bg-slate-100">
-                            <img src="{{ $villa->main_image ? asset('storage/' . $villa->main_image) : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75' }}" 
+                            <img src="{{ $villa->main_image_url }}" 
                                  alt="{{ $villa->name }}" 
                                  loading="lazy"
                                  decoding="async"

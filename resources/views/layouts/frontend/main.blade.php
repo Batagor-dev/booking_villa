@@ -93,8 +93,9 @@
         @yield('content')
     </main>
 
-    <!-- UI TOAST NOTIFICATIONS (ADMIN PANEL COMPATIBLE) -->
+    <!-- UI TOAST NOTIFICATIONS & CONFIRM MODALS (ADMIN PANEL COMPATIBLE) -->
     <x-ui.notification />
+    <x-ui.modal-confirm />
 
     <!-- FOOTER -->
     <x-layout.frontend.footer />

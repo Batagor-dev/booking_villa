@@ -3,7 +3,7 @@
         @foreach($properties as $villa)
             <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
                 <div class="relative h-60 overflow-hidden bg-slate-100">
-                    <img src="{{ $villa->main_image ? asset('storage/' . $villa->main_image) : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=75' }}" alt="{{ $villa->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <img src="{{ $villa->main_image_url }}" alt="{{ $villa->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     <div class="absolute top-4 left-4 flex gap-2 flex-wrap">
                         @if($gridPromo = $villa->active_promo_details)
                             <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm uppercase tracking-wider flex items-center gap-1">

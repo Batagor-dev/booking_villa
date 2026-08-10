@@ -8,6 +8,12 @@
     } elseif (session()->has('error')) {
         $type = 'danger';
         $message = session('error');
+    } elseif (session()->has('failed_booking')) {
+        $type = 'danger';
+        $message = session('failed_booking');
+    } elseif (session()->has('error_promo')) {
+        $type = 'danger';
+        $message = session('error_promo');
     } elseif (session()->has('info')) {
         $type = 'info';
         $message = session('info');

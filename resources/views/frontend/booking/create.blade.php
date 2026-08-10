@@ -59,19 +59,21 @@
                 @if($selectedProperty)
                     @php
                         $propSettings = $selectedProperty->settings;
-                        $mainImg = isset($selectedProperty->main_image) 
-                            ? (\Illuminate\Support\Str::startsWith($selectedProperty->main_image, ['http://', 'https://']) ? $selectedProperty->main_image : asset('storage/'.$selectedProperty->main_image))
-                            : 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=75';
                     @endphp
 
                     <!-- PROPERTY SUMMARY CARD -->
                     <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 space-y-4 p-5 sm:p-6">
                         <div class="relative h-56 rounded-2xl overflow-hidden bg-slate-100 group">
-                            <img src="{{ $mainImg }}" alt="{{ $selectedProperty->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <img src="{{ $selectedProperty->main_image_url }}" alt="{{ $selectedProperty->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             <div class="absolute top-3 left-3 flex gap-2">
                                 <span class="bg-white/90 backdrop-blur-md text-slate-800 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">
                                     {{ $selectedProperty->type ?? 'Sanctuary' }}
                                 </span>
+                                @if($headerPromo = $selectedProperty->active_promo_details)
+                                    <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm uppercase tracking-wider flex items-center gap-1">
+                                        <i class="ri-coupon-3-fill"></i> {{ $headerPromo['badge_text'] }}
+                                    </span>
+                                @endif
                             </div>
                         </div>
 
@@ -107,10 +109,28 @@
                             </div>
                         </div>
 
-                        <!-- Price display -->
+                        <!-- Price display (Same UI as villa/show.blade.php) -->
+                        @php $promoDetails = $selectedProperty->active_promo_details; @endphp
                         <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                             <span class="text-xs font-medium text-slate-500">Harga Per Malam</span>
-                            <x-ui.price :value="$selectedProperty->price" suffix="/malam" class="text-xl font-bold text-[#152c4e]" containerClass="inline-block text-right" />
+                            <div class="text-right space-y-0.5">
+                                @if($promoDetails)
+                                    <div class="flex items-center gap-2 justify-end">
+                                        <span class="line-through text-slate-400 text-xs font-medium font-mono">
+                                            {{ format_rupiah($promoDetails['original_price']) }}
+                                        </span>
+                                        <span class="bg-[#ca9e54] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                                            {{ $promoDetails['badge_text'] }}
+                                        </span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1 justify-end">
+                                        <x-ui.price :value="(float) $promoDetails['final_price']" class="text-xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
+                                        <span class="text-xs text-slate-500 font-normal">/malam</span>
+                                    </div>
+                                @else
+                                    <x-ui.price :value="$selectedProperty->price" suffix="/malam" class="text-xl font-bold text-[#152c4e]" containerClass="inline-block text-right" />
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -176,9 +196,10 @@
                             type="range"
                             checkinName="check_in"
                             checkoutName="check_out"
-                            checkinValue="{{ old('check_in', date('Y-m-d', strtotime('+1 day'))) }}"
-                            checkoutValue="{{ old('check_out', date('Y-m-d', strtotime('+3 days'))) }}"
+                            checkinValue="{{ old('check_in', date('Y-m-d')) }}"
+                            checkoutValue="{{ old('check_out', date('Y-m-d', strtotime('+2 days'))) }}"
                             :disabledDates="$bookedDates ?? []"
+                            minDate="today"
                             :inline="true"
                             showMonths="2"
                         />
@@ -368,47 +389,33 @@
                             </div>
                         </div>
 
-                        <!-- PROOF OF PAYMENT UPLOAD -->
-                        <div class="space-y-2 pt-2">
-                            <label class="block text-xs font-satoshi-medium text-slate-700">
-                                Unggah Bukti Pembayaran / Transfer <span class="text-rose-500">*</span>
-                            </label>
-                            
-                            <div class="relative border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center bg-slate-50/60 hover:bg-slate-100/60 transition cursor-pointer" id="receipt-dropzone">
-                                <input type="file" name="bukti_payment" id="input-bukti-payment" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required onchange="handleReceiptPreview(this)">
-                                
-                                <div id="receipt-prompt" class="space-y-1">
-                                    <i class="ri-upload-cloud-2-line text-2xl text-[#ca9e54]"></i>
-                                    <p class="text-xs font-bold text-slate-800">Klik atau tarik file gambar bukti pembayaran ke sini</p>
-                                    <p class="text-[10px] text-slate-400">Format: JPG, PNG, WebP (Maksimal 5MB)</p>
-                                </div>
-
-                                <div id="receipt-preview-box" class="hidden flex items-center justify-center gap-3">
-                                    <img id="receipt-preview-img" src="#" class="h-20 w-20 object-cover rounded-xl border border-slate-200 shadow-sm">
-                                    <div class="text-left text-xs">
-                                        <span class="font-bold text-slate-900 block" id="receipt-file-name">receipt.jpg</span>
-                                        <span class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                                            <i class="ri-checkbox-circle-fill"></i> File Gambar Siap Diunggah
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            @error('bukti_payment') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
+                        <!-- PROOF OF PAYMENT UPLOAD USING COMPONENT x-ui.dropzone (SINGLE MODE) -->
+                        <div class="pt-2">
+                            <x-ui.dropzone 
+                                name="bukti_payment"
+                                id="input-bukti-payment"
+                                label="Unggah Bukti Pembayaran / Transfer *"
+                                accept="image/jpeg,image/png,image/webp"
+                                :maxSize="5"
+                                :multiple="false"
+                                required
+                            />
                         </div>
 
                     </div>
 
-                    <!-- SUBMIT BUTTON & DISCLAIMER -->
+                    <!-- SUBMIT BUTTON & SECURITY DISCLAIMER CARD -->
                     <div class="pt-4 space-y-3">
-                        <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-4 rounded-2xl text-xs uppercase tracking-wider transition duration-300 shadow-xl flex items-center justify-center gap-2 cursor-pointer group">
-                            <i class="ri-shield-check-fill text-base text-[#e5c382]"></i>
-                            <span>Konfirmasi & Kirim Pemesanan</span>
-                            <i class="ri-arrow-right-line group-hover:translate-x-1 transition-transform"></i>
-                        </button>
-
-                        <p class="text-[10px] text-slate-400 text-center flex items-center justify-center gap-1">
-                            <i class="ri-lock-line text-emerald-600"></i> Transaksi Aman & Terenkripsi. Konfirmasi reservasi akan dikirimkan langsung ke WhatsApp & Email Anda.
-                        </p>
+                        <x-ui.button 
+                            type="submit" 
+                            size="lg" 
+                            font="bold" 
+                            style="primary" 
+                            class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white rounded-2xl py-4 shadow-xl flex items-center justify-center gap-2 transition duration-300 cursor-pointer group"
+                        >
+                            <span class="uppercase tracking-wider text-xs font-bold">Konfirmasi & Kirim Pemesanan</span>
+                            <i class="ri-arrow-right-line text-lg group-hover:translate-x-1 transition-transform"></i>
+                        </x-ui.button>
                     </div>
 
                 </form>
@@ -425,17 +432,15 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         const propertyPrice = {{ $selectedProperty->price ?? 0 }};
         const paymentMethodsData = @json($paymentMethods);
+        let activePromoData = @json($selectedProperty && $selectedProperty->active_promo_details ? $selectedProperty->active_promo_details : null);
+        const formatRupiah = (amount) => typeof window.formatRupiah === 'function' ? window.formatRupiah(amount) : 'Rp ' + new Intl.NumberFormat('id-ID').format(amount || 0);
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Calculate price on initial load
             calculateBookingTotal();
 
-            // Handle event change on hidden input created by x-ui.select2
             document.addEventListener('change', function(e) {
                 if (e.target && e.target.name === 'select_property') {
                     const slug = e.target.value;
@@ -449,30 +454,16 @@
                 }
             });
 
-            // Initial check for payment method box if pre-selected
             const pmInput = document.querySelector('input[name="payment_method_id"]');
             if (pmInput && pmInput.value) {
                 updatePaymentMethodBox(pmInput.value);
             }
 
-            // Auto-apply promo code if pre-filled on page load
             const promoInputEl = document.getElementById('input-promo-code');
             if (promoInputEl && promoInputEl.value.trim() !== '') {
                 applyPromoCode();
             }
         });
-
-        let activePromoData = null;
-
-        // Helper to format currency
-        function formatRupiah(amount) {
-            if (typeof window.formatRupiah === 'function') {
-                return window.formatRupiah(amount);
-            }
-            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount || 0);
-        }
-
-        // Calculate nights, subtotal, discount, and final total price
         function calculateBookingTotal() {
             const checkInInput = document.getElementById('input-check-in');
             const checkOutInput = document.getElementById('input-check-out');
@@ -497,8 +488,10 @@
             if (activePromoData) {
                 if (activePromoData.discount_type === 'percentage') {
                     discountAmount = subtotal * (activePromoData.discount_value / 100);
+                } else if (activePromoData.discount_amount) {
+                    discountAmount = activePromoData.discount_amount * diffDays;
                 } else {
-                    discountAmount = activePromoData.discount_value;
+                    discountAmount = (activePromoData.discount_value || 0) * diffDays;
                 }
                 discountAmount = Math.min(subtotal, Math.max(0, discountAmount));
             }
@@ -517,9 +510,22 @@
 
             if (discountRowEl) {
                 if (discountAmount > 0 && activePromoData) {
-                    if (discountCodeEl) discountCodeEl.innerText = activePromoData.code;
+                    if (discountCodeEl) discountCodeEl.innerText = activePromoData.code || activePromoData.name || 'Promo Villa';
                     if (discountPriceEl) discountPriceEl.innerText = '- ' + formatRupiah(discountAmount);
                     discountRowEl.classList.remove('hidden');
+
+                    const promoNameEl = document.getElementById('active-promo-name');
+                    const promoDescEl = document.getElementById('active-promo-desc');
+                    const promoBadgeEl = document.getElementById('active-promo-badge');
+                    if (promoNameEl) promoNameEl.innerText = `Promo ${activePromoData.code || activePromoData.name || ''}`;
+                    if (promoDescEl) {
+                        if (activePromoData.discount_type === 'percentage') {
+                            promoDescEl.innerText = `Diskon ${activePromoData.discount_value}% (${formatRupiah(discountAmount)})`;
+                        } else {
+                            promoDescEl.innerText = `Total Hemat ${formatRupiah(discountAmount)} (${diffDays} malam)`;
+                        }
+                    }
+                    if (promoBadgeEl) promoBadgeEl.classList.remove('hidden');
                 } else {
                     discountRowEl.classList.add('hidden');
                 }
@@ -596,14 +602,7 @@
                     document.getElementById('active-promo-desc').innerText = `Hemat ${resData.data.discount_formatted}`;
                     document.getElementById('active-promo-badge').classList.remove('hidden');
 
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: resData.message || 'Kode promo berhasil dipasang!',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
+                    createToast('success', resData.message || 'Kode promo berhasil dipasang!');
 
                     calculateBookingTotal();
                 } else {
@@ -670,28 +669,7 @@
             const num = document.getElementById('pm-box-number').innerText;
             if (num && num !== '-') {
                 navigator.clipboard.writeText(num);
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Nomor Rekening berhasil disalin!',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            }
-        }
-
-        // Preview Proof of Payment File
-        function handleReceiptPreview(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('receipt-preview-img').src = e.target.result;
-                    document.getElementById('receipt-file-name').innerText = input.files[0].name;
-                    document.getElementById('receipt-prompt').classList.add('hidden');
-                    document.getElementById('receipt-preview-box').classList.remove('hidden');
-                }
-                reader.readAsDataURL(input.files[0]);
+                createToast('success', 'Nomor Rekening berhasil disalin!');
             }
         }
 
@@ -706,27 +684,77 @@
         }
     </script>
 
+    <!-- BOOKING SUCCESS MODAL (PALMA LUXURY THEME WITH SMOOTH ANIMATION) -->
     @if(session('success_booking'))
         @php $sData = session('success_booking'); @endphp
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Reservasi Berhasil!',
-                html: `
-                    <div class="text-center space-y-2 text-xs font-satoshi">
-                        <p class="text-slate-600">Kode Booking Anda:</p>
-                        <div class="px-4 py-2 bg-slate-100 rounded-xl font-mono font-bold text-lg text-slate-900 border border-slate-200">
-                            #{{ $sData['booking_code'] }}
-                        </div>
-                        <p class="text-slate-500 pt-2">Terima kasih <strong>{{ $sData['guest_name'] }}</strong>, reservasi Anda untuk villa <strong>{{ $sData['property_name'] }}</strong> sedang diproses oleh tim kami.</p>
+        <div id="booking-success-modal" onclick="closeBookingSuccessModal()" class="fixed inset-0 bg-black/75 backdrop-blur-md z-[110] flex items-center justify-center p-4 font-satoshi opacity-0 pointer-events-none transition-all duration-500 ease-out">
+            <div id="booking-success-modal-card" class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-100 opacity-0 scale-90 translate-y-4 transition-all duration-500 ease-out relative" onclick="event.stopPropagation()">
+                
+                <div class="p-6 bg-[#152c4e] text-white text-center space-y-2 relative overflow-hidden">
+                    <div class="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center mx-auto text-3xl shadow-inner transform transition-transform duration-700 ease-out">
+                        <i class="ri-checkbox-circle-fill"></i>
                     </div>
-                `,
-                confirmButtonText: 'Selesai & Lihat Detail',
-                confirmButtonColor: '#152c4e',
-                customClass: {
-                    popup: 'rounded-3xl p-6 font-satoshi'
+                    <span class="text-[9px] uppercase font-bold tracking-widest text-[#e5c382] block pt-1">RESERVASI BERHASIL</span>
+                    <h3 class="font-serif-title text-2xl sm:text-3xl font-bold text-white">Terima Kasih!</h3>
+                </div>
+
+                <div class="p-6 space-y-4 text-xs font-medium text-slate-700">
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 text-center space-y-1">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold block">Kode Booking Anda:</span>
+                        <strong class="text-xl font-mono font-bold text-[#ca9e54] block">#{{ $sData['booking_code'] ?? '' }}</strong>
+                    </div>
+
+                    <div class="space-y-2 text-slate-600">
+                        <div class="flex justify-between py-1 border-b border-slate-100">
+                            <span>Nama Tamu:</span>
+                            <strong class="text-slate-900">{{ $sData['guest_name'] ?? '-' }}</strong>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-100">
+                            <span>Villa Properti:</span>
+                            <strong class="text-slate-900">{{ $sData['property_name'] ?? '-' }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200 flex items-center gap-2">
+                        <i class="ri-information-fill text-emerald-600 text-base shrink-0"></i> 
+                        <span>Bukti pembayaran telah diterima. Tim kami sedang memverifikasi reservasi Anda.</span>
+                    </div>
+
+                    <div class="pt-2 flex flex-col gap-2">
+                        <a href="{{ route('user.bookings') }}" class="w-full py-3 rounded-full bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold transition text-center uppercase tracking-wider shadow-md">
+                            Lihat Riwayat Reservasi Saya
+                        </a>
+                        <button type="button" onclick="closeBookingSuccessModal()" class="w-full py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('booking-success-modal');
+                const card = document.getElementById('booking-success-modal-card');
+                if (modal && card) {
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0', 'pointer-events-none');
+                        card.classList.remove('opacity-0', 'scale-90', 'translate-y-4');
+                        card.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                    }, 50);
                 }
             });
+
+            function closeBookingSuccessModal() {
+                const modal = document.getElementById('booking-success-modal');
+                const card = document.getElementById('booking-success-modal-card');
+                if (modal && card) {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                    card.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                    card.classList.add('opacity-0', 'scale-95', 'translate-y-2');
+                    setTimeout(() => modal.remove(), 400);
+                }
+            }
         </script>
     @endif
 @endpush

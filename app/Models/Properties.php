@@ -22,6 +22,22 @@ class Properties extends Model
         return 'slug';
     }
 
+    /**
+     * Get full main image URL with fallback to local default image.
+     */
+    public function getMainImageUrlAttribute(): string
+    {
+        if (empty($this->main_image)) {
+            return asset('images/no-image.png');
+        }
+
+        if (str_starts_with($this->main_image, 'http://') || str_starts_with($this->main_image, 'https://')) {
+            return $this->main_image;
+        }
+
+        return asset('storage/' . $this->main_image);
+    }
+
     public function destination()
     {
         return $this->belongsTo(Destination::class, 'destination_id');
@@ -145,7 +161,7 @@ class Properties extends Model
 
         $badgeText = $promo->discount_type === 'percentage'
             ? 'Diskon ' . number_format($promo->discount_value, 0) . '%'
-            : 'Hemat Rp ' . number_format($promo->discount_value, 0, ',', '.');
+            : 'Hemat Rp ' . number_format($promo->discount_value, 0, ',', '.') . '/malam';
 
         return [
             'promotion_id'    => $promo->id,
