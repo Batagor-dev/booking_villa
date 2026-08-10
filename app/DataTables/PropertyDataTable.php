@@ -126,13 +126,13 @@ class PropertyDataTable extends DataTable
             ->addTableClass('min-w-full divide-y divide-slate-200 overflow-hidden bg-white text-sm font-satoshi-medium text-slate-700')
             ->parameters([
                 'dom' => '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 font-satoshi-medium"lf>' .
-                         '<"overflow-x-auto w-full border border-slate-100 rounded-2xl shadow-xs"tr>' .
+                         '<"overflow-x-auto w-full"tr>' .
                          '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-4 font-satoshi-medium text-slate-500 text-sm"ip>',
                 'language' => [
                     'search' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Search:</span>',
-                    'searchPlaceholder' => 'Cari nama, kota, tipe...',
-                    'lengthMenu' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Tampilkan</span> _MENU_ <span class="text-slate-600 ml-2 font-satoshi-medium">Data</span>',
-                    'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    'searchPlaceholder' => 'Search property...',
+                    'lengthMenu' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Show</span> _MENU_ <span class="text-slate-600 ml-2 font-satoshi-medium">Entries</span>',
+                    'info' => 'Showing _START_ to _END_ of _TOTAL_ entries',
                     'paginate' => [
                         'first' => '<i class="ri-arrow-left-double-line text-lg"></i>',
                         'previous' => '<i class="ri-arrow-left-s-line text-lg"></i>',

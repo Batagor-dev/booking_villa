@@ -123,15 +123,29 @@ class BookingDataTable extends DataTable
     public function html()
     {
         return $this->builder()
-                    ->setTableId('booking-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    ->orderBy(1)
-                    ->parameters([
-                        'dom'          => '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"l f>rt<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-4"i p>',
-                        'autoWidth'    => false,
-                        'responsive'   => true,
-                    ]);
+            ->setTableId('booking-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->orderBy(1, 'desc')
+            ->responsive(true)
+            ->addTableClass('min-w-full divide-y divide-slate-200 overflow-hidden bg-white text-sm font-satoshi-medium text-slate-700')
+            ->parameters([
+                'dom' => '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 font-satoshi-medium"lf>' .
+                         '<"overflow-x-auto w-full"tr>' .
+                         '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-4 font-satoshi-medium text-slate-500 text-sm"ip>',
+                'language' => [
+                    'search' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Search:</span>',
+                    'searchPlaceholder' => 'Search booking...',
+                    'lengthMenu' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Show</span> _MENU_ <span class="text-slate-600 ml-2 font-satoshi-medium">Entries</span>',
+                    'info' => 'Showing _START_ to _END_ of _TOTAL_ entries',
+                    'paginate' => [
+                        'first' => '<i class="ri-arrow-left-double-line text-lg"></i>',
+                        'previous' => '<i class="ri-arrow-left-s-line text-lg"></i>',
+                        'next' => '<i class="ri-arrow-right-s-line text-lg"></i>',
+                        'last' => '<i class="ri-arrow-right-double-line text-lg"></i>'
+                    ],
+                ],
+            ]);
     }
 
     /**

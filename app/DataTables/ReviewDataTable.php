@@ -127,7 +127,7 @@ class ReviewDataTable extends DataTable
                          '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-4 font-satoshi-medium text-slate-500 text-sm"ip>',
                 'language' => [
                     'search' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Search:</span>',
-                    'searchPlaceholder' => 'Cari ulasan, villa, atau user...',
+                    'searchPlaceholder' => 'Search reviews...',
                     'lengthMenu' => '<span class="text-slate-600 mr-2 font-satoshi-medium">Show</span> _MENU_ <span class="text-slate-600 ml-2 font-satoshi-medium">Entries</span>',
                     'info' => 'Showing _START_ to _END_ of _TOTAL_ entries',
                     'paginate' => [

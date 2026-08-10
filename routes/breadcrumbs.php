@@ -421,7 +421,7 @@ Breadcrumbs::for('promotion.edit', function (BreadcrumbTrail $trail, $promotion)
 // Home > Reviews
 Breadcrumbs::for('reviews.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Reviews & Ulasan', route('reviews.index'));
+    $trail->push('Reviews', route('reviews.index'));
 });
 
 // Home > Reviews > Edit
