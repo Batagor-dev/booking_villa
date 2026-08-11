@@ -15,7 +15,7 @@ class PaymentMethodSeeder extends Seeder
         $methods = [
             [
                 'name'           => 'Bank Transfer BCA',
-                'type'           => 'bank_transfer',
+                'type'           => 'Bank Transfer',
                 'provider'       => 'Bank BCA',
                 'account_number' => '8830192831',
                 'account_name'   => 'PT Villa Indonesia',
@@ -24,7 +24,7 @@ class PaymentMethodSeeder extends Seeder
             ],
             [
                 'name'           => 'Bank Transfer Mandiri',
-                'type'           => 'bank_transfer',
+                'type'           => 'Bank Transfer',
                 'provider'       => 'Bank Mandiri',
                 'account_number' => '1370019283741',
                 'account_name'   => 'PT Villa Indonesia',
@@ -35,6 +35,7 @@ class PaymentMethodSeeder extends Seeder
                 'name'           => 'QRIS Standar',
                 'type'           => 'qris',
                 'provider'       => 'QRIS Nasional',
+                'account_name'   => 'PT Villa Indonesia',
                 'note'           => 'Scan kode QRIS menggunakan aplikasi e-wallet (GoPay, OVO, Dana, LinkAja) atau m-Banking.',
                 'is_active'      => true,
             ],
@@ -42,7 +43,9 @@ class PaymentMethodSeeder extends Seeder
                 'name'           => 'Cash / Tunai Saat Check-in',
                 'type'           => 'cash',
                 'provider'       => 'Cash',
-                'note'           => 'Pembayaran dilakukan tunai di resepsionis villa saat kedatangan.',
+                'account_number' => '8830192831',
+                'account_name'   => 'PT Villa Indonesia',
+                'note'           => 'Wajib transfer DP (Down Payment) ke rekening BCA di atas terlebih dahulu untuk konfirmasi reservasi.',
                 'is_active'      => true,
             ],
         ];

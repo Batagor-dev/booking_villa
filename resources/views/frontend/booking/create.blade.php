@@ -158,12 +158,12 @@
                         @if(!empty($propSettings->cancellation_policy))
                             <div class="p-3 bg-white rounded-2xl border border-slate-200/60 space-y-1">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase block">Kebijakan Pembatalan</span>
-                                <div class="text-slate-600 leading-relaxed text-[11px]">{!! $propSettings->cancellation_policy !!}</div>
+                                <div class="text-slate-600 text-xs">{!! $propSettings->cancellation_policy !!}</div>
                             </div>
                         @endif
 
                         @if(!empty($propSettings->phone) || !empty($propSettings->email))
-                            <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
+                            <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
                                 <span>Bantuan / Helpdesk Villa:</span>
                                 <strong class="text-slate-800">{{ $propSettings->phone ?? $propSettings->email }}</strong>
                             </div>
@@ -276,8 +276,13 @@
                                     <span id="active-promo-desc" class="text-[#ca9e54] text-[11px] font-medium">Hemat Rp 0</span>
                                 </div>
                             </div>
-                            <button type="button" onclick="removePromoCode()" class="text-xs font-bold text-slate-500 hover:text-rose-600 underline px-2 py-1 transition-colors">
-                                Hapus
+                            <button type="button" 
+                                    onclick="removePromoCode()" 
+                                    title="Hapus Kode Promo"
+                                    aria-label="Hapus Kode Promo"
+                                    class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-amber-300 hover:border-rose-400 text-slate-500 hover:text-rose-600 flex items-center justify-center transition-all duration-200 shadow-xs cursor-pointer shrink-0 group"
+                            >
+                                <i class="ri-close-line text-lg font-bold transition-transform group-hover:scale-110"></i>
                             </button>
                         </div>
 
@@ -359,33 +364,55 @@
                             />
                         </div>
 
-                        <!-- DYNAMIC PAYMENT INSTRUCTION & ACCOUNT INFO BOX -->
-                        <div id="payment-details-box" class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 space-y-3 hidden">
-                            <div class="flex items-center justify-between border-b border-amber-200/60 pb-2">
-                                <span class="text-xs font-bold text-amber-900" id="pm-box-name">Bank Transfer BCA</span>
-                                <span class="px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900 text-[10px] font-bold" id="pm-box-type">BANK TRANSFER</span>
+                        <!-- DYNAMIC PAYMENT INSTRUCTION & ACCOUNT INFO BOX (MINIMALIST SLATE THEME) -->
+                        <div id="payment-details-box" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 hidden transition-all duration-300">
+                            <div class="flex items-center justify-between border-b border-slate-200/80 pb-2">
+                                <span class="text-xs font-bold text-slate-900" id="pm-box-name">Bank Transfer BCA</span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-[#152c4e] text-white text-[10px] font-bold tracking-wider" id="pm-box-type">BANK TRANSFER</span>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                <div>
-                                    <span class="text-[10px] font-bold text-amber-800 uppercase block">Nomor Rekening / QR Code</span>
-                                    <div class="flex items-center gap-2 mt-0.5">
-                                        <strong class="text-amber-950 font-mono text-sm" id="pm-box-number">8830123999</strong>
-                                        <button type="button" onclick="copyAccountNo()" class="px-2 py-0.5 rounded bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-[10px] font-bold transition">
-                                            Salin
+                            <!-- MINIMALIST CASH DP NOTICE ALERT BOX -->
+                            <div id="pm-box-cash-notice" class="p-3 rounded-xl bg-slate-100/90 border border-slate-200 text-slate-800 text-xs hidden flex items-start gap-2.5">
+                                <i class="ri-information-fill text-[#152c4e] text-base shrink-0 mt-0.5"></i>
+                                <div class="space-y-1">
+                                    <strong class="font-bold text-slate-900 block text-xs">Ketentuan Pembayaran Cash / Tunai:</strong>
+                                    <p class="text-[11px] leading-relaxed text-slate-600">
+                                        Pilihan pembayaran tunai wajib melunasi <strong>DP (Down Payment)</strong> via transfer ke rekening bank di bawah ini terlebih dahulu untuk mengonfirmasi & mengunci tanggal reservasi Anda. Sisa pelunasan dilakukan saat check-in.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- ACCOUNT & RECIPIENT DETAILS GRID -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs" id="pm-box-details-grid">
+                                <!-- Account Number Block (Hidden for QRIS) -->
+                                <div id="pm-box-account-number-wrapper">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Nomor Rekening / VA</span>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <strong class="text-slate-900 font-mono text-sm font-bold" id="pm-box-number">8830123999</strong>
+                                        <button type="button" onclick="copyAccountNo()" class="px-2.5 py-0.5 rounded-md bg-slate-200/80 hover:bg-[#152c4e] hover:text-white text-slate-700 text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                                            <i class="ri-file-copy-line"></i> Salin
                                         </button>
                                     </div>
                                 </div>
-                                <div>
-                                    <span class="text-[10px] font-bold text-amber-800 uppercase block">Atas Nama / Pemilik</span>
-                                    <strong class="text-amber-950 text-xs font-bold block mt-0.5" id="pm-box-holder">PT Palma Luxury Villa</strong>
+
+                                <!-- Recipient / Account Holder Block -->
+                                <div id="pm-box-account-holder-wrapper">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase block" id="pm-box-holder-label">Atas Nama / Pemilik</span>
+                                    <strong class="text-slate-900 text-xs font-bold block mt-1" id="pm-box-holder">PT Palma Luxury Villa</strong>
                                 </div>
                             </div>
 
                             <!-- QRIS Image Container if available -->
-                            <div id="pm-box-qris-container" class="pt-2 border-t border-amber-200/60 hidden text-center">
-                                <span class="text-[10px] font-bold text-amber-800 uppercase block mb-2">Scan QRIS Untuk Pembayaran</span>
-                                <img id="pm-box-qris-img" src="" alt="QRIS Code" class="h-44 mx-auto rounded-xl border border-amber-200 bg-white p-2 shadow-sm">
+                            <div id="pm-box-qris-container" class="pt-3 border-t border-slate-200/70 hidden text-center space-y-2">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase block">Scan Kode QRIS Untuk Pembayaran</span>
+                                <div class="inline-block">
+                                    <img id="pm-box-qris-img" src="" alt="QRIS Code" class="h-80 w-80 object-contain mx-auto rounded-xl">
+                                </div>
+                            </div>
+
+                            <!-- Custom Instruction/Note if present -->
+                            <div id="pm-box-note-container" class="text-[11px] text-slate-500 italic hidden pt-1 border-t border-slate-200/60">
+                                <span id="pm-box-note"></span>
                             </div>
                         </div>
 
@@ -646,19 +673,77 @@
                 return;
             }
 
-            document.getElementById('pm-box-name').innerText = pm.name || 'Metode Pembayaran';
-            document.getElementById('pm-box-type').innerText = (pm.type || 'PAYMENT').toUpperCase();
-            document.getElementById('pm-box-number').innerText = pm.account_number || '-';
-            document.getElementById('pm-box-holder').innerText = pm.account_name || '-';
+            const type = (pm.type || 'bank_transfer').toLowerCase();
+            const isQris = type === 'qris';
+            const isCash = type === 'cash' || (pm.name && pm.name.toLowerCase().includes('cash')) || (pm.name && pm.name.toLowerCase().includes('tunai'));
 
+            const nameEl = document.getElementById('pm-box-name');
+            const typeEl = document.getElementById('pm-box-type');
+            if (nameEl) nameEl.innerText = pm.name || 'Metode Pembayaran';
+            if (typeEl) typeEl.innerText = (pm.type || 'PAYMENT').toUpperCase();
+
+            const cashNotice = document.getElementById('pm-box-cash-notice');
+            const accNumWrapper = document.getElementById('pm-box-account-number-wrapper');
+            const accHolderLabel = document.getElementById('pm-box-holder-label');
+            const accHolderVal = document.getElementById('pm-box-holder');
+            const accNumVal = document.getElementById('pm-box-number');
             const qrisContainer = document.getElementById('pm-box-qris-container');
             const qrisImg = document.getElementById('pm-box-qris-img');
+            const noteContainer = document.getElementById('pm-box-note-container');
+            const noteVal = document.getElementById('pm-box-note');
 
-            if (pm.image_qris && pm.image_qris.trim() !== '') {
-                qrisImg.src = "{{ asset('storage') }}/" + pm.image_qris;
-                qrisContainer.classList.remove('hidden');
+            // 1. CASH / TUNAI HANDLING
+            if (isCash) {
+                if (cashNotice) cashNotice.classList.remove('hidden');
+                
+                // Fallback to first bank transfer account if Cash record doesn't have an explicit account number
+                const bankFallback = paymentMethodsData.find(item => (item.type || '').toLowerCase() === 'bank_transfer');
+                const displayAccNum = pm.account_number || (bankFallback ? bankFallback.account_number : '-');
+                const displayAccHolder = pm.account_name || (bankFallback ? bankFallback.account_name : '-');
+
+                if (accNumWrapper) accNumWrapper.classList.remove('hidden');
+                if (accNumVal) accNumVal.innerText = displayAccNum || '-';
+                if (accHolderLabel) accHolderLabel.innerText = 'Atas Nama (Rekening Transfer DP)';
+                if (accHolderVal) accHolderVal.innerText = displayAccHolder || '-';
+                if (qrisContainer) qrisContainer.classList.add('hidden');
+            } 
+            // 2. QRIS HANDLING: HIDE NO. REKENING, ONLY SHOW RECIPIENT NAME & QR CODE!
+            else if (isQris) {
+                if (cashNotice) cashNotice.classList.add('hidden');
+                // Hide account number completely for QRIS
+                if (accNumWrapper) accNumWrapper.classList.add('hidden');
+                if (accHolderLabel) accHolderLabel.innerText = 'Nama Penerima';
+                if (accHolderVal) accHolderVal.innerText = pm.account_name || pm.provider || 'PT Palma Luxury Villa';
+
+                if (pm.image_qris && pm.image_qris.trim() !== '') {
+                    if (qrisImg) qrisImg.src = "{{ asset('storage') }}/" + pm.image_qris;
+                    if (qrisContainer) qrisContainer.classList.remove('hidden');
+                } else {
+                    if (qrisContainer) qrisContainer.classList.add('hidden');
+                }
+            } 
+            // 3. BANK TRANSFER & OTHER METHODS
+            else {
+                if (cashNotice) cashNotice.classList.add('hidden');
+                if (accNumWrapper) accNumWrapper.classList.remove('hidden');
+                if (accNumVal) accNumVal.innerText = pm.account_number || '-';
+                if (accHolderLabel) accHolderLabel.innerText = 'Atas Nama / Pemilik';
+                if (accHolderVal) accHolderVal.innerText = pm.account_name || '-';
+
+                if (pm.image_qris && pm.image_qris.trim() !== '') {
+                    if (qrisImg) qrisImg.src = "{{ asset('storage') }}/" + pm.image_qris;
+                    if (qrisContainer) qrisContainer.classList.remove('hidden');
+                } else {
+                    if (qrisContainer) qrisContainer.classList.add('hidden');
+                }
+            }
+
+            // Custom note from admin if present
+            if (pm.note && pm.note.trim() !== '') {
+                if (noteVal) noteVal.innerText = pm.note;
+                if (noteContainer) noteContainer.classList.remove('hidden');
             } else {
-                qrisContainer.classList.add('hidden');
+                if (noteContainer) noteContainer.classList.add('hidden');
             }
 
             if (box) box.classList.remove('hidden');

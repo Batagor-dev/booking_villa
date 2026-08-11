@@ -1,5 +1,24 @@
 @import "tailwindcss";
-@import url("https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap");
+@import "./datatable.css";
+@import "./select2-tailwind.css";
+@import "./home.css";
+
+/* Local Satoshi Font (Offline & Fast Local Asset) */
+@font-face {
+    font-family: "Satoshi";
+    src: url("/assets/font/satoshi/Satoshi-Variable.ttf") format("truetype");
+    font-weight: 300 900;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Satoshi";
+    src: url("/assets/font/satoshi/Satoshi-VariableItalic.ttf") format("truetype");
+    font-weight: 300 900;
+    font-display: swap;
+    font-style: italic;
+}
 
 @theme {
     --font-sans: "Satoshi", system-ui, sans-serif;
@@ -12,6 +31,15 @@
     --color-niskala-cream: #f9f8f3;
 }
 
+body, html {
+    font-family: "Satoshi", system-ui, -apple-system, sans-serif;
+    font-weight: 500;
+}
+
+*:not(.font-serif-title) {
+    font-family: "Satoshi", system-ui, -apple-system, sans-serif;
+}
+
 @utility font-serif-heading {
     font-family: "Playfair Display", Georgia, serif;
 }
@@ -21,11 +49,12 @@
 }
 
 .font-serif-title {
-    font-family: "Playfair Display", Georgia, serif;
+    font-family: "Playfair Display", Georgia, serif !important;
 }
 
 @utility font-satoshi {
     font-family: "Satoshi", sans-serif;
+    font-weight: 500;
 }
 
 @utility font-satoshi-light {
@@ -62,10 +91,6 @@
 @source "../../storage/framework/views/*.php";
 @source "../**/*.blade.php";
 @source "../**/*.js";
-
-@import "./datatable.css";
-@import "./select2-tailwind.css";
-@import "./home.css";
 
 /* --- Custom Page Loader & Progress Bar (NProgress style) --- */
 #nprogress {

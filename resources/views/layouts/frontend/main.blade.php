@@ -11,10 +11,10 @@
     <meta name="description" content="{{ $appSettings['description'] ?? 'Platform Pemesanan Villa Mewah & Resort Eksklusif.' }}">
     <link rel="icon" type="image/png" href="{{ !empty($appSettings['favicon']) ? asset('storage/' . $appSettings['favicon']) : asset('images/no-image.png') }}">
     
-    <!-- Preconnect & Google Fonts (Non-blocking display=swap) -->
+    <!-- Preconnect & Google Fonts: Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     
     <!-- Vendor & RemixIcon CDN Fallback -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" />
@@ -28,6 +28,13 @@
 
     <!-- Luxury UI CSS Helpers -->
     <style>
+        body, html {
+            font-family: 'Satoshi', system-ui, -apple-system, sans-serif !important;
+            font-weight: 500;
+        }
+        *:not(.font-serif-title) {
+            font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .glass-card {
@@ -51,7 +58,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="font-sans bg-[#f8f9fb] text-slate-800 antialiased selection:bg-[#ca9e54] selection:text-white">
+<body class="font-satoshi bg-[#f8f9fb] text-slate-800 antialiased selection:bg-[#ca9e54] selection:text-white">
 
     <!-- FRONTEND SKELETON PAGE LOADING OVERLAY -->
     <div id="frontend-skeleton-page-loader" class="fixed inset-0 z-[100] bg-[#f8f9fb] flex flex-col justify-between p-6 sm:p-12 transition-opacity duration-500 ease-out pointer-events-none">

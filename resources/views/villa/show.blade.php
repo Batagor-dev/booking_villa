@@ -717,32 +717,53 @@
                                     <option value="{{ $pm->id }}" 
                                             data-name="{{ $pm->name }}" 
                                             data-type="{{ strtoupper($pm->type) }}"
-                                            data-account-number="{{ $pm->account_number ?? '-' }}"
-                                            data-account-name="{{ $pm->account_name ?? '-' }}"
+                                            data-account-number="{{ $pm->account_number ?? '' }}"
+                                            data-account-name="{{ $pm->account_name ?? '' }}"
+                                            data-note="{{ $pm->note ?? '' }}"
                                             data-qris="{{ $pm->image_qris ? asset('storage/'.$pm->image_qris) : '' }}">
                                         {{ $pm->name }} ({{ strtoupper($pm->type) }})
                                     </option>
                                 @endforeach
                             @else
-                                <option value="1" data-name="Bank Transfer BCA" data-account-number="8830123999" data-account-name="PT Villa Management">Bank Transfer BCA</option>
+                                <option value="1" data-name="Bank Transfer BCA" data-type="BANK_TRANSFER" data-account-number="8830123999" data-account-name="PT Villa Management">Bank Transfer BCA</option>
                             @endif
                         </select>
                     </div>
 
-                    <!-- Instruction Box for Selected Payment -->
-                    <div id="payment-instruction-box" class="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 space-y-1">
+                    <!-- Instruction Box for Selected Payment (MINIMALIST SLATE THEME) -->
+                    <div id="payment-instruction-box" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 space-y-2">
                         <div class="font-bold flex items-center justify-between">
-                            <span id="pm-info-name">Transfer Bank</span>
-                            <span class="text-[10px] bg-amber-200/80 text-amber-900 font-extrabold px-2 py-0.5 rounded" id="pm-info-type">BANK_TRANSFER</span>
+                            <span id="pm-info-name" class="text-slate-900">Transfer Bank</span>
+                            <span class="text-[10px] bg-[#152c4e] text-white font-extrabold px-2.5 py-0.5 rounded-full" id="pm-info-type">BANK_TRANSFER</span>
                         </div>
-                        <div class="font-mono text-slate-800 pt-1">
-                            No. Rekening / VA: <strong id="pm-info-acc-num" class="text-slate-900 font-bold select-all">8830123999</strong>
+
+                        <!-- MINIMALIST CASH DP NOTICE ALERT BOX -->
+                        <div id="pm-info-cash-notice" class="p-2.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 text-[11px] hidden flex items-start gap-2">
+                            <i class="ri-information-fill text-[#152c4e] text-sm shrink-0 mt-0.5"></i>
+                            <span>Catatan: Pembayaran <strong>Cash / Tunai</strong> wajib melunasi <strong>DP (Down Payment) via transfer bank</strong> terlebih dahulu ke rekening di bawah untuk konfirmasi reservasi.</span>
                         </div>
-                        <div class="text-[11px] text-slate-600">
-                            Atas Nama: <span id="pm-info-acc-name">PT Villa Management</span>
+
+                        <!-- ACCOUNT NUMBER (HIDDEN FOR QRIS) -->
+                        <div id="pm-info-acc-num-wrapper" class="font-mono text-slate-700 pt-1">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase block">No. Rekening / VA:</span>
+                            <strong id="pm-info-acc-num" class="text-slate-900 text-sm font-bold select-all">8830123999</strong>
                         </div>
+
+                        <!-- RECIPIENT / ACCOUNT HOLDER NAME -->
+                        <div id="pm-info-acc-name-wrapper" class="text-[11px] text-slate-600">
+                            <span id="pm-info-acc-name-label" class="text-[10px] font-bold text-slate-500 uppercase block mb-0.5">Atas Nama:</span>
+                            <span id="pm-info-acc-name" class="font-bold text-slate-900">PT Villa Management</span>
+                        </div>
+
+                        <!-- QRIS IMAGE CONTAINER -->
                         <div id="pm-qris-container" class="hidden pt-2 text-center">
-                            <img id="pm-qris-img" src="" class="w-32 h-32 mx-auto rounded-lg border border-slate-300">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Scan QRIS Untuk Pembayaran</span>
+                            <img id="pm-qris-img" src="" class="w-36 h-36 mx-auto rounded-lg border border-slate-200 bg-white p-1 shadow-xs">
+                        </div>
+
+                        <!-- NOTE CONTAINER -->
+                        <div id="pm-info-note-container" class="text-[11px] text-slate-500 italic hidden pt-1 border-t border-slate-200/60">
+                            <span id="pm-info-note"></span>
                         </div>
                     </div>
 
@@ -1220,29 +1241,89 @@
         const selected = selectEl.options[selectEl.selectedIndex];
         if (!selected) return;
         const name = selected.getAttribute('data-name') || selected.text;
-        const type = selected.getAttribute('data-type') || 'BANK_TRANSFER';
-        const accNum = selected.getAttribute('data-account-number') || '-';
-        const accName = selected.getAttribute('data-account-name') || '-';
+        const type = (selected.getAttribute('data-type') || 'BANK_TRANSFER').toLowerCase();
+        let accNum = selected.getAttribute('data-account-number') || '';
+        let accName = selected.getAttribute('data-account-name') || '';
+        const note = selected.getAttribute('data-note') || '';
         const qris = selected.getAttribute('data-qris') || '';
 
         const nameEl = document.getElementById('pm-info-name');
         const typeEl = document.getElementById('pm-info-type');
+        const numWrapper = document.getElementById('pm-info-acc-num-wrapper');
         const numEl = document.getElementById('pm-info-acc-num');
+        const accNameLabel = document.getElementById('pm-info-acc-name-label');
         const accNameEl = document.getElementById('pm-info-acc-name');
-        
-        if (nameEl) nameEl.innerText = name;
-        if (typeEl) typeEl.innerText = type;
-        if (numEl) numEl.innerText = accNum;
-        if (accNameEl) accNameEl.innerText = accName;
-
+        const cashNotice = document.getElementById('pm-info-cash-notice');
         const qrisBox = document.getElementById('pm-qris-container');
         const qrisImg = document.getElementById('pm-qris-img');
-        if (qrisBox && qrisImg) {
-            if (qris) {
-                qrisImg.src = qris;
-                qrisBox.classList.remove('hidden');
+        const noteBox = document.getElementById('pm-info-note-container');
+        const noteEl = document.getElementById('pm-info-note');
+
+        if (nameEl) nameEl.innerText = name;
+        if (typeEl) typeEl.innerText = type.toUpperCase();
+
+        const isQris = type === 'qris';
+        const isCash = type === 'cash' || name.toLowerCase().includes('cash') || name.toLowerCase().includes('tunai');
+
+        if (isCash) {
+            if (cashNotice) cashNotice.classList.remove('hidden');
+            if (numWrapper) numWrapper.classList.remove('hidden');
+
+            // If Cash has no account_number set on option, fallback to default bank transfer account number from select options
+            if (!accNum) {
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    const opt = selectEl.options[i];
+                    const optType = (opt.getAttribute('data-type') || '').toLowerCase();
+                    if (optType === 'bank_transfer' && opt.getAttribute('data-account-number')) {
+                        accNum = opt.getAttribute('data-account-number');
+                        if (!accName) accName = opt.getAttribute('data-account-name');
+                        break;
+                    }
+                }
+            }
+
+            if (numEl) numEl.innerText = accNum || '-';
+            if (accNameLabel) accNameLabel.innerText = 'Atas Nama (Rekening Transfer DP):';
+            if (accNameEl) accNameEl.innerText = accName || 'PT Villa Management';
+            if (qrisBox) qrisBox.classList.add('hidden');
+        } else if (isQris) {
+            if (cashNotice) cashNotice.classList.add('hidden');
+            // Hide account number completely for QRIS (only recipient name is displayed)
+            if (numWrapper) numWrapper.classList.add('hidden');
+            if (accNameLabel) accNameLabel.innerText = 'Nama Penerima:';
+            if (accNameEl) accNameEl.innerText = accName || 'PT Villa Management';
+
+            if (qrisBox && qrisImg) {
+                if (qris) {
+                    qrisImg.src = qris;
+                    qrisBox.classList.remove('hidden');
+                } else {
+                    qrisBox.classList.add('hidden');
+                }
+            }
+        } else {
+            if (cashNotice) cashNotice.classList.add('hidden');
+            if (numWrapper) numWrapper.classList.remove('hidden');
+            if (numEl) numEl.innerText = accNum || '-';
+            if (accNameLabel) accNameLabel.innerText = 'Atas Nama:';
+            if (accNameEl) accNameEl.innerText = accName || '-';
+
+            if (qrisBox && qrisImg) {
+                if (qris) {
+                    qrisImg.src = qris;
+                    qrisBox.classList.remove('hidden');
+                } else {
+                    qrisBox.classList.add('hidden');
+                }
+            }
+        }
+
+        if (noteBox && noteEl) {
+            if (note && note.trim() !== '') {
+                noteEl.innerText = note;
+                noteBox.classList.remove('hidden');
             } else {
-                qrisBox.classList.add('hidden');
+                noteBox.classList.add('hidden');
             }
         }
     }
