@@ -58,7 +58,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="font-satoshi bg-[#f8f9fb] text-slate-800 antialiased selection:bg-[#ca9e54] selection:text-white">
+<body class="font-satoshi-medium bg-[#f8f9fb] text-slate-800 antialiased selection:bg-[#ca9e54] selection:text-white">
 
     <!-- FRONTEND SKELETON PAGE LOADING OVERLAY -->
     <div id="frontend-skeleton-page-loader" class="fixed inset-0 z-[100] bg-[#f8f9fb] flex flex-col justify-between p-6 sm:p-12 transition-opacity duration-500 ease-out pointer-events-none">

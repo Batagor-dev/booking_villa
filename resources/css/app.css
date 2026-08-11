@@ -74,7 +74,7 @@ body, html {
 
 @utility font-satoshi-semibold {
     font-family: "Satoshi", sans-serif;
-    font-weight: 550;
+    font-weight: 600;
 }
 
 @utility font-satoshi-bold {
@@ -86,6 +86,14 @@ body, html {
     font-family: "Satoshi", sans-serif;
     font-weight: 900;
 }
+
+.font-satoshi { font-family: "Satoshi", sans-serif; font-weight: 500; }
+.font-satoshi-light { font-family: "Satoshi", sans-serif; font-weight: 300; }
+.font-satoshi-regular { font-family: "Satoshi", sans-serif; font-weight: 400; }
+.font-satoshi-medium { font-family: "Satoshi", sans-serif; font-weight: 500; }
+.font-satoshi-semibold { font-family: "Satoshi", sans-serif; font-weight: 600; }
+.font-satoshi-bold { font-family: "Satoshi", sans-serif; font-weight: 700; }
+.font-satoshi-black { font-family: "Satoshi", sans-serif; font-weight: 900; }
 
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
 @source "../../storage/framework/views/*.php";

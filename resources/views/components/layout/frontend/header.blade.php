@@ -15,10 +15,6 @@
             <a href="{{ route('wisata.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('wisata.index') ? 'text-[#ca9e54] font-bold' : '' }}">Wisata Bali</a>
             <a href="{{ route('promo.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('promo.index') ? 'text-[#ca9e54] font-bold' : '' }}">Promo</a>
             <a href="{{ route('layanan.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('layanan.index') ? 'text-[#ca9e54] font-bold' : '' }}">Layanan</a>
-            
-            @auth
-                <a href="{{ route('user.bookings') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('user.bookings') ? 'text-[#ca9e54] font-bold' : '' }}">History Pemesanan</a>
-            @endauth
         </nav>
 
         <!-- Action Buttons & Mobile Toggle -->
@@ -87,19 +83,19 @@
 
                         <!-- Links -->
                         <div class="py-1">
-                            <a href="{{ route('user.account') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
-                                <i class="ri-user-settings-line text-lg text-slate-400"></i>
+                            <a href="{{ route('user.account') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors {{ request()->routeIs('user.account') ? 'bg-amber-50/70 text-slate-500 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-500' }}">
+                                <i class="ri-user-settings-line text-lg"></i>
                                 <span>Kelola Akun</span>
                             </a>
 
-                            <a href="{{ route('user.bookings') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
-                                <i class="ri-calendar-check-line text-lg text-slate-400"></i>
+                            <a href="{{ route('user.bookings') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors {{ request()->routeIs('user.bookings') ? 'bg-amber-50/70 text-slate-500 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-500' }}">
+                                <i class="ri-calendar-check-line text-lg"></i>
                                 <span>Reservasi Saya</span>
                             </a>
 
                             @if(method_exists($authUser, 'hasRole') && $authUser->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
-                                <a href="{{ route('dashboard') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
-                                    <i class="ri-dashboard-line text-lg text-slate-400"></i>
+                                <a href="{{ route('dashboard') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors {{ request()->routeIs('dashboard*') ? 'bg-amber-50/70 text-slate-500 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-500' }}">
+                                    <i class="ri-dashboard-line text-lg"></i>
                                     <span>Admin Panel</span>
                                 </a>
                             @endif
@@ -167,12 +163,6 @@
                 <span>Layanan Concierge</span>
                 <i class="ri-arrow-right-s-line text-slate-500"></i>
             </a>
-            @auth
-                <a href="{{ route('user.bookings') }}" class="mobile-nav-link text-white/90 hover:text-[#ca9e54] transition-colors py-2 border-b border-white/5 flex items-center justify-between">
-                    <span>History Pemesanan</span>
-                    <i class="ri-arrow-right-s-line text-slate-500"></i>
-                </a>
-            @endauth
         </nav>
 
         <div class="space-y-4 pt-6 border-t border-white/10 text-center">

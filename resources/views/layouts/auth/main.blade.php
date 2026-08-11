@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/remixicon.css') }}" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
   </head>
-  <body class="h-full bg-[#fcfbf9] text-slate-900 antialiased font-satoshi selection:bg-[#ca9e54] selection:text-white">
+  <body class="h-full bg-[#fcfbf9] text-slate-900 antialiased font-satoshi-medium selection:bg-[#ca9e54] selection:text-white">
     <div class="min-h-screen flex flex-col lg:flex-row">
 
       <!-- LEFT COLUMN: LUXURY SHOWCASE (Visible on lg screens) -->

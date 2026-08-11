@@ -28,9 +28,6 @@
                     <span class="inline-flex items-center gap-1 bg-[#ca9e54]/10 text-[#b88c43] border border-[#ca9e54]/30 text-[10px] sm:text-xs font-semibold px-3 py-0.5 rounded-full uppercase tracking-widest">
                         <i class="ri-vip-crown-2-fill text-[#ca9e54]"></i> Superhost
                     </span>
-                    <span class="inline-flex items-center gap-1 bg-[#152c4e]/5 text-[#152c4e] border border-[#152c4e]/10 text-[10px] sm:text-xs font-semibold px-3 py-0.5 rounded-full uppercase tracking-wider">
-                        {{ $property->type ?? 'Villa Sanctuary' }}
-                    </span>
                     @if($headerPromo = $property->active_promo_details)
                         <span class="inline-flex items-center gap-1 bg-[#ca9e54] text-white border border-[#ca9e54] text-[10px] sm:text-xs font-bold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
                             <i class="ri-coupon-3-fill"></i> {{ $headerPromo['badge_text'] }}
@@ -204,7 +201,7 @@
             <!-- Villa Description -->
             <div class="space-y-4 pb-8 border-b border-slate-200/80">
                 <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">Tentang Villa Ini</h3>
-                <div class="text-xs sm:text-sm text-slate-600 font-light leading-relaxed space-y-3">
+                <div class="text-xs sm:text-sm text-slate-600 font-satoshi-medium leading-relaxed space-y-3">
                     {!! nl2br(e($property->description ?? '')) !!}
                 </div>
             </div>

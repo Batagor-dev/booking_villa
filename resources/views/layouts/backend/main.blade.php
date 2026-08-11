@@ -36,7 +36,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
   </head>
-  <body class="min-h-screen text-slate-900 antialiased flex font-satoshi" data-admin-panel="true">
+  <body class="min-h-screen text-slate-900 antialiased flex font-satoshi-medium" data-admin-panel="true">
     <!-- Sidebar component -->
     <x-layout.admin.sidebar />
 
