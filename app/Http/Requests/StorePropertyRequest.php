@@ -37,7 +37,7 @@ class StorePropertyRequest extends FormRequest
             'destination_id'        => 'nullable|exists:destinations,id',
             'slug'                  => 'nullable|string|max:255|unique:properties,slug',
             'code'                  => 'nullable|string|max:50',
-            'type'                  => 'required|string|max:100',
+            'type'                  => 'required|in:Villa,Resort,Boutique Hotel,Apartment,Private House',
             'price'                 => 'required|numeric|min:0',
             'bedrooms'              => 'required|integer|min:1',
             'capacity'              => 'required|integer|min:1',
@@ -54,9 +54,6 @@ class StorePropertyRequest extends FormRequest
 
 
             // Settings rules
-            'check_in_time'         => 'nullable|string|max:10',
-            'check_out_time'        => 'nullable|string|max:10',
-            'cancellation_policy'   => 'nullable|string',
             'phone'                 => 'nullable|string|max:50',
             'email'                 => 'nullable|email|max:255',
             'currency'              => 'nullable|string|max:10',

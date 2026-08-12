@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('code')->nullable();
-            $table->string('type')->default('Villa'); // Villa, Resort, Hotel, Apartment
+            $table->enum('type', ['Villa', 'Resort', 'Boutique Hotel', 'Apartment', 'Private House'])->default('Villa');
             
             // Specification & Pricing
             $table->decimal('price', 15, 2)->default(0);

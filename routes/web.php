@@ -115,6 +115,10 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
         'facilities' => 'facility:uuid',
     ])->except('show');
 
+    Route::resource('/property_rules', App\Http\Controllers\PropertyRuleController::class)->parameters([
+        'property_rules' => 'property_rule:uuid',
+    ])->except('show');
+
     Route::resource('/payment_methods', App\Http\Controllers\PaymentMethodController::class)->parameters([
         'payment_methods' => 'payment_method:uuid',
     ])->except('show');

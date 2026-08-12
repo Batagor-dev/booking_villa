@@ -302,32 +302,6 @@
                     <h5 class="text-lg font-satoshi-bold text-slate-900 mb-6">Property Operational Settings & Policies</h5>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Check In Time -->
-                        <x-ui.input 
-                            name="check_in_time" 
-                            label="Check-In Time" 
-                            placeholder="e.g. 14:00" 
-                            value="{{ old('check_in_time', $property_data->settings->check_in_time ?? '14:00') }}"
-                        />
-
-                        <!-- Check Out Time -->
-                        <x-ui.input 
-                            name="check_out_time" 
-                            label="Check-Out Time" 
-                            placeholder="e.g. 12:00" 
-                            value="{{ old('check_out_time', $property_data->settings->check_out_time ?? '12:00') }}"
-                        />
-
-                        <!-- Currency -->
-                        <x-ui.input 
-                            name="currency" 
-                            label="Currency Code" 
-                            placeholder="e.g. IDR, USD" 
-                            value="{{ old('currency', $property_data->settings->currency ?? 'IDR') }}"
-                        />
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <!-- Phone -->
                         <x-ui.input 
                             name="phone" 
@@ -344,17 +318,17 @@
                             placeholder="e.g. reservation@villaseminyak.com" 
                             value="{{ old('email', $property_data->settings->email ?? '') }}"
                         />
-                    </div>
 
-                    <!-- Cancellation Policy Quill Editor Component -->
-                    <div class="mt-6">
-                        <x-ui.editor 
-                            name="cancellation_policy" 
-                            label="Cancellation Policy" 
-                            placeholder="Explain deposit rules, cancellation timeframes, and refund terms..." 
-                            :value="old('cancellation_policy', $property_data->settings->cancellation_policy ?? '')"
+                        <!-- Currency -->
+                        <x-ui.input 
+                            name="currency" 
+                            label="Currency Code" 
+                            placeholder="e.g. IDR, USD" 
+                            value="{{ old('currency', $property_data->settings->currency ?? 'IDR') }}"
                         />
                     </div>
+
+
                 </x-ui.card>
             </div>
 

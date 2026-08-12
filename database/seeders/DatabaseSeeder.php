@@ -46,6 +46,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PropertySettingSeeder::class);
         $this->call(PropertyGallerySeeder::class);
         $this->call(PropertyServiceSeeder::class);
+        $this->call(PropertyRuleSeeder::class);
         $this->call(PaymentMethodSeeder::class);
         $this->call(PromotionSeeder::class);
         $this->call(BookingSeeder::class);

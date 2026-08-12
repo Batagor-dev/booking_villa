@@ -102,6 +102,18 @@ class MenuSeeder extends Seeder
             'sort'               => '4',
         ]);
 
+        Menu::updateOrCreate(
+            ['href' => '/property_rules'],
+            [
+                'menu_group_id'      => 2,
+                'nama_menu'          => 'Property Rules',
+                'permission_group_id'=> null,
+                'icon'               => 'ri-shield-keyhole-line',
+                'status'             => '1',
+                'sort'               => '5',
+            ]
+        );
+
         Menu::create([
             'menu_group_id'      => 2,
             'nama_menu'          => 'Payment Methods',

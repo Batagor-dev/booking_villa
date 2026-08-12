@@ -75,14 +75,11 @@ class PropertiesController extends Controller
 
             // 4. Create Property Settings
             $property->settings()->create([
-                'check_in_time'       => $request->input('check_in_time', '14:00'),
-                'check_out_time'      => $request->input('check_out_time', '12:00'),
-                'cancellation_policy' => $request->input('cancellation_policy'),
-                'phone'               => $request->input('phone'),
-                'email'               => $request->input('email'),
-                'currency'            => $request->input('currency', 'IDR'),
-                'latitude'            => $request->input('latitude'),
-                'longitude'           => $request->input('longitude'),
+                'phone'     => $request->input('phone'),
+                'email'     => $request->input('email'),
+                'currency'  => $request->input('currency', 'IDR'),
+                'latitude'  => $request->input('latitude'),
+                'longitude' => $request->input('longitude'),
             ]);
 
             // 5. Upload Gallery Photos
@@ -159,14 +156,11 @@ class PropertiesController extends Controller
             $property->settings()->updateOrCreate(
                 ['property_id' => $property->id],
                 [
-                    'check_in_time'       => $request->input('check_in_time', '14:00'),
-                    'check_out_time'      => $request->input('check_out_time', '12:00'),
-                    'cancellation_policy' => $request->input('cancellation_policy'),
-                    'phone'               => $request->input('phone'),
-                    'email'               => $request->input('email'),
-                    'currency'            => $request->input('currency', 'IDR'),
-                    'latitude'            => $request->input('latitude'),
-                    'longitude'           => $request->input('longitude'),
+                    'phone'     => $request->input('phone'),
+                    'email'     => $request->input('email'),
+                    'currency'  => $request->input('currency', 'IDR'),
+                    'latitude'  => $request->input('latitude'),
+                    'longitude' => $request->input('longitude'),
                 ]
             );
 

@@ -577,69 +577,48 @@
 
             </div>
 
-            <!-- PERATURAN & KETENTUAN PEMESANAN (MINIMALIST & PROFESSIONAL CARD-LESS LAYOUT) -->
-            <div class="space-y-6 pt-4">
+            @php
+                $propertyRules = \App\Models\PropertyRule::active()->forPropertyType($property->type ?? 'Villa')->orderBy('sort_order', 'asc')->get();
+            @endphp
+
+            <!-- PERATURAN & KETENTUAN PEMESANAN -->
+            <div class="space-y-8 pt-4">
                 <div class="border-b border-slate-200/80 pb-4">
-                    <span class="text-[10px] font-bold tracking-widest text-[#ca9e54] uppercase block mb-1">INFORMASI & KEBIJAKAN VILLA</span>
+                    <span class="text-[10px] font-bold tracking-widest text-[#ca9e54] uppercase block mb-1">INFORMASI & KEBIJAKAN {{ strtoupper($property->type ?? 'PROPERTI') }}</span>
                     <h3 class="font-serif-title text-2xl sm:text-3xl font-bold text-slate-900">Peraturan & Ketentuan Pemesanan</h3>
+                    <p class="text-xs text-slate-500 mt-1">Harap pahami peraturan dan ketentuan sebelum melakukan pemesanan.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 text-xs text-slate-600">
-                    <!-- 1. Check-in & Check-out -->
-                    <div class="flex items-start gap-3.5">
-                        <i class="ri-time-line text-[#ca9e54] text-lg shrink-0 mt-0.5"></i>
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-slate-900 text-sm">Waktu Check-in & Check-out</h4>
-                            <p class="leading-relaxed">
-                                Check-in tersedia mulai pukul <strong class="text-slate-900 font-semibold">14:00 WITA</strong> dan waktu Check-out maksimal pukul <strong class="text-slate-900 font-semibold">12:00 WITA</strong>.
-                            </p>
-                        </div>
+                <div class="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-6 space-y-4 shadow-xs">
+                    <div class="flex items-center gap-2 pb-3 border-b border-slate-200/60">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#ca9e54] shrink-0"></span>
+                        <h4 class="font-bold text-slate-900 text-xs sm:text-sm tracking-wide uppercase flex items-center gap-1.5">
+                            <i class="ri-shield-check-line text-[#ca9e54] text-base"></i> Peraturan Ketentuan (Tipe {{ $property->type ?? 'Properti' }})
+                        </h4>
                     </div>
 
-                    <!-- 2. Capacity & Guests -->
-                    <div class="flex items-start gap-3.5">
-                        <i class="ri-team-line text-[#152c4e] text-lg shrink-0 mt-0.5"></i>
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-slate-900 text-sm">Kapasitas & Batas Tamu</h4>
-                            <p class="leading-relaxed">
-                                Kapasitas maksimal <strong class="text-slate-900 font-semibold">{{ $property->capacity ?? 2 }} tamu</strong> menginap. Tambahan tamu di luar kapasitas wajib dikonfirmasi sebelumnya.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- 3. Prohibition & Quiet Hours -->
-                    <div class="flex items-start gap-3.5">
-                        <i class="ri-shield-cross-line text-slate-700 text-lg shrink-0 mt-0.5"></i>
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-slate-900 text-sm">Larangan & Jam Tenang</h4>
-                            <p class="leading-relaxed">
-                                Dilarang merokok di dalam kamar tidur. Jam tenang lingkungan berlaku mulai pukul <strong class="text-slate-900 font-semibold">22:00 WITA</strong>.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- 4. Cancellation Policy -->
-                    <div class="flex items-start gap-3.5">
-                        <i class="ri-file-shield-2-line text-emerald-600 text-lg shrink-0 mt-0.5"></i>
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-slate-900 text-sm">Kebijakan Pembatalan & Refund</h4>
-                            <p class="leading-relaxed">
-                                Pembatalan gratis hingga <strong class="text-slate-900 font-semibold">7 hari sebelum check-in</strong>. Pembatalan < 7 hari dikenakan biaya 50%.
-                            </p>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600">
+                        @forelse($propertyRules as $rule)
+                            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
+                                <i class="{{ $rule->icon ?: 'ri-shield-line' }} text-[#ca9e54] text-lg shrink-0 mt-0.5"></i>
+                                <div>
+                                    <strong class="text-slate-900 font-semibold block text-sm mb-0.5">{{ $rule->title }}</strong>
+                                    <span>{{ $rule->description }}</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
+                                <i class="ri-time-line text-[#ca9e54] text-lg shrink-0 mt-0.5"></i>
+                                <div>
+                                    <strong class="text-slate-900 font-semibold block text-sm mb-0.5">Waktu Check-in & Check-out</strong>
+                                    <span>Check-in mulai pukul <strong class="text-slate-900 font-semibold">14:00 WITA</strong>. Check-out maksimal pukul <strong class="text-slate-900 font-semibold">12:00 WITA</strong>.</span>
+                                </div>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
-                <!-- Special Notes if available -->
-                @if($property && $property->settings && $property->settings->cancellation_policy)
-                    <div class="pt-4 border-t border-slate-200/60 flex items-center gap-2.5 text-xs text-slate-600">
-                        <i class="ri-information-line text-[#ca9e54] text-base shrink-0"></i>
-                        <p class="leading-relaxed text-slate-600">
-                            <strong class="text-slate-900 font-semibold">Catatan Khusus Properti:</strong>
-                            <span class="ml-1">{!! strip_tags($property->settings->cancellation_policy) !!}</span>
-                        </p>
-                    </div>
-                @endif
+
             </div>
 
         </div>

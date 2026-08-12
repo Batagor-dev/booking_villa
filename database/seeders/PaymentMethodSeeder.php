@@ -15,7 +15,7 @@ class PaymentMethodSeeder extends Seeder
         $methods = [
             [
                 'name'           => 'Bank Transfer BCA',
-                'type'           => 'Bank Transfer',
+                'type'           => 'bank_transfer',
                 'provider'       => 'Bank BCA',
                 'account_number' => '8830192831',
                 'account_name'   => 'PT Villa Indonesia',
@@ -24,7 +24,7 @@ class PaymentMethodSeeder extends Seeder
             ],
             [
                 'name'           => 'Bank Transfer Mandiri',
-                'type'           => 'Bank Transfer',
+                'type'           => 'bank_transfer',
                 'provider'       => 'Bank Mandiri',
                 'account_number' => '1370019283741',
                 'account_name'   => 'PT Villa Indonesia',

@@ -144,23 +144,16 @@
                             <div class="p-3 bg-white rounded-2xl border border-slate-200/60">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Waktu Check-In</span>
                                 <strong class="text-slate-900 text-sm font-bold flex items-center gap-1">
-                                    <i class="ri-time-line text-[#ca9e54]"></i> {{ $propSettings->check_in_time ?? '14:00 WITA' }}
+                                    <i class="ri-time-line text-[#ca9e54]"></i> 14:00 WITA
                                 </strong>
                             </div>
                             <div class="p-3 bg-white rounded-2xl border border-slate-200/60">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Waktu Check-Out</span>
                                 <strong class="text-slate-900 text-sm font-bold flex items-center gap-1">
-                                    <i class="ri-time-line text-rose-500"></i> {{ $propSettings->check_out_time ?? '12:00 WITA' }}
+                                    <i class="ri-time-line text-rose-500"></i> 12:00 WITA
                                 </strong>
                             </div>
                         </div>
-
-                        @if(!empty($propSettings->cancellation_policy))
-                            <div class="p-3 bg-white rounded-2xl border border-slate-200/60 space-y-1">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase block">Kebijakan Pembatalan</span>
-                                <div class="text-slate-600 text-xs">{!! $propSettings->cancellation_policy !!}</div>
-                            </div>
-                        @endif
 
                         @if(!empty($propSettings->phone) || !empty($propSettings->email))
                             <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">

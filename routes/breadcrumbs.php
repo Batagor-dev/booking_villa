@@ -430,7 +430,28 @@ Breadcrumbs::for('reviews.edit', function (BreadcrumbTrail $trail, $review) {
     $trail->push('Moderasi Ulasan', route('reviews.edit', $review));
 });
 
-// **************************** END REVIEWS ***************************
+// **************************** PROPERTY RULES ***************************
+
+// Home > Property Rules
+Breadcrumbs::for('property_rules.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Peraturan Villa', route('property_rules.index'));
+});
+
+// Home > Property Rules > Create
+Breadcrumbs::for('property_rules.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('property_rules.index');
+    $trail->push('Tambah Peraturan', route('property_rules.create'));
+});
+
+// Home > Property Rules > Edit
+Breadcrumbs::for('property_rules.edit', function (BreadcrumbTrail $trail, $property_rule) {
+    $trail->parent('property_rules.index');
+    $trail->push('Update [' . $property_rule->title . ']', route('property_rules.edit', $property_rule));
+});
+
+// **************************** END PROPERTY RULES ***************************
+
 
 
 
