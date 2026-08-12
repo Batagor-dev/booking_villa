@@ -241,7 +241,7 @@
                 </p>
 
                 <!-- Embedded Interactive Google Maps Container -->
-                <div class="w-full h-72 sm:h-96 overflow-hidden border border-slate-200/80 relative rounded-2xl">
+                <div class="w-full h-72 sm:h-96 overflow-hidden border border-slate-200/80 relative rounded-2xl [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0">
                     @if(!empty($property->map_link))
                         {!! $property->map_link !!}
                     @else

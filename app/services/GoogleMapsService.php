@@ -21,60 +21,57 @@ class GoogleMapsService
 
         $url = trim($url);
 
-        // If it's already an iframe HTML tag
-        if (str_contains($url, '<iframe')) {
-            preg_match('/src=["\']([^"\']+)["\']/i', $url, $m);
-            $embedUrl = $m[1] ?? '';
+        // Input MUST contain an iframe HTML tag
+        if (!str_contains($url, '<iframe')) {
             return [
-                'success' => true,
-                'iframe' => $url,
-                'embed_url' => $embedUrl,
-                'direct_url' => $embedUrl,
-                'place_name' => null,
-                'lat' => null,
-                'lng' => null,
+                'success' => false,
+                'message' => 'Format lokasi tidak valid. Input Google Maps wajib menggunakan kode Embed Tag <iframe>...</iframe>, link biasa tidak bisa digunakan.',
             ];
         }
 
-        $fullUrl = $this->expandUrl($url);
-        $placeName = $this->extractPlaceName($fullUrl);
-        
+        preg_match('/src=["\']([^"\']+)["\']/i', $url, $m);
+        $embedUrl = $m[1] ?? '';
+
         $lat = null;
         $lng = null;
-        $this->extractCoordinates($fullUrl, $lat, $lng);
-
-        // Build query string for Google Maps embed with RED MARKER PIN using clean match expression
-        $query = match (true) {
-            (bool)($placeName && $lat && $lng) => urlencode($placeName) . "@{$lat},{$lng}",
-            (bool)$placeName => urlencode($placeName),
-            (bool)($lat && $lng) => "{$lat},{$lng}",
-            default => urlencode($fullUrl),
-        };
-
-        $embedSrc = "https://maps.google.com/maps?q={$query}&t=&z=15&ie=UTF8&iwloc=&output=embed";
-        $iframeHtml = '<iframe src="' . $embedSrc . '" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>';
+        $this->extractCoordinates($embedUrl ?: $url, $lat, $lng);
 
         return [
             'success' => true,
-            'iframe' => $iframeHtml,
-            'embed_url' => $embedSrc,
-            'direct_url' => $fullUrl,
-            'place_name' => $placeName ?: null,
+            'iframe' => $url,
+            'embed_url' => $embedUrl,
+            'direct_url' => $embedUrl,
+            'place_name' => null,
             'lat' => $lat,
             'lng' => $lng,
         ];
     }
 
     /**
-     * Helper to directly convert a link to iframe markup.
+     * Helper to return iframe markup if valid iframe tag is provided.
      *
      * @param string|null $url
      * @return string|null
      */
     public function formatToIframe(?string $url): ?string
     {
-        $resolved = $this->resolve($url);
-        return $resolved['success'] ? $resolved['iframe'] : null;
+        if (empty($url)) {
+            return null;
+        }
+        $trimmed = trim($url);
+        if (!str_contains($trimmed, '<iframe')) {
+            return null;
+        }
+        
+        // Ensure iframe takes 100% width and 100% height
+        if (preg_match('/width=["\']\d+%?["\']/i', $trimmed)) {
+            $trimmed = preg_replace('/width=["\']\d+%?["\']/i', 'width="100%"', $trimmed);
+        }
+        if (preg_match('/height=["\']\d+%?["\']/i', $trimmed)) {
+            $trimmed = preg_replace('/height=["\']\d+%?["\']/i', 'height="100%"', $trimmed);
+        }
+
+        return $trimmed;
     }
 
     /**

@@ -50,7 +50,15 @@ class UpdatePropertyRequest extends FormRequest
             'province'              => 'nullable|string|max:100',
             'postal_code'           => 'nullable|string|max:20',
             'main_image'            => 'nullable|image|file|max:3072',
-            'map_link'              => 'nullable|string',
+            'map_link'              => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value) && !str_contains(trim($value), '<iframe')) {
+                        $fail('Input Google Maps harus berupa kode HTML tag <iframe>...</iframe> (Share -> Embed a map). Link biasa tidak dapat digunakan.');
+                    }
+                },
+            ],
             'status'                => 'nullable',
             'is_featured'           => 'nullable',
 
