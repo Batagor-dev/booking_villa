@@ -4,6 +4,7 @@
     'labels' => [],
     'colors' => null,
     'height' => 300,
+    'showYAxis' => true,
     'options' => []
 ])
 
@@ -18,6 +19,7 @@
     labels: @js($labels),
     colors: @js($colors),
     height: '{{ $height }}',
+    showYAxis: @js($showYAxis),
     customOptions: @js($options)
 })">
     <div id="{{ $chartId }}" class="w-full" style="min-height: {{ $height }}px;"></div>
@@ -63,8 +65,16 @@
                                 theme: 'light',
                                 x: { show: true },
                                 y: {
-                                    formatter: function(val) {
-                                        return val;
+                                    formatter: function(val, opts) {
+                                        if (val === null || val === undefined) return val;
+                                        const seriesIdx = opts ? opts.seriesIndex : 0;
+                                        if (seriesIdx === 0 && val >= 1000) {
+                                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
+                                        }
+                                        if (seriesIdx === 1) {
+                                            return new Intl.NumberFormat('id-ID').format(val) + ' Booking';
+                                        }
+                                        return new Intl.NumberFormat('id-ID').format(val);
                                     }
                                 },
                                 style: {
@@ -89,16 +99,66 @@
                                     }
                                 }
                             };
-                            options.yaxis = {
-                                labels: {
-                                    style: {
-                                        colors: '#94a3b8',
-                                        fontSize: '11px',
-                                        fontFamily: 'Satoshi, sans-serif',
-                                        fontWeight: 500
-                                    }
+
+                            // Dual Y-Axis handling for multi-series with vastly different numerical scales (e.g. Millions vs Small integer count)
+                            if (Array.isArray(config.series) && config.series.length === 2) {
+                                const data1 = config.series[0].data || [];
+                                const data2 = config.series[1].data || [];
+                                const max1 = Math.max(...data1, 0);
+                                const max2 = Math.max(...data2, 0);
+
+                                if (max1 > 100 && max2 < 1000) {
+                                    options.yaxis = [
+                                        {
+                                            show: true,
+                                            seriesName: config.series[0].name,
+                                            labels: {
+                                                show: true,
+                                                formatter: function(val) {
+                                                    if (val >= 1000000) return (val / 1000000).toFixed(1).replace(/\.0$/, '') + ' Jt';
+                                                    if (val >= 1000) return (val / 1000).toFixed(0) + 'k';
+                                                    return val;
+                                                },
+                                                style: { colors: '#64748b', fontSize: '11px', fontFamily: 'Satoshi, sans-serif' }
+                                            }
+                                        },
+                                        {
+                                            show: false,
+                                            opposite: true,
+                                            seriesName: config.series[1].name,
+                                            labels: {
+                                                show: false
+                                            }
+                                        }
+                                    ];
+                                } else {
+                                    options.yaxis = {
+                                        show: true,
+                                        labels: {
+                                            show: true,
+                                            style: {
+                                                colors: '#94a3b8',
+                                                fontSize: '11px',
+                                                fontFamily: 'Satoshi, sans-serif',
+                                                fontWeight: 500
+                                            }
+                                        }
+                                    };
                                 }
-                            };
+                            } else {
+                                options.yaxis = {
+                                    show: true,
+                                    labels: {
+                                        show: true,
+                                        style: {
+                                            colors: '#94a3b8',
+                                            fontSize: '11px',
+                                            fontFamily: 'Satoshi, sans-serif',
+                                            fontWeight: 500
+                                        }
+                                    }
+                                };
+                            }
                         }
                         
                         if (config.type === 'area') {

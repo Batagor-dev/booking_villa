@@ -456,7 +456,7 @@
         </x-ui.card>
 
         <!-- Top Rated Villas Spotlight Grid (2 Columns) -->
-        <x-ui.card class="lg:col-span-2 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300 border border-slate-200/80">
+        <x-ui.card class="lg:col-span-2 p-6 flex flex-col hover:shadow-xl transition-all duration-300 border border-slate-200/80">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
                 <div>
                     <h3 class="font-satoshi-bold text-slate-900 text-base flex items-center gap-2">
