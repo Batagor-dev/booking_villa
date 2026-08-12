@@ -180,7 +180,7 @@
                 <div class="shrink-0">
                     @php 
                         $bookingUrl = route('booking.create', [
-                            'slug' => $property->slug ?? '',
+                            'property' => $property->slug ?? '',
                             'promo' => $promoDetails['code'] ?? ''
                         ]); 
                     @endphp
@@ -565,7 +565,7 @@
                                     <button type="button" @click="requireBookingModalOpen = false" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
                                         Tutup
                                     </button>
-                                    <a href="{{ route('booking.create', ['slug' => $property->slug]) }}" class="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#152c4e] hover:bg-[#0f1d32] text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
+                                    <a href="{{ route('booking.create', ['property' => $property->slug]) }}" class="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#152c4e] hover:bg-[#0f1d32] text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
                                         <span>Pesan {{ $property->name }} Sekarang</span>
                                         <i class="ri-arrow-right-line text-sm"></i>
                                     </a>
@@ -1015,12 +1015,12 @@
 
             <!-- Right CTA Button: Minimalist Gold Button -->
             @auth
-                <a href="{{ route('booking.create', $property->slug ?? '') }}" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
+                <a href="{{ route('booking.create', ['property' => $property->slug ?? '']) }}" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
                     <span>Pesan Sekarang</span>
                     <i class="ri-arrow-right-line text-sm"></i>
                 </a>
             @else
-                <button onclick="openRequireLoginModal('{{ route('booking.create', $property->slug ?? '') }}')" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
+                <button onclick="openRequireLoginModal('{{ route('booking.create', ['property' => $property->slug ?? '']) }}')" class="bg-[#ca9e54] hover:bg-[#b88c43] text-slate-950 font-bold px-5 py-2.5 rounded-full text-xs transition-transform active:scale-95 cursor-pointer shadow-lg flex items-center gap-1.5 shrink-0">
                     <span>Pesan Sekarang</span>
                     <i class="ri-arrow-right-line text-sm"></i>
                 </button>

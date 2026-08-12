@@ -46,13 +46,18 @@ class BookingController extends Controller
 
         $properties = Properties::where('status', true)->with(['settings', 'galleries', 'facilities'])->latest()->get();
         
-        $selectedSlug = $slug ?? $request->query('property');
+        $selectedSlug = $slug ?? $request->query('slug') ?? $request->query('property');
         
         $selectedProperty = null;
         if ($selectedSlug) {
-            $selectedProperty = $properties->firstWhere('slug', $selectedSlug);
+            $selectedProperty = $properties->firstWhere('slug', $selectedSlug)
+                ?? $properties->firstWhere('id', $selectedSlug);
+
             if (!$selectedProperty) {
-                $selectedProperty = Properties::where('slug', $selectedSlug)->with(['settings', 'galleries', 'facilities'])->first();
+                $selectedProperty = Properties::where('slug', $selectedSlug)
+                    ->orWhere('id', $selectedSlug)
+                    ->with(['settings', 'galleries', 'facilities'])
+                    ->first();
             }
         }
         
