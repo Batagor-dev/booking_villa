@@ -40,6 +40,7 @@ class PromotionController extends Controller
         DB::transaction(function () use ($request) {
             $data = $request->validated();
             $data['status'] = $request->has('status') ? 1 : 0;
+            $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
             // Set times to exactly 12 AM (midnight)
             if (!empty($data['start_date'])) {
@@ -103,6 +104,7 @@ class PromotionController extends Controller
         DB::transaction(function () use ($request, $promotion) {
             $data = $request->validated();
             $data['status'] = $request->has('status') ? 1 : 0;
+            $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
             // Set times to exactly 12 AM (midnight)
             if (!empty($data['start_date'])) {

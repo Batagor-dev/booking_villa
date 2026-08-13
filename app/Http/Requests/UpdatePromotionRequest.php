@@ -79,6 +79,11 @@ class UpdatePromotionRequest extends FormRequest
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after:start_date'],
             'status' => ['nullable'],
+            'badge_text' => ['nullable', 'string', 'max:100'],
+            'is_featured' => ['nullable'],
+            'banner_theme' => ['nullable', 'string', 'in:navy,gold,dark'],
+            'features' => ['nullable', 'string'],
+            'icon' => ['nullable', 'string', 'max:100'],
         ];
     }
 }

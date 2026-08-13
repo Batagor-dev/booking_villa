@@ -24,63 +24,104 @@
         </div>
     </section>
 
+    @php
+        $dbPromos = isset($promotions) && $promotions->count() > 0 ? $promotions : collect();
+        $featuredPromos = $dbPromos->where('is_featured', true)->values();
+        
+        if ($featuredPromos->count() === 0) {
+            $featuredPromos = $dbPromos->take(2);
+            $otherPromos = $dbPromos->slice(2);
+        } else {
+            $featuredIds = $featuredPromos->pluck('id')->toArray();
+            $otherPromos = $dbPromos->reject(fn($p) => in_array($p->id, $featuredIds));
+        }
+
+        $p1 = $featuredPromos->get(0);
+        $p2 = $featuredPromos->get(1);
+
+        $getThemeClass = function($theme, $default = 'navy') {
+            return match($theme ?? $default) {
+                'gold' => 'bg-gradient-to-br from-[#d4af37] via-[#ca9e54] to-[#b88c43]',
+                'dark' => 'bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617]',
+                default => 'bg-gradient-to-br from-[#1e3a66] via-[#152c4e] to-[#0b172a]'
+            };
+        };
+    @endphp
+
     <!-- PROMO CARDS SECTION -->
     <section class="py-14 sm:py-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto font-satoshi">
         
         <!-- Top Main Banners Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
             
-            <!-- Main Promo 1: Flash Sale Weekend Escape -->
-            <div class="bg-gradient-to-br from-[#1e3a66] via-[#152c4e] to-[#0b172a] text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col justify-between border border-white/10 group">
+            <!-- Main Promo Card 1 -->
+            <div class="{{ $getThemeClass($p1?->banner_theme, 'navy') }} text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col justify-between border border-white/10 group">
                 <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#ca9e54]/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
 
                 <div>
                     <!-- Badge & Discount Pill -->
                     <div class="flex items-center justify-between gap-2 mb-6">
                         <span class="inline-flex items-center gap-1.5 bg-[#ca9e54] text-white text-[10px] sm:text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                            <i class="ri-time-line"></i> Flash Sale Weekend
+                            <i class="ri-time-line"></i> {{ $p1 ? ($p1->badge_text ?: ($p1->promotion_type === 'automatic' ? 'Promo Otomatis' : 'Flash Sale Special')) : 'FLASH SALE WEEKEND' }}
                         </span>
                         <span class="bg-white/10 backdrop-blur-md text-[#e5c382] text-xs font-bold px-3 py-1 rounded-full border border-white/10">
-                            -40% OFF
+                            @if($p1)
+                                {{ $p1->discount_type === 'percentage' ? '-' . number_format($p1->discount_value, 0) . '% OFF' : 'Diskon Rp ' . number_format($p1->discount_value, 0, ',', '.') }}
+                            @else
+                                -40% OFF
+                            @endif
                         </span>
                     </div>
 
                     <h3 class="font-serif-title text-2xl sm:text-4xl font-bold mb-3 leading-tight">
-                        Weekend Luxury Escape
+                        {{ $p1 ? $p1->name : 'Weekend Luxury Escape' }}
                     </h3>
                     
                     <p class="text-xs sm:text-sm text-white/80 font-light leading-relaxed mb-6">
-                        Reservasi weekend di villa mewah pilihan kawasan Seminyak & Uluwatu. Dapatkan diskon 40% plus bonus gratis makan malam dan welcome drink.
+                        {{ $p1 ? ($p1->description ?: 'Reservasi weekend di villa mewah pilihan kawasan Seminyak & Uluwatu. Dapatkan diskon 40% plus bonus gratis makan malam dan welcome drink.') : 'Reservasi weekend di villa mewah pilihan kawasan Seminyak & Uluwatu. Dapatkan diskon 40% plus bonus gratis makan malam dan welcome drink.' }}
                     </p>
+
+                    <!-- Features Checklist (If Provided) -->
+                    @if($p1 && count($p1->features_list) > 0)
+                        <ul class="space-y-2.5 mb-6 text-xs sm:text-sm font-medium text-white/95">
+                            @foreach($p1->features_list as $feat)
+                                <li class="flex items-center gap-2.5">
+                                    <i class="ri-checkbox-circle-fill text-lg text-[#e5c382]"></i>
+                                    <span>{{ $feat }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
 
                     <!-- Live Countdown Timer -->
                     <div class="mb-6">
                         <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-2">SISA WAKTU PROMO:</span>
-                        <div class="flex items-center gap-2 sm:gap-3" id="promo-timer">
+                        <div class="flex items-center gap-2 sm:gap-3" id="promo-timer-1">
                             <div class="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 min-w-[62px] text-center border border-white/10">
-                                <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p-hours">23</span>
+                                <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p1-hours">23</span>
                                 <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">JAM</span>
                             </div>
                             <span class="text-lg font-bold text-[#e5c382]">:</span>
                             <div class="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 min-w-[62px] text-center border border-white/10">
-                                <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p-mins">42</span>
+                                <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p1-mins">42</span>
                                 <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">MENIT</span>
                             </div>
                             <span class="text-lg font-bold text-[#e5c382]">:</span>
                             <div class="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 min-w-[62px] text-center border border-white/10">
-                                <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p-secs">15</span>
+                                <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p1-secs">15</span>
                                 <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">DETIK</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Voucher Box -->
+                    @php $code1 = $p1 ? ($p1->code ?: 'PALMAWEEKEND') : 'PALMAWEEKEND'; @endphp
                     <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 flex items-center justify-between mb-8">
                         <div>
                             <span class="text-[9px] uppercase font-bold text-slate-300 block">KODE VOUCHER</span>
-                            <span class="text-lg sm:text-xl font-mono font-bold text-[#e5c382]">PALMAWEEKEND</span>
+                            <span class="text-lg sm:text-xl font-mono font-bold text-[#e5c382]">{{ $code1 }}</span>
                         </div>
-                        <button onclick="copyCode('PALMAWEEKEND', this)" class="bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md active:scale-95">
+                        <button onclick="copyCode('{{ $code1 }}', this)" class="bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer">
                             Salin Kode
                         </button>
                     </div>
@@ -94,60 +135,64 @@
                 </div>
             </div>
 
-            <!-- Main Promo 2: VIP Member Welcome Bonus -->
-            <div class="bg-gradient-to-br from-[#d4af37] via-[#ca9e54] to-[#b88c43] text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col justify-between group">
+            <!-- Main Promo Card 2 -->
+            <div class="{{ $getThemeClass($p2?->banner_theme, 'gold') }} text-white rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col justify-between group">
                 <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-black/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
 
                 <div>
                     <!-- Badge -->
                     <div class="flex items-center justify-between gap-2 mb-6">
                         <span class="inline-flex items-center gap-1.5 bg-black/20 backdrop-blur-md text-white text-[10px] sm:text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider border border-white/20">
-                            <i class="ri-vip-crown-line"></i> Khusus Member Baru
+                            <i class="ri-vip-crown-line"></i> {{ $p2 ? ($p2->badge_text ?: 'KHUSUS MEMBER BARU') : 'KHUSUS MEMBER BARU' }}
                         </span>
                         <span class="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
-                            -35% OFF
+                            @if($p2)
+                                {{ $p2->discount_type === 'percentage' ? '-' . number_format($p2->discount_value, 0) . '% OFF' : 'Diskon Rp ' . number_format($p2->discount_value, 0, ',', '.') }}
+                            @else
+                                -35% OFF
+                            @endif
                         </span>
                     </div>
 
                     <h3 class="font-serif-title text-2xl sm:text-4xl font-bold mb-3 leading-tight">
-                        Bonus Registrasi Pertama
+                        {{ $p2 ? $p2->name : 'Bonus Registrasi Pertama' }}
                     </h3>
 
                     <p class="text-xs sm:text-sm text-white/90 font-light leading-relaxed mb-6">
-                        Daftar akun Palma hari ini dan klaim diskon instan 35% untuk reservasi villa pertama Anda beserta paket penjemputan bandara gratis.
+                        {{ $p2 ? ($p2->description ?: 'Daftar akun Palma hari ini dan klaim diskon instan 35% untuk reservasi villa pertama Anda beserta paket penjemputan bandara gratis.') : 'Daftar akun Palma hari ini dan klaim diskon instan 35% untuk reservasi villa pertama Anda beserta paket penjemputan bandara gratis.' }}
                     </p>
 
                     <!-- Features checklist -->
+                    @php
+                        $featuresList = $p2 && count($p2->features_list) > 0 
+                            ? $p2->features_list 
+                            : ['Gratis Transfer Bandara VIP (Alphard / SUV)', 'Gratis Romantic Candlelight Dinner', 'Layanan Concierge 24 Jam Nonstop'];
+                    @endphp
                     <ul class="space-y-2.5 mb-6 text-xs sm:text-sm font-medium text-white/95">
-                        <li class="flex items-center gap-2.5">
-                            <i class="ri-checkbox-circle-fill text-lg text-white"></i>
-                            <span>Gratis Transfer Bandara VIP (Alphard / SUV)</span>
-                        </li>
-                        <li class="flex items-center gap-2.5">
-                            <i class="ri-checkbox-circle-fill text-lg text-white"></i>
-                            <span>Gratis Romantic Candlelight Dinner</span>
-                        </li>
-                        <li class="flex items-center gap-2.5">
-                            <i class="ri-checkbox-circle-fill text-lg text-white"></i>
-                            <span>Layanan Concierge 24 Jam Nonstop</span>
-                        </li>
+                        @foreach($featuresList as $feat)
+                            <li class="flex items-center gap-2.5">
+                                <i class="ri-checkbox-circle-fill text-lg text-white"></i>
+                                <span>{{ $feat }}</span>
+                            </li>
+                        @endforeach
                     </ul>
 
                     <!-- Voucher Box -->
+                    @php $code2 = $p2 ? ($p2->code ?: 'WELCOMEPALMA') : 'WELCOMEPALMA'; @endphp
                     <div class="bg-black/20 backdrop-blur-md rounded-2xl p-3.5 border border-white/20 flex items-center justify-between mb-8">
                         <div>
                             <span class="text-[9px] uppercase font-bold text-white/70 block">KODE VOUCHER</span>
-                            <span class="text-lg sm:text-xl font-mono font-bold text-white">WELCOMEPALMA</span>
+                            <span class="text-lg sm:text-xl font-mono font-bold text-white">{{ $code2 }}</span>
                         </div>
-                        <button onclick="copyCode('WELCOMEPALMA', this)" class="bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md active:scale-95">
+                        <button onclick="copyCode('{{ $code2 }}', this)" class="bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer">
                             Salin Kode
                         </button>
                     </div>
                 </div>
 
                 <div>
-                    <a href="{{ route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-50 font-bold px-8 py-4 rounded-full text-xs uppercase tracking-wider transition duration-300 shadow-lg">
-                        <span>Daftar & Klaim Diskon</span>
+                    <a href="{{ auth()->check() ? route('villa.index') : route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-50 font-bold px-8 py-4 rounded-full text-xs uppercase tracking-wider transition duration-300 shadow-lg">
+                        <span>{{ auth()->check() ? 'Gunakan Promo Sekarang' : 'Daftar & Klaim Diskon' }}</span>
                         <i class="ri-arrow-right-line text-base"></i>
                     </a>
                 </div>
@@ -163,80 +208,100 @@
             </h2>
         </div>
 
-        <!-- 4 Curated Feature Promo Cards Grid -->
+        <!-- Curated Feature Promo Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <!-- Card 1 -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 rounded-2xl bg-[#152c4e]/10 text-[#152c4e] flex items-center justify-center text-xl">
-                        <i class="ri-calendar-check-line"></i>
+            @if($otherPromos->count() > 0)
+                @foreach($otherPromos as $op)
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
+                        <div class="space-y-3">
+                            <div class="w-11 h-11 rounded-2xl bg-[#152c4e]/10 text-[#152c4e] flex items-center justify-center text-xl">
+                                <i class="{{ $op->icon ?: 'ri-price-tag-3-line' }}"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-[#ca9e54] uppercase tracking-wider block">
+                                {{ $op->badge_text ?: ($op->discount_type === 'percentage' ? 'DISKON ' . number_format($op->discount_value, 0) . '%' : 'HEMAT Rp ' . number_format($op->discount_value, 0, ',', '.')) }}
+                            </span>
+                            <h4 class="font-serif-title text-xl font-bold text-slate-900">{{ $op->name }}</h4>
+                            <p class="text-xs text-slate-500 font-light leading-relaxed">
+                                {{ $op->description ?: 'Gunakan kode promo ini saat melakukan reservasi villa untuk mendapatkan penawaran spesial.' }}
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[11px] font-mono font-bold text-slate-700">{{ $op->code ?: 'OTOMATIS' }}</span>
+                            <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
+                        </div>
                     </div>
-                    <span class="text-[10px] font-bold text-[#ca9e54] uppercase tracking-wider block">LONG STAY SANCTUARY</span>
-                    <h4 class="font-serif-title text-xl font-bold text-slate-900">Hemat 25% (> 7 Malam)</h4>
-                    <p class="text-xs text-slate-500 font-light leading-relaxed">
-                        Nikmati pengalaman liburan panjang. Makin lama Anda menginap, makin hemat harga per malamnya.
-                    </p>
+                @endforeach
+            @else
+                <!-- Default Preset Deals -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-11 h-11 rounded-2xl bg-[#152c4e]/10 text-[#152c4e] flex items-center justify-center text-xl">
+                            <i class="ri-calendar-check-line"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-[#ca9e54] uppercase tracking-wider block">LONG STAY SANCTUARY</span>
+                        <h4 class="font-serif-title text-xl font-bold text-slate-900">Hemat 25% (> 7 Malam)</h4>
+                        <p class="text-xs text-slate-500 font-light leading-relaxed">
+                            Nikmati pengalaman liburan panjang. Makin lama Anda menginap, makin hemat harga per malamnya.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-[11px] font-mono font-bold text-slate-700">LONGSTAY25</span>
+                        <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
+                    </div>
                 </div>
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-[11px] font-mono font-bold text-slate-700">LONGSTAY25</span>
-                    <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
-                </div>
-            </div>
 
-            <!-- Card 2 -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 rounded-2xl bg-[#ca9e54]/10 text-[#ca9e54] flex items-center justify-center text-xl">
-                        <i class="ri-gift-line"></i>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-11 h-11 rounded-2xl bg-[#ca9e54]/10 text-[#ca9e54] flex items-center justify-center text-xl">
+                            <i class="ri-gift-line"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-[#ca9e54] uppercase tracking-wider block">REFERRAL REWARD</span>
+                        <h4 class="font-serif-title text-xl font-bold text-slate-900">Kredit $100 Per Teman</h4>
+                        <p class="text-xs text-slate-500 font-light leading-relaxed">
+                            Ajak kerabat & teman Anda menginap di Palma dan dapatkan langsung kredit saldo $100 per booking.
+                        </p>
                     </div>
-                    <span class="text-[10px] font-bold text-[#ca9e54] uppercase tracking-wider block">REFERRAL REWARD</span>
-                    <h4 class="font-serif-title text-xl font-bold text-slate-900">Kredit $100 Per Teman</h4>
-                    <p class="text-xs text-slate-500 font-light leading-relaxed">
-                        Ajak kerabat & teman Anda menginap di Palma dan dapatkan langsung kredit saldo $100 per booking.
-                    </p>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-[11px] font-mono font-bold text-slate-700">REFER100</span>
+                        <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
+                    </div>
                 </div>
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-[11px] font-mono font-bold text-slate-700">REFER100</span>
-                    <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
-                </div>
-            </div>
 
-            <!-- Card 3 -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-xl">
-                        <i class="ri-price-tag-3-line"></i>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-xl">
+                            <i class="ri-price-tag-3-line"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">LAST MINUTE DEAL</span>
+                        <h4 class="font-serif-title text-xl font-bold text-slate-900">Diskon Hingga 50%</h4>
+                        <p class="text-xs text-slate-500 font-light leading-relaxed">
+                            Penawaran istimewa untuk pemesanan tanggal spontan di minggu yang sama.
+                        </p>
                     </div>
-                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">LAST MINUTE DEAL</span>
-                    <h4 class="font-serif-title text-xl font-bold text-slate-900">Diskon Hingga 50%</h4>
-                    <p class="text-xs text-slate-500 font-light leading-relaxed">
-                        Penawaran istimewa untuk pemesanan tanggal spontan di minggu yang sama.
-                    </p>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-[11px] font-mono font-bold text-slate-700">LASTMIN50</span>
+                        <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
+                    </div>
                 </div>
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-[11px] font-mono font-bold text-slate-700">LASTMIN50</span>
-                    <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
-                </div>
-            </div>
 
-            <!-- Card 4 -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-xl">
-                        <i class="ri-heart-3-line"></i>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition duration-300 flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="w-11 h-11 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-xl">
+                            <i class="ri-heart-3-line"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">HONEYMOON SPECIAL</span>
+                        <h4 class="font-serif-title text-xl font-bold text-slate-900">Paket Pasangan Romantis</h4>
+                        <p class="text-xs text-slate-500 font-light leading-relaxed">
+                            Gratis dekorasi bunga tempat tidur, botol wine premium, dan perawatan spa pasangan 90 menit.
+                        </p>
                     </div>
-                    <span class="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">HONEYMOON SPECIAL</span>
-                    <h4 class="font-serif-title text-xl font-bold text-slate-900">Paket Pasangan Romantis</h4>
-                    <p class="text-xs text-slate-500 font-light leading-relaxed">
-                        Gratis dekorasi bunga tempat tidur, botol wine premium, dan perawatan spa pasangan 90 menit.
-                    </p>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-[11px] font-mono font-bold text-slate-700">ROMANCEVIP</span>
+                        <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
+                    </div>
                 </div>
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-[11px] font-mono font-bold text-slate-700">ROMANCEVIP</span>
-                    <a href="{{ route('villa.index') }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54]">Pesan <i class="ri-arrow-right-line"></i></a>
-                </div>
-            </div>
+            @endif
 
         </div>
 
@@ -261,9 +326,9 @@
 
     // Ticking Countdown Timer JS
     let pHours = 23, pMins = 42, pSecs = 15;
-    const hEl = document.getElementById('p-hours');
-    const mEl = document.getElementById('p-mins');
-    const sEl = document.getElementById('p-secs');
+    const hEl = document.getElementById('p1-hours');
+    const mEl = document.getElementById('p1-mins');
+    const sEl = document.getElementById('p1-secs');
 
     setInterval(() => {
         if (pSecs > 0) {

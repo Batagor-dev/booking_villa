@@ -18,6 +18,18 @@ class PromoController extends Controller
     }
 
     /**
+     * Display the public promotions page.
+     */
+    public function index()
+    {
+        $promotions = \App\Models\Promotion::active()
+            ->latest()
+            ->get();
+
+        return view('promo.index', compact('promotions'));
+    }
+
+    /**
      * AJAX Endpoint to validate and apply promo code.
      */
     public function checkPromo(Request $request): JsonResponse

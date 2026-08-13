@@ -18,11 +18,24 @@ class Promotion extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'status' => 'boolean',
+        'is_featured' => 'boolean',
         'discount_value' => 'decimal:2',
         'min_transaction' => 'decimal:2',
         'max_uses' => 'integer',
         'used_count' => 'integer',
     ];
+
+    /**
+     * Get features list as array (split by comma ',' or newline)
+     */
+    public function getFeaturesListAttribute(): array
+    {
+        if (empty($this->features)) {
+            return [];
+        }
+        $items = preg_split('/[,\n]+/', $this->features);
+        return array_values(array_filter(array_map('trim', $items)));
+    }
 
     /**
      * Scope a query to only include active promotions.

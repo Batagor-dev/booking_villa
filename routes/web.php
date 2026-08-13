@@ -46,9 +46,7 @@ Route::get('/layanan', function () {
     return view('layanan.index');
 })->name('layanan.index');
 
-Route::get('/promo', function () {
-    return view('promo.index');
-})->name('promo.index');
+Route::get('/promo', [App\Http\Controllers\PromoController::class, 'index'])->name('promo.index');
 
 // Route untuk memicu login Google
 Route::get('/auth/google', [App\Http\Controllers\SocialiteController::class, 'redirectToGoogle'])->name('google.login');
