@@ -134,25 +134,35 @@
                         </div>
                     </div>
 
-                    <!-- PROPERTY SETTINGS & POLICIES (`PropertySettings`) -->
+                    <!-- PROPERTY SETTINGS & POLICIES (`PropertyRule`) -->
                     <div class="bg-slate-50/80 p-5 sm:p-6 rounded-3xl border border-slate-200/80 space-y-4 text-xs font-medium text-slate-700">
-                        <h4 class="font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-xs">
-                            <i class="ri-[#152c4e] ri-information-line text-base text-[#ca9e54]"></i> Aturan & Kebijakan Menginap
-                        </h4>
+                        <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
+                            <h4 class="font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-xs">
+                                <i class="ri-shield-check-line text-base text-[#ca9e54]"></i> Aturan & Kebijakan Menginap
+                            </h4>
+                            <span class="text-[10px] font-bold text-[#ca9e54] uppercase bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                                {{ $selectedProperty->type ?? 'Properti' }}
+                            </span>
+                        </div>
                         
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="p-3 bg-white rounded-2xl border border-slate-200/60">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Waktu Check-In</span>
-                                <strong class="text-slate-900 text-sm font-bold flex items-center gap-1">
-                                    <i class="ri-time-line text-[#ca9e54]"></i> 14:00 WITA
-                                </strong>
-                            </div>
-                            <div class="p-3 bg-white rounded-2xl border border-slate-200/60">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase block mb-0.5">Waktu Check-Out</span>
-                                <strong class="text-slate-900 text-sm font-bold flex items-center gap-1">
-                                    <i class="ri-time-line text-rose-500"></i> 12:00 WITA
-                                </strong>
-                            </div>
+                        <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                            @forelse($propertyRules ?? [] as $rule)
+                                <div class="flex items-start gap-2.5 pb-2.5 border-b border-slate-200/50 last:border-0 last:pb-0">
+                                    <i class="{{ $rule->icon ?: 'ri-shield-line' }} text-base text-[#ca9e54] shrink-0 mt-0.5"></i>
+                                    <div class="space-y-0.5">
+                                        <strong class="text-slate-900 font-bold block text-xs">{{ $rule->title }}</strong>
+                                        <p class="text-[11px] text-slate-500 leading-snug font-light">{{ $rule->description }}</p>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="flex items-start gap-2.5 pb-2.5 border-b border-slate-200/50">
+                                    <i class="ri-time-line text-base text-[#ca9e54] shrink-0 mt-0.5"></i>
+                                    <div class="space-y-0.5">
+                                        <strong class="text-slate-900 font-bold block text-xs">Waktu Check-in & Check-out</strong>
+                                        <p class="text-[11px] text-slate-500 leading-snug font-light">Check-in mulai 14:00 WITA. Check-out maksimal 12:00 WITA.</p>
+                                    </div>
+                                </div>
+                            @endforelse
                         </div>
 
                         @if(!empty($propSettings->phone) || !empty($propSettings->email))
@@ -426,6 +436,14 @@
 
                     <!-- SUBMIT BUTTON & SECURITY DISCLAIMER CARD -->
                     <div class="pt-4 space-y-3">
+                        <!-- PROPERTY RULES AGREEMENT CHECKBOX -->
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs flex items-start gap-2.5">
+                            <input type="checkbox" id="agree_rules" name="agree_rules" required class="mt-0.5 rounded border-slate-300 text-[#152c4e] focus:ring-[#ca9e54] cursor-pointer shrink-0">
+                            <label for="agree_rules" class="text-slate-600 font-medium cursor-pointer leading-snug">
+                                Saya telah membaca dan menyetujui <strong class="text-slate-900 font-bold">Peraturan & Kebijakan Villa</strong> yang berlaku.
+                            </label>
+                        </div>
+
                         <x-ui.button 
                             type="submit" 
                             size="lg" 

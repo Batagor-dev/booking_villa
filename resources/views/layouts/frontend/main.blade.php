@@ -51,6 +51,8 @@
             background: linear-gradient(135deg, #f5e6c8 0%, #ca9e54 50%, #b88c43 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            display: inline-block;
+            padding-right: 0.2em;
         }
         .gold-glow {
             box-shadow: 0 0 25px -5px rgba(202, 158, 84, 0.4);

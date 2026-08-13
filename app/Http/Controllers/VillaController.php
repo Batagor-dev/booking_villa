@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Properties;
 use App\Models\Destination;
 use App\Models\PaymentMethod;
+use App\Models\PropertyRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -220,6 +221,11 @@ class VillaController extends Controller
                 ->exists()
             : false;
 
-        return view('villa.show', compact('property', 'paymentMethods', 'galleryList', 'approvedReviews', 'totalReviews', 'propRating', 'userReview', 'userCanReview'));
+        $propertyRules = PropertyRule::active()
+            ->forPropertyType($property->type ?? 'Villa')
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        return view('villa.show', compact('property', 'paymentMethods', 'galleryList', 'approvedReviews', 'totalReviews', 'propRating', 'userReview', 'userCanReview', 'propertyRules'));
     }
 }

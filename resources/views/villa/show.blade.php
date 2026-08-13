@@ -577,48 +577,37 @@
 
             </div>
 
-            @php
-                $propertyRules = \App\Models\PropertyRule::active()->forPropertyType($property->type ?? 'Villa')->orderBy('sort_order', 'asc')->get();
-            @endphp
-
-            <!-- PERATURAN & KETENTUAN PEMESANAN -->
-            <div class="space-y-8 pt-4">
+            <!-- PERATURAN & KETENTUAN PEMESANAN (MINIMALIST LIST - NO CARDS) -->
+            <div class="space-y-6 pt-4">
                 <div class="border-b border-slate-200/80 pb-4">
                     <span class="text-[10px] font-bold tracking-widest text-[#ca9e54] uppercase block mb-1">INFORMASI & KEBIJAKAN {{ strtoupper($property->type ?? 'PROPERTI') }}</span>
                     <h3 class="font-serif-title text-2xl sm:text-3xl font-bold text-slate-900">Peraturan & Ketentuan Pemesanan</h3>
                     <p class="text-xs text-slate-500 mt-1">Harap pahami peraturan dan ketentuan sebelum melakukan pemesanan.</p>
                 </div>
 
-                <div class="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-6 space-y-4 shadow-xs">
-                    <div class="flex items-center gap-2 pb-3 border-b border-slate-200/60">
-                        <span class="w-2.5 h-2.5 rounded-full bg-[#ca9e54] shrink-0"></span>
-                        <h4 class="font-bold text-slate-900 text-xs sm:text-sm tracking-wide uppercase flex items-center gap-1.5">
-                            <i class="ri-shield-check-line text-[#ca9e54] text-base"></i> Peraturan Ketentuan (Tipe {{ $property->type ?? 'Properti' }})
-                        </h4>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600">
-                        @forelse($propertyRules as $rule)
-                            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
-                                <i class="{{ $rule->icon ?: 'ri-shield-line' }} text-[#ca9e54] text-lg shrink-0 mt-0.5"></i>
-                                <div>
-                                    <strong class="text-slate-900 font-semibold block text-sm mb-0.5">{{ $rule->title }}</strong>
-                                    <span>{{ $rule->description }}</span>
-                                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-xs text-slate-600 pt-2">
+                    @forelse($propertyRules as $rule)
+                        <div class="flex items-start gap-3.5 group">
+                            <span class="w-7 h-7 rounded-full bg-amber-50/80 border border-amber-200/60 text-[#ca9e54] flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-[#ca9e54] group-hover:text-white transition-colors duration-300">
+                                <i class="{{ $rule->icon ?: 'ri-shield-line' }} text-sm"></i>
+                            </span>
+                            <div class="space-y-0.5">
+                                <h4 class="text-slate-900 font-bold text-sm tracking-tight">{{ $rule->title }}</h4>
+                                <p class="text-slate-600 text-xs leading-relaxed font-light">{{ $rule->description }}</p>
                             </div>
-                        @empty
-                            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
-                                <i class="ri-time-line text-[#ca9e54] text-lg shrink-0 mt-0.5"></i>
-                                <div>
-                                    <strong class="text-slate-900 font-semibold block text-sm mb-0.5">Waktu Check-in & Check-out</strong>
-                                    <span>Check-in mulai pukul <strong class="text-slate-900 font-semibold">14:00 WITA</strong>. Check-out maksimal pukul <strong class="text-slate-900 font-semibold">12:00 WITA</strong>.</span>
-                                </div>
+                        </div>
+                    @empty
+                        <div class="flex items-start gap-3.5 group">
+                            <span class="w-7 h-7 rounded-full bg-amber-50/80 border border-amber-200/60 text-[#ca9e54] flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="ri-time-line text-sm"></i>
+                            </span>
+                            <div class="space-y-0.5">
+                                <h4 class="text-slate-900 font-bold text-sm tracking-tight">Waktu Check-in & Check-out</h4>
+                                <p class="text-slate-600 text-xs leading-relaxed font-light">Check-in mulai pukul <strong class="text-slate-900 font-semibold">14:00 WITA</strong>. Check-out maksimal pukul <strong class="text-slate-900 font-semibold">12:00 WITA</strong>.</p>
                             </div>
-                        @endforelse
-                    </div>
+                        </div>
+                    @endforelse
                 </div>
-
-
             </div>
 
         </div>
@@ -763,6 +752,14 @@
                         placeholder="Catatan khusus atau permintaan check-in..."
                         rows="2"
                     />
+
+                    <!-- PROPERTY RULES AGREEMENT CHECKBOX IN MODAL -->
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-[11px] text-slate-600 flex items-start gap-2 mt-2">
+                        <input type="checkbox" id="modal_agree_rules" name="agree_rules" required class="mt-0.5 rounded border-slate-300 text-[#152c4e] focus:ring-[#ca9e54] cursor-pointer shrink-0">
+                        <label for="modal_agree_rules" class="cursor-pointer leading-snug">
+                            Saya telah membaca dan menyetujui <strong class="text-slate-900 font-bold">Peraturan & Ketentuan {{ $property->type ?? 'Villa' }}</strong>.
+                        </label>
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full bg-[#152c4e] hover:bg-[#0f1e36] text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-colors mt-4 cursor-pointer flex items-center justify-center gap-2">

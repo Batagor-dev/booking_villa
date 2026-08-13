@@ -14,7 +14,7 @@
         </div>
 
         <!-- Hero Content -->
-        <div class="relative z-10 max-w-4xl mx-auto text-center text-white space-y-4 sm:space-y-6 my-auto pt-8 sm:pt-12">
+        <div class="relative z-10 max-w-5xl mx-auto text-center text-white space-y-4 sm:space-y-6 my-auto pt-8 sm:pt-12">
             <!-- Editorial Subhead Text -->
             <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">
                 Bali, Indonesia • Private Sanctuaries
@@ -23,7 +23,7 @@
             <!-- Title -->
             <h1 class="font-serif-title text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight md:leading-none tracking-tight">
                 Keindahan & Ketenangan <br class="hidden md:inline"/>
-                <span class="italic font-normal gold-gradient-text">Mewah di Bali</span>
+                <span class="italic font-normal gold-gradient-text inline-block pr-2.5">Mewah di Bali</span>
             </h1>
 
             <!-- Subtitle -->
@@ -164,56 +164,10 @@
             <p class="text-slate-600 font-light text-xs sm:text-base md:text-lg">
                 Temukan pilihan properti luar biasa kami di destinasi paling menakjubkan di dunia
             </p>
-        </div>        <!-- Villa Grid (Dynamic Cards) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8 mb-10 sm:mb-12">
-            @if(isset($properties) && $properties->count() > 0)
-                @foreach($properties as $villa)
-                    <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
-                        <div class="relative h-56 sm:h-64 overflow-hidden bg-slate-100">
-                            <img src="{{ $villa->main_image_url }}" 
-                                 alt="{{ $villa->name }}" 
-                                 loading="lazy"
-                                 decoding="async"
-                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                            <div class="absolute top-4 left-4 flex gap-2">
-                                <span class="bg-[#ca9e54] text-white text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full shadow-md uppercase">{{ $villa->code ?? 'PLM' }}</span>
-                                <span class="bg-white/90 backdrop-blur-md text-slate-800 text-[10px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1 rounded-full shadow-md">{{ $villa->type ?? 'Villa' }}</span>
-                            </div>
-                        </div>
-                        <div class="p-5 sm:p-6 flex-1 flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="font-serif-title text-lg sm:text-xl font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors line-clamp-1">
-                                        <a href="{{ route('villa.show', $villa->slug) }}">{{ $villa->name }}</a>
-                                    </h3>
-                                    <div class="flex items-center gap-1 text-xs sm:text-sm font-semibold text-slate-700 shrink-0 ml-2">
-                                        <i class="ri-star-fill text-[#ca9e54]"></i>
-                                        <span>{{ number_format($villa->rating ?? 4.9, 1) }}</span>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-slate-500 flex items-center gap-1.5 mb-4">
-                                    <i class="ri-map-pin-line text-slate-400 text-sm"></i>
-                                    {{ $villa->city ?? 'Seminyak' }}, {{ $villa->province ?? 'Bali' }}
-                                </p>
-                                <div class="flex items-center justify-between text-[11px] sm:text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                                    <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-sm text-[#ca9e54]"></i> {{ $villa->bedrooms }} Kamar</span>
-                                    <span class="flex items-center gap-1"><i class="ri-group-line text-sm text-[#ca9e54]"></i> {{ $villa->capacity }} Tamu</span>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline justify-between pt-2 border-t border-slate-100">
-                                <div>
-                                    <x-ui.price :value="$villa->price" class="text-xl sm:text-2xl font-bold text-[#152c4e]" />
-                                    <span class="text-xs font-normal text-slate-500">/ malam</span>
-                                </div>
-                                <a href="{{ route('villa.show', $villa->slug) }}" class="text-xs font-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors flex items-center gap-1">
-                                    Detail <i class="ri-arrow-right-line"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            @endif
-        </div>v>
+        </div>        <!-- Villa Grid (Dynamic Cards - Matched with Villa List Page) -->
+        <div class="mb-10 sm:mb-12">
+            @include('villa.partials.grid', ['properties' => isset($properties) ? $properties->take(6) : collect([])])
+        </div>
 
         <!-- Section Action Button -->
         <div class="text-center">
@@ -324,56 +278,6 @@
                 </div>
 
             </div>
-
-            <!-- Bottom 3 Promo Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-
-                <!-- Feature Promo 1 -->
-                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition duration-300 space-y-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#152c4e]/10 text-[#152c4e] flex items-center justify-center text-lg sm:text-xl">
-                        <i class="ri-percent-line"></i>
-                    </div>
-                    <h4 class="font-serif-title text-lg sm:text-xl font-bold text-slate-900">Spesial Musim Panas</h4>
-                    <p class="text-xs text-slate-600 font-light leading-relaxed">
-                        Hemat 25% untuk booking lebih dari 7 malam
-                    </p>
-                    <a href="#villa" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors pt-1">
-                        <span>Pelajari Lebih Lanjut</span>
-                        <i class="ri-arrow-right-line text-sm"></i>
-                    </a>
-                </div>
-
-                <!-- Feature Promo 2 -->
-                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition duration-300 space-y-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#ca9e54]/10 text-[#ca9e54] flex items-center justify-center text-lg sm:text-xl">
-                        <i class="ri-gift-line"></i>
-                    </div>
-                    <h4 class="font-serif-title text-lg sm:text-xl font-bold text-slate-900">Refer & Dapatkan</h4>
-                    <p class="text-xs text-slate-600 font-light leading-relaxed">
-                        Dapatkan kredit $100 untuk setiap referral teman
-                    </p>
-                    <a href="#villa" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors pt-1">
-                        <span>Pelajari Lebih Lanjut</span>
-                        <i class="ri-arrow-right-line text-sm"></i>
-                    </a>
-                </div>
-
-                <!-- Feature Promo 3 -->
-                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition duration-300 space-y-3 sm:col-span-2 md:col-span-1">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-lg sm:text-xl">
-                        <i class="ri-price-tag-3-line"></i>
-                    </div>
-                    <h4 class="font-serif-title text-lg sm:text-xl font-bold text-slate-900">Promo Last Minute</h4>
-                    <p class="text-xs text-slate-600 font-light leading-relaxed">
-                        Hingga 50% off untuk booking minggu yang sama
-                    </p>
-                    <a href="#villa" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#152c4e] hover:text-[#ca9e54] transition-colors pt-1">
-                        <span>Pelajari Lebih Lanjut</span>
-                        <i class="ri-arrow-right-line text-sm"></i>
-                    </a>
-                </div>
-
-            </div>
         </div>
     </section>
 
@@ -476,21 +380,33 @@
         </div>
     </section>
 
-    <!-- SECTION: CTA BANNER -->
-    <section class="py-14 sm:py-20 px-4 sm:px-6 md:px-12 bg-[#152c4e] text-white font-satoshi relative overflow-hidden">
+    <!-- SECTION: CTA BANNER WITH UNSPLASH BACKGROUND & NAVY BLUE OVERLAY -->
+    <section class="py-16 sm:py-24 px-4 sm:px-6 md:px-12 relative font-satoshi text-white overflow-hidden">
+        <!-- Unsplash Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1920&q=80" 
+                 alt="Luxury Villa Sanctuary" 
+                 class="w-full h-full object-cover object-center">
+            <!-- Rich Navy Blue Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0c182b]/90 via-[#152c4e]/85 to-[#0c182b]/90 backdrop-blur-[2px]"></div>
+        </div>
+
         <div class="max-w-5xl mx-auto text-center space-y-4 sm:space-y-6 relative z-10">
-            <h2 class="font-serif-title text-2xl sm:text-3xl md:text-5xl font-bold">
+            <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">PENGALAMAN MEWAH DENGAN PALMA</span>
+            <h2 class="font-serif-title text-3xl sm:text-4xl md:text-6xl font-bold text-white leading-tight">
                 Siap Merasakan Kemewahan?
             </h2>
-            <p class="text-white/80 font-light text-xs sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed px-2">
+            <p class="text-white/90 font-light text-xs sm:text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-2">
                 Bergabunglah dengan ribuan tamu puas yang telah menemukan villa sempurna mereka bersama Palma.
             </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 sm:pt-4 px-4 sm:px-0">
-                <a href="#villa" class="w-full sm:w-auto bg-[#ca9e54] hover:bg-[#b88c43] text-white font-semibold px-9 py-3.5 sm:py-4 rounded-full shadow-lg transition duration-300 text-xs uppercase tracking-wider gold-glow">
-                    Jelajahi Villa Sekarang
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-3 sm:pt-6 px-4 sm:px-0">
+                <a href="#villa" class="w-full sm:w-auto bg-[#ca9e54] hover:bg-[#b88c43] text-white font-semibold px-9 py-3.5 sm:py-4 rounded-full shadow-xl transition duration-300 text-xs uppercase tracking-wider gold-glow flex items-center justify-center gap-2">
+                    <span>Jelajahi Villa Sekarang</span>
+                    <i class="ri-arrow-right-line text-base"></i>
                 </a>
-                <a href="#tentang" class="w-full sm:w-auto border border-white/40 hover:border-white bg-white/10 hover:bg-white/20 text-white font-medium px-9 py-3.5 sm:py-4 rounded-full transition duration-300 text-xs uppercase tracking-wider backdrop-blur-md">
-                    Hubungi Concierge
+                <a href="#tentang" class="w-full sm:w-auto border border-white/30 hover:border-white bg-white/10 hover:bg-white/20 text-white font-medium px-9 py-3.5 sm:py-4 rounded-full transition duration-300 text-xs uppercase tracking-wider backdrop-blur-md flex items-center justify-center gap-2">
+                    <span>Hubungi Concierge</span>
+                    <i class="ri-customer-service-2-line text-base"></i>
                 </a>
             </div>
         </div>

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Properties;
 use App\Models\PaymentMethod;
+use App\Models\PropertyRule;
 use App\Models\Promotion;
 use App\Services\ImageService;
 use App\Services\PromoService;
@@ -91,7 +92,11 @@ class BookingController extends Controller
             }
         }
 
-        return view('frontend.booking.create', compact('properties', 'selectedProperty', 'paymentMethods', 'bookedDates', 'autoPromoCode'));
+        $propertyRules = $selectedProperty
+            ? PropertyRule::active()->forPropertyType($selectedProperty->type ?? 'Villa')->orderBy('sort_order', 'asc')->get()
+            : PropertyRule::active()->orderBy('sort_order', 'asc')->get();
+
+        return view('frontend.booking.create', compact('properties', 'selectedProperty', 'paymentMethods', 'bookedDates', 'autoPromoCode', 'propertyRules'));
     }
 
     /**
