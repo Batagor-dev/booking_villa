@@ -28,6 +28,9 @@
     $savedMapLink = old('map_link', $property_data->map_link ?? '');
     $savedLat = old('latitude', $property_data->settings->latitude ?? '');
     $savedLng = old('longitude', $property_data->settings->longitude ?? '');
+
+    $transId = isset($property_data) && $property_data->relationLoaded('translations') ? $property_data->translations->firstWhere('locale', 'id') : null;
+    $transEn = isset($property_data) && $property_data->relationLoaded('translations') ? $property_data->translations->firstWhere('locale', 'en') : null;
 @endphp
 
 @extends('layouts.backend.main')
@@ -81,31 +84,92 @@
                 <x-ui.card>
                     <h5 class="text-lg font-satoshi-bold text-slate-900 mb-6">{{ $sub_title }}</h5>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Property Name Input -->
-                        <div class="md:col-span-2">
-                            <x-ui.input 
-                                id="property_name_input"
-                                name="name" 
-                                label="Property Name *" 
-                                placeholder="e.g. Villa Seminyak Sanctuary" 
-                                value="{{ old('name', $property_data->name ?? '') }}"
-                                required
-                            />
+                    <!-- Multi-Language Translations Box -->
+                    <div x-data="{ langTab: 'id' }" class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-5 mb-6">
+                        <div class="flex items-center justify-between border-b border-slate-200/80 pb-3 flex-wrap gap-2">
+                            <div>
+                                <h6 class="text-sm font-satoshi-bold text-slate-900 flex items-center gap-2">
+                                    <i class="ri-translate-2 text-slate-700 text-base"></i> Multi-Language Content
+                                </h6>
+                                <p class="text-xs text-slate-500 font-satoshi-medium">Kelola nama dan deskripsi properti dalam berbagai bahasa.</p>
+                            </div>
+
+                            <!-- Language Switcher Pill Buttons -->
+                            <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-xs">
+                                <button type="button" 
+                                        @click="langTab = 'id'" 
+                                        :class="langTab === 'id' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
+                                        class="px-3.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                                    <span>🇮🇩</span> <span>Indonesia (Default)</span>
+                                </button>
+                                <button type="button" 
+                                        @click="langTab = 'en'" 
+                                        :class="langTab === 'en' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
+                                        class="px-3.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                                    <span>🇬🇧</span> <span>English</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Property Code (Auto-generated from Name & Readonly) -->
-                        <div>
-                            <x-ui.input 
-                                id="property_code_input"
-                                name="code" 
-                                label="Property Code (Auto)" 
-                                placeholder="e.g. VSS" 
-                                value="{{ old('code', $property_data->code ?? '') }}"
-                                readonly
-                                class="bg-slate-100/80 text-slate-600 font-bold tracking-wider cursor-not-allowed border-slate-200"
-                            />
-                            <span class="text-[11px] text-slate-400 mt-1 block">Karakter inisial otomatis dari Nama Properti (Maks. 3 karakter)</span>
+                        <!-- Tab 1: Bahasa Indonesia (ID) -->
+                        <div x-show="langTab === 'id'" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="md:col-span-2">
+                                    <x-ui.input 
+                                        id="property_name_input"
+                                        name="name" 
+                                        label="Property Name (Bahasa Indonesia) *" 
+                                        placeholder="e.g. Villa Seminyak Sanctuary" 
+                                        value="{{ old('name', $transId->name ?? ($property_data->name ?? '')) }}"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <x-ui.input 
+                                        id="property_code_input"
+                                        name="code" 
+                                        label="Property Code (Auto)" 
+                                        placeholder="e.g. VSS" 
+                                        value="{{ old('code', $property_data->code ?? '') }}"
+                                        readonly
+                                        class="bg-slate-100/80 text-slate-600 font-bold tracking-wider cursor-not-allowed border-slate-200"
+                                    />
+                                    <span class="text-[11px] text-slate-400 mt-1 block">Karakter inisial otomatis dari Nama Properti</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <x-ui.editor 
+                                    name="description" 
+                                    label="Property Description (Bahasa Indonesia)" 
+                                    placeholder="Deskripsikan keindahan, fasilitas, dan keunikan properti ini..." 
+                                    :value="old('description', $transId->description ?? ($property_data->description ?? ''))"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: English (EN) -->
+                        <div x-show="langTab === 'en'" class="space-y-4" style="display: none;">
+                            <div>
+                                <x-ui.input 
+                                    name="translations[en][name]" 
+                                    label="Property Name (English)" 
+                                    placeholder="e.g. Seminyak Sanctuary Villa" 
+                                    value="{{ old('translations.en.name', $transEn->name ?? '') }}"
+                                />
+                            </div>
+
+                            <div>
+                                <x-ui.editor 
+                                    name="translations[en][description]" 
+                                    label="Property Description (English)" 
+                                    placeholder="Describe property features, luxury ambiance, and location highlights in English..." 
+                                    :value="old('translations.en.description', $transEn->description ?? '')"
+                                />
+                            </div>
+                        </div>
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -195,16 +259,6 @@
                                 :checked="old('is_featured', $property_data->is_featured ?? false) ? true : false"
                             />
                         </div>
-                    </div>
-
-                    <!-- Description Quill Rich Text Editor Component -->
-                    <div class="mt-6">
-                        <x-ui.editor 
-                            name="description" 
-                            label="Property Description" 
-                            placeholder="Describe the property, view, ambiance, and location highlights..." 
-                            :value="old('description', $property_data->description ?? '')"
-                        />
                     </div>
 
                     <!-- Wilayah Indonesia API Select2 Cascading Pickers (Provinsi -> Kota/Kabupaten) -->

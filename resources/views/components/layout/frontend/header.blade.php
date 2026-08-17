@@ -10,23 +10,60 @@
 
         <!-- Desktop Nav Links -->
         <nav class="hidden md:flex items-center gap-7 lg:gap-9 font-satoshi text-xs font-medium uppercase tracking-[0.15em] text-white/90" id="nav-menu">
-            <a href="{{ route('home') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('home') ? 'text-[#ca9e54] font-bold' : '' }}">Beranda</a>
-            <a href="{{ route('villa.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('villa.index') ? 'text-[#ca9e54] font-bold' : '' }}">Villa</a>
-            <a href="{{ route('wisata.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('wisata.index') ? 'text-[#ca9e54] font-bold' : '' }}">Wisata Bali</a>
-            <a href="{{ route('promo.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('promo.index') ? 'text-[#ca9e54] font-bold' : '' }}">Promo</a>
-            <a href="{{ route('layanan.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('layanan.index') ? 'text-[#ca9e54] font-bold' : '' }}">Layanan</a>
+            <a href="{{ route('home') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('home') ? 'text-[#ca9e54] font-bold' : '' }}">{{ __('frontend.nav.home') }}</a>
+            <a href="{{ route('villa.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('villa.index') ? 'text-[#ca9e54] font-bold' : '' }}">{{ __('frontend.nav.villa') }}</a>
+            <a href="{{ route('wisata.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('wisata.index') ? 'text-[#ca9e54] font-bold' : '' }}">{{ __('frontend.nav.tour') }}</a>
+            <a href="{{ route('promo.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('promo.index') ? 'text-[#ca9e54] font-bold' : '' }}">{{ __('frontend.nav.promo') }}</a>
+            <a href="{{ route('layanan.index') }}" class="transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-[#ca9e54] hover:after:w-full after:transition-all {{ request()->routeIs('layanan.index') ? 'text-[#ca9e54] font-bold' : '' }}">{{ __('frontend.nav.services') }}</a>
         </nav>
 
         <!-- Action Buttons & Mobile Toggle -->
         <div class="flex items-center gap-2.5 sm:gap-4">
-            <button type="button" class="p-1.5 sm:p-2 text-white hover:text-[#ca9e54] transition-colors focus:outline-none cursor-pointer" id="nav-search-icon" title="Cari Villa & Wisata" aria-label="Buka Pencarian Cepat" aria-controls="quick-search-modal">
+            <button type="button" class="p-1.5 sm:p-2 text-white hover:text-[#ca9e54] transition-colors focus:outline-none cursor-pointer" id="nav-search-icon" title="{{ __('frontend.nav.search_tooltip') }}" aria-label="{{ __('frontend.nav.search_tooltip') }}" aria-controls="quick-search-modal">
                 <i class="ri-search-line text-lg sm:text-xl"></i>
             </button>
             
-            <!-- Language Toggle Circle Button -->
-            <button type="button" id="lang-toggle-btn" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/40 hover:border-white bg-white/10 hover:bg-[#152c4e] text-white font-satoshi text-[11px] sm:text-xs font-bold uppercase transition duration-300 flex items-center justify-center cursor-pointer shrink-0" title="Ganti Bahasa" aria-label="Ganti Bahasa (Bahasa Indonesia / English)">
-                <span id="current-lang-text">ID</span>
-            </button>
+            @php
+                $currentLocale = app()->getLocale();
+                $localesMeta = config('localization.locales_meta', [
+                    'id' => ['name' => 'Bahasa Indonesia', 'short_name' => 'ID', 'flag' => '🇮🇩'],
+                    'en' => ['name' => 'English', 'short_name' => 'EN', 'flag' => '🇬🇧'],
+                ]);
+            @endphp
+
+            <!-- Language Selector Dropdown (Circular shape, ID & EN only) -->
+            <div class="relative" x-data="{ openLang: false }">
+                <button type="button" 
+                        @click="openLang = !openLang" 
+                        @click.outside="openLang = false"
+                        id="lang-toggle-btn" 
+                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/40 hover:border-white bg-white/10 hover:bg-[#152c4e] text-white font-satoshi text-xs font-bold uppercase transition duration-300 flex items-center justify-center cursor-pointer shrink-0 shadow-sm hover:scale-105" 
+                        title="Ganti Bahasa ({{ strtoupper($currentLocale) }})"
+                        aria-label="Ganti Bahasa">
+                    <span id="current-lang-text">{{ strtoupper($currentLocale) }}</span>
+                </button>
+
+                <div x-show="openLang" 
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     style="display: none;"
+                     class="absolute right-0 mt-2 w-44 rounded-2xl bg-white text-slate-800 shadow-xl border border-slate-100 p-1.5 z-50">
+                    @foreach($localesMeta as $locKey => $locInfo)
+                        <a href="{{ route('lang.switch', $locKey) }}" 
+                           class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-satoshi-bold transition {{ $currentLocale === $locKey ? 'bg-amber-50 text-[#ca9e54]' : 'hover:bg-slate-50 text-slate-700' }}">
+                            <span class="text-base">{{ $locInfo['flag'] }}</span>
+                            <span>{{ $locInfo['name'] }}</span>
+                            @if($currentLocale === $locKey)
+                                <i class="ri-check-line ml-auto text-[#ca9e54]"></i>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            </div>
             
             @auth
                 @php
@@ -85,18 +122,18 @@
                         <div class="py-1">
                             <a href="{{ route('user.account') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors {{ request()->routeIs('user.account') ? 'bg-amber-50/70 text-slate-500 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-500' }}">
                                 <i class="ri-user-settings-line text-lg"></i>
-                                <span>Kelola Akun</span>
+                                <span>{{ __('frontend.nav.manage_account') }}</span>
                             </a>
 
                             <a href="{{ route('user.bookings') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors {{ request()->routeIs('user.bookings') ? 'bg-amber-50/70 text-slate-500 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-500' }}">
                                 <i class="ri-calendar-check-line text-lg"></i>
-                                <span>Reservasi Saya</span>
+                                <span>{{ __('frontend.nav.my_bookings') }}</span>
                             </a>
 
                             @if(method_exists($authUser, 'hasRole') && $authUser->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
                                 <a href="{{ route('dashboard') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors {{ request()->routeIs('dashboard*') ? 'bg-amber-50/70 text-slate-500 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-500' }}">
                                     <i class="ri-dashboard-line text-lg"></i>
-                                    <span>Admin Panel</span>
+                                    <span>{{ __('frontend.nav.admin_panel') }}</span>
                                 </a>
                             @endif
                         </div>
@@ -108,7 +145,7 @@
                             @csrf
                             <button type="submit" 
                                 class="w-full flex items-center justify-center font-satoshi-semibold gap-2.5 px-3 py-1.5 rounded-lg text-sm bg-rose-600 text-white hover:bg-rose-700 transition-colors cursor-pointer">
-                                <span>Keluar</span>
+                                <span>{{ __('frontend.nav.logout') }}</span>
                                 <i class="ri-logout-box-r-line text-lg text-white"></i>
                             </button>
                         </form>
@@ -116,7 +153,7 @@
                 </div>
             @else
                 <a href="{{ route('login') }}" id="nav-login-btn" class="border border-white/40 hover:border-white bg-white/10 hover:bg-[#152c4e] text-white font-satoshi text-[11px] sm:text-xs font-semibold uppercase tracking-wider px-4 sm:px-6 py-2 sm:py-2.5 rounded-full transition duration-300">
-                    Masuk
+                    {{ __('frontend.nav.login') }}
                 </a>
             @endauth
 
@@ -132,11 +169,17 @@
         <div class="flex items-center justify-between border-b border-white/10 pb-6">
             <span class="font-serif-title text-2xl font-bold tracking-[0.2em] text-white uppercase">PALMA</span>
             <div class="flex items-center gap-3">
-                <!-- Mobile Language Circle Button -->
-                <button type="button" id="mobile-lang-toggle-btn" class="w-8 h-8 rounded-full border border-white/40 hover:border-white bg-white/10 text-white font-satoshi text-xs font-bold uppercase flex items-center justify-center cursor-pointer shrink-0" aria-label="Ganti Bahasa">
-                    <span id="mobile-lang-text">ID</span>
-                </button>
-                <button id="mobile-close-btn" class="p-2 text-slate-400 hover:text-white text-2xl focus:outline-none" aria-label="Tutup Menu Navigasi">
+                <!-- Mobile Language Selector (Circular ID & EN) -->
+                <div class="flex items-center gap-1.5 bg-white/10 p-1 rounded-full border border-white/20">
+                    @foreach($localesMeta as $locKey => $locInfo)
+                        <a href="{{ route('lang.switch', $locKey) }}" 
+                           class="w-7 h-7 rounded-full text-[10px] font-bold uppercase transition flex items-center justify-center {{ $currentLocale === $locKey ? 'bg-[#ca9e54] text-white shadow-sm' : 'text-white/70 hover:text-white' }}"
+                           title="{{ $locInfo['name'] }}">
+                            {{ strtoupper($locKey) }}
+                        </a>
+                    @endforeach
+                </div>
+                <button id="mobile-close-btn" class="p-2 text-slate-400 hover:text-white text-2xl focus:outline-none cursor-pointer" aria-label="Tutup Menu Navigasi">
                     <i class="ri-close-line"></i>
                 </button>
             </div>
@@ -144,23 +187,23 @@
 
         <nav class="flex flex-col gap-6 py-8 font-satoshi text-base font-medium tracking-wider uppercase">
             <a href="{{ route('home') }}" class="mobile-nav-link text-white/90 hover:text-[#ca9e54] transition-colors py-2 border-b border-white/5 flex items-center justify-between">
-                <span>Beranda</span>
+                <span>{{ __('frontend.nav.home') }}</span>
                 <i class="ri-arrow-right-s-line text-slate-500"></i>
             </a>
             <a href="{{ route('villa.index') }}" class="mobile-nav-link text-white/90 hover:text-[#ca9e54] transition-colors py-2 border-b border-white/5 flex items-center justify-between">
-                <span>Villa</span>
+                <span>{{ __('frontend.nav.villa') }}</span>
                 <i class="ri-arrow-right-s-line text-slate-500"></i>
             </a>
             <a href="{{ route('wisata.index') }}" class="mobile-nav-link text-white/90 hover:text-[#ca9e54] transition-colors py-2 border-b border-white/5 flex items-center justify-between">
-                <span>Wisata Bali</span>
+                <span>{{ __('frontend.nav.tour') }}</span>
                 <i class="ri-arrow-right-s-line text-slate-500"></i>
             </a>
             <a href="{{ route('promo.index') }}" class="mobile-nav-link text-white/90 hover:text-[#ca9e54] transition-colors py-2 border-b border-white/5 flex items-center justify-between">
-                <span>Promo</span>
+                <span>{{ __('frontend.nav.promo') }}</span>
                 <i class="ri-arrow-right-s-line text-slate-500"></i>
             </a>
             <a href="{{ route('layanan.index') }}" class="mobile-nav-link text-white/90 hover:text-[#ca9e54] transition-colors py-2 border-b border-white/5 flex items-center justify-between">
-                <span>Layanan Concierge</span>
+                <span>{{ __('frontend.nav.services') }}</span>
                 <i class="ri-arrow-right-s-line text-slate-500"></i>
             </a>
         </nav>
@@ -169,26 +212,26 @@
             @auth
                 <div class="space-y-2">
                     <a href="{{ route('user.bookings') }}" class="block w-full bg-[#ca9e54] text-white font-semibold uppercase text-xs tracking-wider py-3 rounded-full shadow-lg">
-                        <i class="ri-calendar-event-line mr-1"></i> My Bookings & Riwayat
+                        <i class="ri-calendar-event-line mr-1"></i> {{ __('frontend.nav.my_bookings') }}
                     </a>
                     <a href="{{ route('user.account') }}" class="block w-full bg-white/10 border border-white/20 text-white font-semibold uppercase text-xs tracking-wider py-3 rounded-full">
-                        <i class="ri-user-settings-line mr-1"></i> Kelola Akun
+                        <i class="ri-user-settings-line mr-1"></i> {{ __('frontend.nav.manage_account') }}
                     </a>
                     @if(method_exists(auth()->user(), 'hasRole') && auth()->user()->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
                         <a href="{{ route('dashboard') }}" class="block w-full bg-white/10 text-white font-semibold uppercase text-xs tracking-wider py-2.5 rounded-full">
-                            Admin Panel
+                            {{ __('frontend.nav.admin_panel') }}
                         </a>
                     @endif
                     <form method="POST" action="{{ route('logout') }}" class="pt-1">
                         @csrf
                         <button type="submit" class="w-full text-rose-400 hover:text-rose-300 text-xs font-bold py-2">
-                            Keluar
+                            {{ __('frontend.nav.logout') }}
                         </button>
                     </form>
                 </div>
             @else
                 <a href="{{ route('login') }}" class="block w-full bg-[#ca9e54] text-white font-semibold uppercase text-xs tracking-wider py-3.5 rounded-full shadow-lg">
-                    Masuk ke Akun
+                    {{ __('frontend.nav.login') }}
                 </a>
             @endauth
             <p class="text-[11px] text-slate-400 font-light">&copy; {{ date('Y') }} Palma Luxury Sanctuary</p>
@@ -203,7 +246,7 @@
         <!-- Input Header -->
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center gap-3">
             <i class="ri-search-line text-xl sm:text-2xl text-[#ca9e54]"></i>
-            <input type="text" id="quick-search-input" placeholder="Cari villa, lokasi (Seminyak, Ubud...), atau wisata..." class="w-full text-sm sm:text-base font-semibold text-slate-900 focus:outline-none placeholder:text-slate-400 placeholder:font-normal">
+            <input type="text" id="quick-search-input" placeholder="{{ __('frontend.nav.search_placeholder') }}" class="w-full text-sm sm:text-base font-semibold text-slate-900 focus:outline-none placeholder:text-slate-400 placeholder:font-normal">
             <button id="quick-search-close" class="p-1.5 text-slate-400 hover:text-slate-700 text-xl focus:outline-none">
                 <i class="ri-close-line"></i>
             </button>
@@ -211,17 +254,17 @@
 
         <!-- Live Results Container -->
         <div class="p-4 sm:p-6 max-h-[60vh] overflow-y-auto no-scrollbar" id="quick-search-results">
-            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-3">Rekomendasi Populer</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400 block mb-3">{{ __('frontend.nav.popular_recommendations') }}</span>
             
             <div class="space-y-3" id="search-list">
-                <!-- Initial dummy items rendered via JS -->
+                <!-- Initial items rendered via JS -->
             </div>
         </div>
 
         <!-- Footer -->
         <div class="p-3 sm:p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
-            <span>Tekan <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-mono">ESC</kbd> untuk menutup</span>
-            <a href="{{ route('villa.index') }}" class="text-[#152c4e] hover:text-[#ca9e54] font-bold">Lihat Semua Villa &rarr;</a>
+            <span>{{ __('frontend.nav.close_esc') }}</span>
+            <a href="{{ route('villa.index') }}" class="text-[#152c4e] hover:text-[#ca9e54] font-bold">{{ __('frontend.nav.view_all') }} &rarr;</a>
         </div>
     </div>
 </div>
@@ -236,21 +279,15 @@
         const searchList = document.getElementById('search-list');
 
         const dummySearchData = [
-            { title: "Villa Azure Paradise", category: "Villa Mewah", location: "Seminyak, Bali", price: "$450 / malam", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.show', 1) }}" },
-            { title: "Villa Ocean Breeze", category: "Villa Cliffside", location: "Uluwatu, Bali", price: "$680 / malam", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.show', 1) }}" },
-            { title: "Villa Tropical Serenity", category: "Villa Nature", location: "Canggu, Bali", price: "$320 / malam", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.show', 1) }}" },
-            { title: "Villa Sunset Cliff", category: "Villa Ocean View", location: "Nusa Dua, Bali", price: "$550 / malam", image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.show', 1) }}" },
-            { title: "Villa Emerald Hills", category: "Jungle Sanctuary", location: "Ubud, Bali", price: "$280 / malam", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.show', 1) }}" },
-            { title: "Villa Coastal Dream", category: "Beachfront Villa", location: "Jimbaran, Bali", price: "$420 / malam", image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.show', 1) }}" },
-            { title: "Seminyak Beach & Beach Club", category: "Wisata Populer", location: "Seminyak, Bali", price: "Sunset & Lifestyle", image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=300&q=75", link: "{{ route('wisata.index') }}" },
-            { title: "Tegallalang & Monkey Forest", category: "Wisata Alam", location: "Ubud, Bali", price: "Hutan & Sawah", image: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=300&q=75", link: "{{ route('wisata.index') }}" },
-            { title: "Pura Uluwatu & Tari Kecak", category: "Wisata Budaya", location: "Uluwatu, Bali", price: "Tebing & Kecak", image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=300&q=75", link: "{{ route('wisata.index') }}" }
+            { title: "Villa Azure Paradise", category: "Villa Mewah", location: "Seminyak, Bali", price: "$450", image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.index') }}" },
+            { title: "Villa Ocean Breeze", category: "Villa Cliffside", location: "Uluwatu, Bali", price: "$680", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.index') }}" },
+            { title: "Villa Tropical Serenity", category: "Villa Nature", location: "Canggu, Bali", price: "$320", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=75", link: "{{ route('villa.index') }}" }
         ];
 
         function renderResults(filteredItems) {
             if (!searchList) return;
             if (filteredItems.length === 0) {
-                searchList.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">Tidak ada villa atau wisata yang cocok dengan pencarian Anda.</div>`;
+                searchList.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">{{ __('frontend.nav.no_search_results') }}</div>`;
                 return;
             }
             searchList.innerHTML = filteredItems.map(item => `
@@ -263,7 +300,6 @@
                         </div>
                         <h4 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#152c4e] transition-colors truncate">${item.title}</h4>
                     </div>
-                    <span class="text-xs font-bold text-[#152c4e] shrink-0">${item.price}</span>
                 </a>
             `).join('');
         }
@@ -316,21 +352,6 @@
                 renderResults(filtered);
             });
         }
-
-        // Language Toggle ID <-> EN JS Handler
-        const langToggleBtn = document.getElementById('lang-toggle-btn');
-        const langText = document.getElementById('current-lang-text');
-        const mobileLangBtn = document.getElementById('mobile-lang-toggle-btn');
-        const mobileLangText = document.getElementById('mobile-lang-text');
-
-        function toggleLanguage() {
-            const newLang = (langText && langText.innerText === 'ID') ? 'EN' : 'ID';
-            if (langText) langText.innerText = newLang;
-            if (mobileLangText) mobileLangText.innerText = newLang;
-        }
-
-        if (langToggleBtn) langToggleBtn.addEventListener('click', toggleLanguage);
-        if (mobileLangBtn) mobileLangBtn.addEventListener('click', toggleLanguage);
     });
 
     // User Profile Dropdown Toggle Function (Admin Panel Style)
@@ -412,26 +433,26 @@
         </div>
 
         <div>
-            <span class="text-[10px] uppercase font-bold tracking-[0.2em] text-[#ca9e54] block mb-1">Akses Pemesanan Terbatas</span>
-            <h3 class="font-serif-title text-2xl font-bold text-slate-900">Login Diperlukan</h3>
+            <span class="text-[10px] uppercase font-bold tracking-[0.2em] text-[#ca9e54] block mb-1">{{ __('frontend.modal.login_required_badge') }}</span>
+            <h3 class="font-serif-title text-2xl font-bold text-slate-900">{{ __('frontend.modal.login_required_title') }}</h3>
             <p class="text-xs text-slate-500 font-medium leading-relaxed mt-2">
-                Silakan masuk ke akun Anda atau daftar sebagai pengguna baru terlebih dahulu untuk melanjutkan proses reservasi villa ini.
+                {{ __('frontend.modal.login_required_desc') }}
             </p>
         </div>
 
         <!-- Action Buttons -->
         <div class="space-y-2.5 pt-2">
             <a href="{{ route('login') }}" id="modal-login-btn-link" class="block w-full bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-3.5 px-4 rounded-2xl text-xs uppercase tracking-wider transition shadow-md">
-                <i class="ri-login-box-line mr-1 text-sm"></i> Masuk Ke Akun Anda
+                <i class="ri-login-box-line mr-1 text-sm"></i> {{ __('frontend.modal.login_button') }}
             </a>
             
             <a href="{{ route('register') }}" class="block w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3.5 px-4 rounded-2xl text-xs uppercase tracking-wider border border-slate-200 transition">
-                <i class="ri-user-add-line mr-1 text-sm"></i> Buat Akun Baru
+                <i class="ri-user-add-line mr-1 text-sm"></i> {{ __('frontend.modal.register_button') }}
             </a>
         </div>
 
         <button type="button" onclick="closeRequireLoginModal()" class="text-[11px] text-slate-400 hover:text-slate-600 font-semibold block mx-auto pt-1">
-            Nanti Saja / Kembalikan Ke Detail Villa
+            {{ __('frontend.modal.later_button') }}
         </button>
 
     </div>

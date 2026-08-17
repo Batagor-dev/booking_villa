@@ -50,10 +50,10 @@
             <!-- Action Buttons: Bagikan & Simpan -->
             <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
                 <button onclick="shareVilla()" class="px-4 py-2.5 rounded-full border border-slate-200 text-slate-700 hover:border-slate-900 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer shrink-0">
-                    <i class="ri-share-line text-sm"></i> Bagikan
+                    <i class="ri-share-line text-sm"></i> {{ __('frontend.villa.share') }}
                 </button>
                 <button id="detail-fav-btn" onclick="toggleFav(this)" class="px-4 py-2.5 rounded-full border border-slate-200 text-slate-700 hover:text-red-500 hover:border-red-200 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer shrink-0">
-                    <i class="ri-heart-line text-sm" id="fav-icon"></i> Simpan
+                    <i class="ri-heart-line text-sm" id="fav-icon"></i> {{ __('frontend.villa.save') }}
                 </button>
             </div>
         </div>
@@ -78,8 +78,8 @@
                             <img src="{{ $item['url'] }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500">
                             <div class="absolute inset-0 rounded-2xl bg-slate-950/60 group-hover/img:bg-slate-950/75 backdrop-blur-xs transition-all duration-300 flex flex-col items-center justify-center text-white text-center p-2">
                                 <i class="ri-grid-fill text-2xl sm:text-3xl text-[#ca9e54] mb-1 group-hover/img:scale-110 transition-transform"></i>
-                                <span class="font-bold text-sm sm:text-base tracking-wide text-white drop-shadow-md">+{{ count($galleryList) - 7 }} Foto</span>
-                                <span class="text-[10px] sm:text-xs font-medium text-slate-200 mt-0.5 drop-shadow-sm">Lihat Semua Foto</span>
+                                <span class="font-bold text-sm sm:text-base tracking-wide text-white drop-shadow-md">+{{ count($galleryList) - 7 }} {{ __('frontend.villa.photos_count') }}</span>
+                                <span class="text-[10px] sm:text-xs font-medium text-slate-200 mt-0.5 drop-shadow-sm">{{ __('frontend.villa.view_all_photos') }}</span>
                             </div>
                         </div>
                     @else
@@ -101,10 +101,10 @@
             <div class="flex items-center justify-between pb-8 border-b border-slate-200/80">
                 <div class="space-y-1">
                     <h2 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">
-                        Dipandu oleh Concierge Tim Palma VIP
+                        {{ __('frontend.villa.hosted_by') }}
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-500">
-                        {{ $property->capacity ?? 4 }} Tamu • {{ $property->bedrooms ?? 2 }} Kamar Tidur • {{ $property->type ?? 'Villa' }} Sanctuary
+                        {{ $property->capacity ?? 4 }} {{ __('frontend.villa.guests') }} • {{ $property->bedrooms ?? 2 }} {{ __('frontend.villa.bedrooms') }} • {{ $property->type ?? 'Villa' }} {{ __('frontend.villa.sanctuary') }}
                     </p>
                 </div>
                 <div class="w-14 h-14 rounded-full bg-[#152c4e] text-[#e5c382] flex items-center justify-center font-bold text-xl shadow-md shrink-0 border border-[#ca9e54]/30">
@@ -119,8 +119,8 @@
                         <i class="ri-shield-star-line"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">Keamanan & Kebersihan Bintang 5</h4>
-                        <p class="text-[11px] text-slate-500 font-light mt-0.5">Disterilkan sebelum kedatangan dengan butler 24 jam.</p>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">{{ __('frontend.home.why_val1_title') }}</h4>
+                        <p class="text-[11px] text-slate-500 font-light mt-0.5">{{ __('frontend.home.why_val1_desc') }}</p>
                     </div>
                 </div>
 
@@ -129,8 +129,8 @@
                         <i class="ri-cup-line"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">Sarapan Apung & Koki Pribadi</h4>
-                        <p class="text-[11px] text-slate-500 font-light mt-0.5">Nikmati Floating Breakfast gratis hari pertama.</p>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">{{ __('frontend.villa.floating_breakfast') }}</h4>
+                        <p class="text-[11px] text-slate-500 font-light mt-0.5">{{ __('frontend.villa.floating_breakfast_desc') }}</p>
                     </div>
                 </div>
 
@@ -139,8 +139,8 @@
                         <i class="ri-price-tag-3-line"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">Garansi Harga Terbaik</h4>
-                        <p class="text-[11px] text-slate-500 font-light mt-0.5">Pemesanan langsung tanpa biaya komisi.</p>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">{{ __('frontend.villa.best_price_guarantee') }}</h4>
+                        <p class="text-[11px] text-slate-500 font-light mt-0.5">{{ __('frontend.villa.best_price_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -161,17 +161,17 @@
                         </div>
                         <div class="flex items-baseline gap-1.5 flex-wrap">
                             <x-ui.price :value="(float) $promoDetails['final_price']" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
-                            <span class="text-[11px] sm:text-xs text-slate-500 font-normal">/malam</span>
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-normal">{{ __('frontend.villa.per_night') }}</span>
                         </div>
                         @if(!empty($promoDetails['code']))
                             <p class="text-[10px] sm:text-xs text-slate-600 font-medium flex items-center gap-1.5 pt-0.5">
-                                <i class="ri-coupon-3-line text-[#ca9e54] text-sm"></i> Kode Promo: <strong class="font-mono bg-slate-100 text-slate-900 px-2 py-0.5 rounded border border-slate-200 uppercase font-bold text-xs">{{ $promoDetails['code'] }}</strong>
+                                <i class="ri-coupon-3-line text-[#ca9e54] text-sm"></i> {{ __('frontend.villa.promo_code') }}: <strong class="font-mono bg-slate-100 text-slate-900 px-2 py-0.5 rounded border border-slate-200 uppercase font-bold text-xs">{{ $promoDetails['code'] }}</strong>
                             </p>
                         @endif
                     @else
                         <div class="flex items-baseline gap-1.5 flex-wrap">
                             <x-ui.price :value="(float) ($property->price ?? 4500000)" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
-                            <span class="text-[11px] sm:text-xs text-slate-500 font-normal">/malam</span>
+                            <span class="text-[11px] sm:text-xs text-slate-500 font-normal">{{ __('frontend.villa.per_night') }}</span>
                         </div>
                     @endif
                 </div>
@@ -186,12 +186,12 @@
                     @endphp
                     @auth
                         <a href="{{ $bookingUrl }}" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                            <span>Lanjut Pesan</span>
+                            <span>{{ __('frontend.villa.continue_booking') }}</span>
                             <i class="ri-arrow-right-line text-sm"></i>
                         </a>
                     @else
                         <button type="button" onclick="openRequireLoginModal('{{ $bookingUrl }}')" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                            <span>Lanjut Pesan</span>
+                            <span>{{ __('frontend.villa.continue_booking') }}</span>
                             <i class="ri-arrow-right-line text-sm"></i>
                         </button>
                     @endauth
@@ -200,7 +200,7 @@
 
             <!-- Villa Description -->
             <div class="space-y-4 pb-8 border-b border-slate-200/80">
-                <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">Tentang Villa Ini</h3>
+                <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">{{ __('frontend.villa.about_villa') }}</h3>
                 <div class="text-xs sm:text-sm text-slate-600 font-satoshi-medium leading-relaxed space-y-3">
                     {!! nl2br(e($property->description ?? '')) !!}
                 </div>
@@ -208,7 +208,7 @@
 
             <!-- Amenities Checklist -->
             <div class="space-y-6 pb-8 border-b border-slate-200/80">
-                <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">Fasilitas Properti</h3>
+                <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">{{ __('frontend.villa.facilities') }}</h3>
                 
                 @if($property && $property->facilities && $property->facilities->count() > 0)
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-xs sm:text-sm font-medium text-slate-800">

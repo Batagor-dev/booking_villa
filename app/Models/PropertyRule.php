@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\HasUuid;
+use App\Models\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PropertyRule extends Model
 {
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasFactory, HasUuid, SoftDeletes, HasTranslations;
 
     protected $table = 'property_rules';
 
@@ -19,6 +20,16 @@ class PropertyRule extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    public function getTitleAttribute($value)
+    {
+        return $this->translate('title') ?: $value;
+    }
+
+    public function getDescriptionAttribute($value)
+    {
+        return $this->translate('description') ?: $value;
+    }
 
     public function getRouteKeyName()
     {

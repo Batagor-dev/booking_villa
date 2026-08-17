@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/lang/{locale}', [App\Http\Controllers\LocalizationController::class, 'switch'])->name('lang.switch');
 
 // Public Frontend Villa Pages
 Route::get('/villa', [App\Http\Controllers\VillaController::class, 'index'])->name('villa.index');

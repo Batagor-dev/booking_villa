@@ -11,21 +11,21 @@
         <div class="max-w-7xl mx-auto relative z-10">
             <!-- Breadcrumbs -->
             <div class="flex items-center gap-2 text-xs text-white/70 mb-3 font-medium">
-                <a href="{{ route('home') }}" class="hover:text-[#ca9e54] transition-colors">Beranda</a>
+                <a href="{{ route('home') }}" class="hover:text-[#ca9e54] transition-colors">{{ __('frontend.nav.home') }}</a>
                 <span>/</span>
-                <span class="text-white font-semibold">My Bookings</span>
+                <span class="text-white font-semibold">{{ __('frontend.nav.my_bookings') }}</span>
             </div>
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">Portal Pelanggan</span>
+                    <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">{{ __('frontend.user.customer_portal') }}</span>
                     <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-normal text-white">
-                        Daftar & Riwayat Reservasi
+                        {{ __('frontend.user.my_bookings_title') }}
                     </h1>
                 </div>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('villa.index') }}" class="px-5 py-2.5 rounded-full bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold transition shadow-md flex items-center gap-1.5">
-                        <i class="ri-add-line text-sm"></i> Pesan Villa Baru
+                        <i class="ri-add-line text-sm"></i> {{ __('frontend.user.book_new_villa') }}
                     </a>
                 </div>
             </div>
@@ -39,19 +39,19 @@
         <div class="flex items-center gap-2 mb-8 border-b border-slate-200 overflow-x-auto no-scrollbar pb-3">
             <a href="{{ route('user.bookings') }}" 
                class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ !$statusFilter ? 'bg-[#152c4e] text-white shadow' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
-                Semua Reservasi ({{ $totalCount }})
+                {{ __('frontend.user.tab_all_bookings') }} ({{ $totalCount }})
             </a>
             <a href="{{ route('user.bookings', ['status' => 'pending']) }}" 
                class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ $statusFilter === 'pending' ? 'bg-amber-500 text-white shadow' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
-                Pending ({{ $pendingCount }})
+                {{ __('frontend.user.tab_pending') }} ({{ $pendingCount }})
             </a>
             <a href="{{ route('user.bookings', ['status' => 'confirmed']) }}" 
                class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ $statusFilter === 'confirmed' ? 'bg-emerald-600 text-white shadow' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
-                Disetujui ({{ $confirmedCount }})
+                {{ __('frontend.user.tab_confirmed') }} ({{ $confirmedCount }})
             </a>
             <a href="{{ route('user.bookings', ['status' => 'cancelled']) }}" 
                class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ $statusFilter === 'cancelled' ? 'bg-rose-600 text-white shadow' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
-                Dibatalkan ({{ $cancelledCount }})
+                {{ __('frontend.user.tab_cancelled') }} ({{ $cancelledCount }})
             </a>
         </div>
 

@@ -10,16 +10,15 @@
 
         <div class="max-w-7xl mx-auto text-center relative z-10 space-y-4 sm:space-y-6">
             <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block">
-                Penawaran Eksklusif Terbatas
+                {{ __('frontend.promo.hero_tag') }}
             </span>
 
             <h1 class="font-serif-title text-3xl sm:text-5xl md:text-6xl font-normal leading-tight">
-                Hak Istimewa & <br class="hidden sm:inline"/>
-                <span class="italic font-normal gold-gradient-text">Promo Villa Mewah Bali</span>
+                {{ __('frontend.promo.hero_title') }}
             </h1>
 
             <p class="text-xs sm:text-base text-slate-200 font-light max-w-2xl mx-auto leading-relaxed px-2">
-                Nikmati penawaran khusus reservasi villa bintang 5 dengan potongan harga spesial, voucher promo instan, dan hak istimewa gratis layanan VIP.
+                {{ __('frontend.promo.hero_desc') }}
             </p>
         </div>
     </section>
@@ -62,7 +61,7 @@
                     <!-- Badge & Discount Pill -->
                     <div class="flex items-center justify-between gap-2 mb-6">
                         <span class="inline-flex items-center gap-1.5 bg-[#ca9e54] text-white text-[10px] sm:text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                            <i class="ri-time-line"></i> {{ $p1 ? ($p1->badge_text ?: ($p1->promotion_type === 'automatic' ? 'Promo Otomatis' : 'Flash Sale Special')) : 'FLASH SALE WEEKEND' }}
+                            <i class="ri-time-line"></i> {{ $p1 ? ($p1->badge_text ?: ($p1->promotion_type === 'automatic' ? 'Promo' : 'Flash Sale')) : 'FLASH SALE WEEKEND' }}
                         </span>
                         <span class="bg-white/10 backdrop-blur-md text-[#e5c382] text-xs font-bold px-3 py-1 rounded-full border border-white/10">
                             @if($p1)
@@ -78,7 +77,7 @@
                     </h3>
                     
                     <p class="text-xs sm:text-sm text-white/80 font-light leading-relaxed mb-6">
-                        {{ $p1 ? ($p1->description ?: 'Reservasi weekend di villa mewah pilihan kawasan Seminyak & Uluwatu. Dapatkan diskon 40% plus bonus gratis makan malam dan welcome drink.') : 'Reservasi weekend di villa mewah pilihan kawasan Seminyak & Uluwatu. Dapatkan diskon 40% plus bonus gratis makan malam dan welcome drink.' }}
+                        {{ $p1 ? ($p1->description ?: __('frontend.promo.default_desc_1')) : __('frontend.promo.default_desc_1') }}
                     </p>
 
                     <!-- Features Checklist (If Provided) -->
@@ -95,21 +94,21 @@
 
                     <!-- Live Countdown Timer -->
                     <div class="mb-6">
-                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-2">SISA WAKTU PROMO:</span>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-2">{{ __('frontend.promo.remaining_time') }}</span>
                         <div class="flex items-center gap-2 sm:gap-3" id="promo-timer-1">
                             <div class="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 min-w-[62px] text-center border border-white/10">
                                 <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p1-hours">23</span>
-                                <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">JAM</span>
+                                <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">{{ __('frontend.home.timer_hours') }}</span>
                             </div>
                             <span class="text-lg font-bold text-[#e5c382]">:</span>
                             <div class="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 min-w-[62px] text-center border border-white/10">
                                 <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p1-mins">42</span>
-                                <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">MENIT</span>
+                                <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">{{ __('frontend.home.timer_minutes') }}</span>
                             </div>
                             <span class="text-lg font-bold text-[#e5c382]">:</span>
                             <div class="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 min-w-[62px] text-center border border-white/10">
                                 <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="p1-secs">15</span>
-                                <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">DETIK</span>
+                                <span class="text-[9px] uppercase font-bold text-white/60 tracking-wider">{{ __('frontend.home.timer_seconds') }}</span>
                             </div>
                         </div>
                     </div>
@@ -118,18 +117,18 @@
                     @php $code1 = $p1 ? ($p1->code ?: 'PALMAWEEKEND') : 'PALMAWEEKEND'; @endphp
                     <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 flex items-center justify-between mb-8">
                         <div>
-                            <span class="text-[9px] uppercase font-bold text-slate-300 block">KODE VOUCHER</span>
+                            <span class="text-[9px] uppercase font-bold text-slate-300 block">{{ __('frontend.promo.voucher_code') }}</span>
                             <span class="text-lg sm:text-xl font-mono font-bold text-[#e5c382]">{{ $code1 }}</span>
                         </div>
                         <button onclick="copyCode('{{ $code1 }}', this)" class="bg-[#ca9e54] hover:bg-[#b88c43] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer">
-                            Salin Kode
+                            {{ __('frontend.promo.copy_code') }}
                         </button>
                     </div>
                 </div>
 
                 <div>
                     <a href="{{ route('villa.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#ca9e54] hover:bg-[#b88c43] text-white font-bold px-8 py-4 rounded-full text-xs uppercase tracking-wider transition duration-300 shadow-lg gold-glow">
-                        <span>Gunakan Promo Sekarang</span>
+                        <span>{{ __('frontend.promo.use_promo') }}</span>
                         <i class="ri-arrow-right-line text-base"></i>
                     </a>
                 </div>
@@ -143,7 +142,7 @@
                     <!-- Badge -->
                     <div class="flex items-center justify-between gap-2 mb-6">
                         <span class="inline-flex items-center gap-1.5 bg-black/20 backdrop-blur-md text-white text-[10px] sm:text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider border border-white/20">
-                            <i class="ri-vip-crown-line"></i> {{ $p2 ? ($p2->badge_text ?: 'KHUSUS MEMBER BARU') : 'KHUSUS MEMBER BARU' }}
+                            <i class="ri-vip-crown-line"></i> {{ $p2 ? ($p2->badge_text ?: __('frontend.promo.exclusive_new_member')) : __('frontend.promo.exclusive_new_member') }}
                         </span>
                         <span class="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
                             @if($p2)
@@ -155,18 +154,18 @@
                     </div>
 
                     <h3 class="font-serif-title text-2xl sm:text-4xl font-bold mb-3 leading-tight">
-                        {{ $p2 ? $p2->name : 'Bonus Registrasi Pertama' }}
+                        {{ $p2 ? $p2->name : __('frontend.promo.bonus_first_reg') }}
                     </h3>
 
                     <p class="text-xs sm:text-sm text-white/90 font-light leading-relaxed mb-6">
-                        {{ $p2 ? ($p2->description ?: 'Daftar akun Palma hari ini dan klaim diskon instan 35% untuk reservasi villa pertama Anda beserta paket penjemputan bandara gratis.') : 'Daftar akun Palma hari ini dan klaim diskon instan 35% untuk reservasi villa pertama Anda beserta paket penjemputan bandara gratis.' }}
+                        {{ $p2 ? ($p2->description ?: __('frontend.promo.default_desc_2')) : __('frontend.promo.default_desc_2') }}
                     </p>
 
                     <!-- Features checklist -->
                     @php
                         $featuresList = $p2 && count($p2->features_list) > 0 
                             ? $p2->features_list 
-                            : ['Gratis Transfer Bandara VIP (Alphard / SUV)', 'Gratis Romantic Candlelight Dinner', 'Layanan Concierge 24 Jam Nonstop'];
+                            : [__('frontend.promo.feat_airport'), __('frontend.promo.feat_dinner'), __('frontend.promo.feat_concierge')];
                     @endphp
                     <ul class="space-y-2.5 mb-6 text-xs sm:text-sm font-medium text-white/95">
                         @foreach($featuresList as $feat)
@@ -181,18 +180,18 @@
                     @php $code2 = $p2 ? ($p2->code ?: 'WELCOMEPALMA') : 'WELCOMEPALMA'; @endphp
                     <div class="bg-black/20 backdrop-blur-md rounded-2xl p-3.5 border border-white/20 flex items-center justify-between mb-8">
                         <div>
-                            <span class="text-[9px] uppercase font-bold text-white/70 block">KODE VOUCHER</span>
+                            <span class="text-[9px] uppercase font-bold text-white/70 block">{{ __('frontend.promo.voucher_code') }}</span>
                             <span class="text-lg sm:text-xl font-mono font-bold text-white">{{ $code2 }}</span>
                         </div>
                         <button onclick="copyCode('{{ $code2 }}', this)" class="bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer">
-                            Salin Kode
+                            {{ __('frontend.promo.copy_code') }}
                         </button>
                     </div>
                 </div>
 
                 <div>
                     <a href="{{ auth()->check() ? route('villa.index') : route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-50 font-bold px-8 py-4 rounded-full text-xs uppercase tracking-wider transition duration-300 shadow-lg">
-                        <span>{{ auth()->check() ? 'Gunakan Promo Sekarang' : 'Daftar & Klaim Diskon' }}</span>
+                        <span>{{ auth()->check() ? __('frontend.promo.use_promo') : __('frontend.promo.register_and_claim') }}</span>
                         <i class="ri-arrow-right-line text-base"></i>
                     </a>
                 </div>

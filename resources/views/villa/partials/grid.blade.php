@@ -25,8 +25,8 @@
                             <i class="ri-map-pin-line text-slate-400 text-sm"></i> {{ $villa->city ?? 'Seminyak' }}, {{ $villa->province ?? 'Bali' }}
                         </p>
                         <div class="flex items-center justify-between text-xs text-slate-600 pt-3 border-t border-slate-100 mb-5 font-medium">
-                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> {{ $villa->bedrooms }} Kamar</span>
-                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> {{ $villa->capacity }} Tamu</span>
+                            <span class="flex items-center gap-1"><i class="ri-hotel-bed-line text-[#ca9e54]"></i> {{ $villa->bedrooms }} {{ __('frontend.villa.bedrooms') }}</span>
+                            <span class="flex items-center gap-1"><i class="ri-group-line text-[#ca9e54]"></i> {{ $villa->capacity }} {{ __('frontend.villa.guests') }}</span>
                         </div>
                     </div>
                     <div class="flex items-end justify-between pt-3 border-t border-slate-100 min-h-[58px]">
@@ -35,7 +35,7 @@
                                 <span class="line-through text-slate-400 text-[11px] font-mono font-medium block leading-none">{{ format_rupiah($gridPromo['original_price']) }}</span>
                                 <div class="flex items-baseline gap-1">
                                     <x-ui.price :value="$gridPromo['final_price']" class="text-xl font-bold text-[#152c4e]" />
-                                    <span class="text-xs font-normal text-slate-500">/malam</span>
+                                    <span class="text-xs font-normal text-slate-500">{{ __('frontend.villa.per_night') }}</span>
                                 </div>
                             </div>
                         @else
@@ -43,11 +43,11 @@
                                 <span class="text-[11px] block leading-none opacity-0 select-none pointer-events-none">&nbsp;</span>
                                 <div class="flex items-baseline gap-1">
                                     <x-ui.price :value="$villa->price" class="text-xl font-bold text-[#152c4e]" />
-                                    <span class="text-xs font-normal text-slate-500">/malam</span>
+                                    <span class="text-xs font-normal text-slate-500">{{ __('frontend.villa.per_night') }}</span>
                                 </div>
                             </div>
                         @endif
-                        <a href="{{ route('villa.show', $villa->slug) }}" class="bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold px-5 py-2.5 rounded-full transition-colors shrink-0">Pesan</a>
+                        <a href="{{ route('villa.show', $villa->slug) }}" class="bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold px-5 py-2.5 rounded-full transition-colors shrink-0">{{ __('frontend.villa.book') }}</a>
                     </div>
                 </div>
             </div>
@@ -58,13 +58,13 @@
         <div class="w-14 h-14 rounded-full bg-[#ca9e54]/10 text-[#ca9e54] flex items-center justify-center text-2xl mx-auto">
             <i class="ri-search-line"></i>
         </div>
-        <h3 class="font-serif-title text-2xl font-bold text-slate-900">Tidak Ada Villa yang Ditemukan</h3>
+        <h3 class="font-serif-title text-2xl font-bold text-slate-900">{{ __('frontend.villa.not_found_title') }}</h3>
         <p class="text-xs sm:text-sm text-slate-500 font-light leading-relaxed">
-            Maaf, kami tidak menemukan villa yang sesuai dengan kombinasi filter Anda. Coba ubah kata kunci atau reset filter.
+            {{ __('frontend.villa.not_found_desc') }}
         </p>
         <div class="pt-2">
             <button type="button" onclick="resetVillaFilters()" class="inline-flex items-center gap-2 bg-[#152c4e] hover:bg-[#ca9e54] text-white font-bold px-6 py-2.5 rounded-full text-xs transition-colors cursor-pointer shadow-md">
-                <i class="ri-refresh-line"></i> Reset Filter
+                <i class="ri-refresh-line"></i> {{ __('frontend.villa.reset_filters') }}
             </button>
         </div>
     </div>

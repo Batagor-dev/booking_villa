@@ -7,10 +7,10 @@
             <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80" alt="Villa Background" class="w-full h-full object-cover">
         </div>
         <div class="max-w-7xl mx-auto text-center relative z-10 space-y-4">
-            <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block">Eksplorasi Properti</span>
-            <h1 class="font-serif-title text-3xl sm:text-5xl font-normal">Katalog Villa Mewah di Bali</h1>
+            <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block">{{ __('frontend.villa.catalog_title') }}</span>
+            <h1 class="font-serif-title text-3xl sm:text-5xl font-normal">{{ __('frontend.villa.catalog_title') }}</h1>
             <p class="text-xs sm:text-base text-white/80 font-light max-w-2xl mx-auto">
-                Temukan villa private sanctuary terbaik di Seminyak, Ubud, Uluwatu, Canggu, dan Nusa Dua yang siap memberikan pengalaman menginap tak terlupakan.
+                {{ __('frontend.villa.catalog_sub') }}
             </p>
         </div>
     </section>
@@ -24,10 +24,10 @@
                 
                 <!-- 1. Keyword Input -->
                 <div class="lg:col-span-1">
-                    <label class="mb-2 block text-base font-satoshi-medium text-slate-700">Cari Kata Kunci</label>
+                    <label class="mb-2 block text-base font-satoshi-medium text-slate-700">{{ __('frontend.villa.filter_search_placeholder') }}</label>
                     <div class="flex min-h-[50px] w-full items-center rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5">
                         <i class="ri-search-line text-slate-400 text-lg mr-2 shrink-0"></i>
-                        <input type="text" name="q" id="search-q" value="{{ request('q') }}" placeholder="Cari nama villa..." class="w-full bg-transparent text-base font-satoshi-medium text-slate-900 focus:outline-none placeholder:text-slate-400">
+                        <input type="text" name="q" id="search-q" value="{{ request('q') }}" placeholder="{{ __('frontend.villa.filter_search_placeholder') }}" class="w-full bg-transparent text-base font-satoshi-medium text-slate-900 focus:outline-none placeholder:text-slate-400">
                     </div>
                 </div>
 
@@ -35,8 +35,8 @@
                 <div class="lg:col-span-1">
                     <x-ui.select2 
                         name="location" 
-                        label="Lokasi Daerah" 
-                        placeholder="Semua Lokasi" 
+                        label="Location" 
+                        placeholder="{{ __('frontend.villa.all_locations') }}" 
                         :options="$locationOptions ?? []" 
                         :value="request('location')" 
                     />
@@ -46,8 +46,8 @@
                 <div class="lg:col-span-1">
                     <x-ui.select2 
                         name="bedrooms" 
-                        label="Jumlah Kamar" 
-                        placeholder="Semua Kamar" 
+                        label="Bedrooms" 
+                        placeholder="{{ __('frontend.villa.all_bedrooms') }}" 
                         :options="$bedroomOptions ?? []" 
                         :value="request('bedrooms')" 
                     />
@@ -58,14 +58,14 @@
                     <div class="flex-1">
                         <x-ui.select2 
                             name="price" 
-                            label="Rentang Harga" 
-                            placeholder="Semua Harga" 
+                            label="Price" 
+                            placeholder="{{ __('frontend.villa.all_prices') }}" 
                             :options="$priceOptions ?? []" 
                             :value="request('price')" 
                         />
                     </div>
 
-                    <button type="button" onclick="resetVillaFilters()" class="min-h-[50px] px-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-colors border border-slate-200 text-xs font-semibold flex items-center justify-center shrink-0" title="Reset Filter" aria-label="Reset Filter">
+                    <button type="button" onclick="resetVillaFilters()" class="min-h-[50px] px-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-colors border border-slate-200 text-xs font-semibold flex items-center justify-center shrink-0" title="{{ __('frontend.villa.reset_filters') }}" aria-label="{{ __('frontend.villa.reset_filters') }}">
                         <i class="ri-refresh-line text-lg"></i>
                     </button>
                 </div>
@@ -76,18 +76,17 @@
         <!-- Catalog Villa Grid Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
             <div>
-                <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-slate-900">Villa Mewah Terverifikasi</h2>
+                <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-slate-900">{{ __('frontend.villa.catalog_title') }}</h2>
                 <p class="text-xs text-slate-500 font-light mt-1" id="villa-count-text">
-                    Menampilkan {{ $properties->total() ?? count($properties) }} villa terbaik dengan garansi harga resmi
+                    {{ $properties->total() ?? count($properties) }} {{ __('frontend.villa.photos_count') }}
                 </p>
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-400 font-medium">Urutkan:</span>
                 <select name="sort" id="villa-sort-select" class="bg-white border border-slate-200 text-xs font-semibold text-slate-800 rounded-full px-4 py-2 focus:outline-none cursor-pointer">
-                    <option value="" {{ request('sort') == '' ? 'selected' : '' }}>Terbaru / Populer</option>
-                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Harga: Rendah ke Tinggi</option>
-                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Harga: Tinggi ke Rendah</option>
-                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Rating Tertinggi</option>
+                    <option value="" {{ request('sort') == '' ? 'selected' : '' }}>{{ __('frontend.villa.sort_latest') }}</option>
+                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>{{ __('frontend.villa.sort_price_asc') }}</option>
+                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('frontend.villa.sort_price_desc') }}</option>
+                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>{{ __('frontend.villa.sort_rating') }}</option>
                 </select>
             </div>
         </div>

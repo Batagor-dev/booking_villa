@@ -68,6 +68,38 @@ class PropertiesController extends Controller
             // 2. Create Property
             $property = Properties::create($data);
 
+            // 2b. Save Multi-language Translations
+            $supportedLocales = config('localization.supported_locales', ['id', 'en', 'ja']);
+            $translationsInput = $request->input('translations', []);
+
+            // Ensure default locale 'id' is populated
+            $defaultName = $data['name'] ?? '';
+            $defaultDesc = $data['description'] ?? null;
+            $defaultAddr = $data['address'] ?? null;
+
+            if (!isset($translationsInput['id'])) {
+                $translationsInput['id'] = [
+                    'name'        => $defaultName,
+                    'description' => $defaultDesc,
+                    'address'     => $defaultAddr,
+                ];
+            } else {
+                if (empty($translationsInput['id']['name'])) {
+                    $translationsInput['id']['name'] = $defaultName;
+                }
+            }
+
+            foreach ($supportedLocales as $locale) {
+                if (isset($translationsInput[$locale]) && !empty($translationsInput[$locale]['name'])) {
+                    $property->updateTranslation($locale, [
+                        'name'              => $translationsInput[$locale]['name'],
+                        'description'       => $translationsInput[$locale]['description'] ?? null,
+                        'short_description' => $translationsInput[$locale]['short_description'] ?? null,
+                        'address'           => $translationsInput[$locale]['address'] ?? null,
+                    ]);
+                }
+            }
+
             // 3. Sync Facilities
             if ($request->has('facilities')) {
                 $property->facilities()->sync($request->facilities);
@@ -106,7 +138,7 @@ class PropertiesController extends Controller
      */
     public function edit(Properties $property)
     {
-        $property->load(['settings', 'galleries', 'facilities', 'destination']);
+        $property->load(['settings', 'galleries', 'facilities', 'destination', 'translations']);
         $this->data['property_data'] = $property;
         $this->data['destinations'] = Destination::where('status', true)->orderBy('sort')->get();
         $this->data['facilities'] = Facilities::where('status', true)->orderBy('sort')->get();
@@ -148,6 +180,38 @@ class PropertiesController extends Controller
 
             // 2. Update Main Property
             $property->update($data);
+
+            // 2b. Update Multi-language Translations
+            $supportedLocales = config('localization.supported_locales', ['id', 'en', 'ja']);
+            $translationsInput = $request->input('translations', []);
+
+            // Ensure default locale 'id' has values
+            $defaultName = $data['name'] ?? $property->name;
+            $defaultDesc = $data['description'] ?? $property->description;
+            $defaultAddr = $data['address'] ?? $property->address;
+
+            if (!isset($translationsInput['id'])) {
+                $translationsInput['id'] = [
+                    'name'        => $defaultName,
+                    'description' => $defaultDesc,
+                    'address'     => $defaultAddr,
+                ];
+            } else {
+                if (empty($translationsInput['id']['name'])) {
+                    $translationsInput['id']['name'] = $defaultName;
+                }
+            }
+
+            foreach ($supportedLocales as $locale) {
+                if (isset($translationsInput[$locale]) && !empty($translationsInput[$locale]['name'])) {
+                    $property->updateTranslation($locale, [
+                        'name'              => $translationsInput[$locale]['name'],
+                        'description'       => $translationsInput[$locale]['description'] ?? null,
+                        'short_description' => $translationsInput[$locale]['short_description'] ?? null,
+                        'address'           => $translationsInput[$locale]['address'] ?? null,
+                    ]);
+                }
+            }
 
             // 3. Sync Facilities
             $property->facilities()->sync($request->input('facilities', []));

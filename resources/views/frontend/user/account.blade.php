@@ -40,22 +40,22 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <h2 class="text-2xl sm:text-3xl font-serif-title font-bold text-slate-900">{{ $user->name }}</h2>
-                            <i class="ri-checkbox-circle-fill text-blue-500 text-xl" title="Terverifikasi"></i>
+                            <i class="ri-checkbox-circle-fill text-blue-500 text-xl" title="{{ __('frontend.user.verified') }}"></i>
                         </div>
                         <p class="text-xs text-slate-400 font-medium mt-0.5">{{ $user->email }}</p>
                     </div>
                 </div>
 
-                <!-- Top Right "Upload Photo" Button (Replaces My Bookings, triggers Cropper Modal) -->
+                <!-- Top Right "Upload Photo" Button -->
                 <div class="flex items-center gap-3">
                     <label for="user-profile-cropper-upload" class="px-5 py-2.5 rounded-2xl bg-[#152c4e] text-white hover:bg-[#0f1d32] text-xs font-satoshi-bold shadow-sm transition cursor-pointer">
-                        Upload Photo
+                        {{ __('frontend.user.upload_photo') }}
                     </label>
                     <button type="button" 
                             id="user-profile-cropper-reset-btn" 
                             class="px-4 py-2.5 rounded-2xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-satoshi-bold transition cursor-pointer"
                             style="display: none;">
-                        Reset
+                        {{ __('frontend.user.reset') }}
                     </button>
                 </div>
             </div>
@@ -96,14 +96,13 @@
             </div>
 
             <!-- TABS NAVIGATION BUTTONS -->
-            <!-- Enhanced Tabs Navigation with Gradient & Glass Effect -->
             <div class="flex items-center gap-4 bg-white/10 backdrop-blur-lg rounded-2xl p-2">
                 <button type="button"
                         @click="activeTab = 'account'"
                         :class="activeTab === 'account' ? 'bg-[#152c4e] text-white' : 'bg-white/30 text-slate-700 hover:bg-white/50 '"
                         class="px-4 py-2 rounded-lg flex shadow-lg items-center gap-2 transition-colors duration-200">
                     <i class="ri-user-3-line"></i>
-                    <span>Account Settings</span>
+                    <span>{{ __('frontend.user.tab_account') }}</span>
                 </button>
 
                 <button type="button"
@@ -111,7 +110,7 @@
                         :class="activeTab === 'security' ? 'bg-[#152c4e] text-white shadow-lg' : 'bg-white/30 text-slate-700 hover:bg-white/50'"
                         class="px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200">
                     <i class="ri-lock-line"></i>
-                    <span>Security & Password</span>
+                    <span>{{ __('frontend.user.tab_security') }}</span>
                 </button>
             </div>
 
@@ -124,7 +123,7 @@
                       class="space-y-8">
                     @csrf
 
-                    <!-- IMAGE CROPPER COMPONENT (Hides default container, keeps modal accessible for top avatar & button) -->
+                    <!-- IMAGE CROPPER COMPONENT -->
                     <style>#user-profile-cropper-container { display: none !important; }</style>
                     <x-ui.image-cropper 
                         name="foto"
@@ -138,7 +137,7 @@
                     <!-- SECTION 1: PERSONAL INFORMATION -->
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start pb-8 border-b border-slate-100">
                         <div class="md:col-span-4">
-                            <h4 class="text-base font-satoshi-bold text-slate-900">Personal Information</h4>
+                            <h4 class="text-base font-satoshi-bold text-slate-900">{{ __('frontend.user.tab_account') }}</h4>
                             <p class="text-xs text-slate-400 mt-1">Informasi lengkap kontak dan data diri Anda.</p>
                         </div>
                         <div class="md:col-span-8 space-y-5">
@@ -147,8 +146,8 @@
                                     name="name" 
                                     id="name"
                                     :value="old('name', $user->name)" 
-                                    label="Full Name" 
-                                    placeholder="Full Name" 
+                                    label="{{ __('frontend.user.full_name') }}" 
+                                    placeholder="{{ __('frontend.user.full_name') }}" 
                                 />
 
                                 <x-ui.input 
@@ -156,8 +155,8 @@
                                     name="email" 
                                     id="email"
                                     :value="old('email', $user->email)" 
-                                    label="E-mail Address" 
-                                    placeholder="E-mail Address" 
+                                    label="{{ __('frontend.user.email_address') }}" 
+                                    placeholder="{{ __('frontend.user.email_address') }}" 
                                 />
                             </div>
 
@@ -174,16 +173,16 @@
                                     name="phone" 
                                     id="phone"
                                     :value="old('phone', $user->phone)" 
-                                    label="Phone Number" 
-                                    placeholder="Phone Number" 
+                                    label="{{ __('frontend.user.phone_number') }}" 
+                                    placeholder="{{ __('frontend.user.phone_ph') }}" 
                                 />
                             </div>
 
                             <div>
                                 <x-ui.textarea 
                                     name="address" 
-                                    label="Address" 
-                                    placeholder="Address"
+                                    label="{{ __('frontend.user.address') }}" 
+                                    placeholder="{{ __('frontend.user.address_ph') }}"
                                     value="{{ old('address', $user->address) }}"
                                     rows="3"
                                 />
@@ -220,7 +219,7 @@
                         <button type="submit" 
                                 @click="isSaving = true" 
                                 class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-3.5 px-8 rounded-2xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer flex items-center gap-2">
-                            <span x-show="!isSaving">Save changes</span>
+                            <span x-show="!isSaving">{{ __('frontend.user.save_changes') }}</span>
                             <span x-show="isSaving" style="display: none;" class="flex items-center gap-2">
                                 <i class="ri-loader-4-line animate-spin text-sm"></i>
                                 <span>Saving...</span>
@@ -234,7 +233,7 @@
             <div x-show="activeTab === 'security'" x-transition:enter="transition ease-out duration-200" class="space-y-8 pt-4" style="display: none;">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start pb-8 border-b border-slate-100">
                     <div class="md:col-span-4">
-                        <h4 class="text-base font-satoshi-bold text-slate-900">Change Password</h4>
+                        <h4 class="text-base font-satoshi-bold text-slate-900">{{ __('frontend.user.tab_security') }}</h4>
                         <p class="text-xs text-slate-400 mt-1">Pastikan akun Anda menggunakan kata sandi yang kuat dan aman.</p>
                     </div>
                     <div class="md:col-span-8">
@@ -246,7 +245,7 @@
                             <div>
                                 <x-ui.password 
                                     name="current_password" 
-                                    label="Current Password" 
+                                    label="{{ __('frontend.user.current_password') }}" 
                                     placeholder="Enter your current password" 
                                 />
                                 @error('current_password') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
@@ -256,7 +255,7 @@
                                 <div>
                                     <x-ui.password 
                                         name="new_password" 
-                                        label="New Password" 
+                                        label="{{ __('frontend.user.new_password') }}" 
                                         placeholder="At least 8 characters" 
                                     />
                                     @error('new_password') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
@@ -265,7 +264,7 @@
                                 <div>
                                     <x-ui.password 
                                         name="new_password_confirmation" 
-                                        label="Confirm New Password" 
+                                        label="{{ __('frontend.user.confirm_password') }}" 
                                         placeholder="Repeat new password" 
                                     />
                                 </div>
@@ -273,7 +272,7 @@
 
                             <div class="flex justify-end pt-4">
                                 <button type="submit" class="bg-[#152c4e] hover:bg-[#0f1d32] text-white font-bold py-3.5 px-8 rounded-2xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer">
-                                    Update Password
+                                    {{ __('frontend.user.update_password') }}
                                 </button>
                             </div>
                         </form>

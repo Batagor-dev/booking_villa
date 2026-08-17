@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\HasSlug;
+use App\Models\Traits\HasTranslations;
 
 class Properties extends Model
 {
-    use HasFactory, SoftDeletes, HasSlug;
+    use HasFactory, SoftDeletes, HasSlug, HasTranslations;
 
     protected $table = 'properties';
 
@@ -20,6 +21,36 @@ class Properties extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    public function getNameAttribute($value)
+    {
+        return $this->translate('name') ?: $value;
+    }
+
+    public function getDescriptionAttribute($value)
+    {
+        return $this->translate('description') ?: $value;
+    }
+
+    public function getAddressAttribute($value)
+    {
+        return $this->translate('address') ?: $value;
+    }
+
+    public function getTranslatedNameAttribute(): string
+    {
+        return (string) ($this->translate('name') ?: ($this->attributes['name'] ?? ''));
+    }
+
+    public function getTranslatedDescriptionAttribute(): ?string
+    {
+        return $this->translate('description') ?: ($this->attributes['description'] ?? null);
+    }
+
+    public function getTranslatedAddressAttribute(): ?string
+    {
+        return $this->translate('address') ?: ($this->attributes['address'] ?? null);
     }
 
     /**

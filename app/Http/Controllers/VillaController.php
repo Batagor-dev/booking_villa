@@ -16,16 +16,20 @@ class VillaController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Properties::where('status', true);
+        $query = Properties::where('status', true)->with(['translations', 'destination.translations', 'promotions']);
 
-        // 1. Keyword search (name, address, city, description)
+        // 1. Keyword search (name, address, city, description, and multi-language translations)
         if ($request->filled('q') || $request->filled('search')) {
             $keyword = trim($request->input('q', $request->input('search')));
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
                   ->orWhere('address', 'like', "%{$keyword}%")
                   ->orWhere('city', 'like', "%{$keyword}%")
-                  ->orWhere('description', 'like', "%{$keyword}%");
+                  ->orWhere('description', 'like', "%{$keyword}%")
+                  ->orWhereHas('translations', function ($tQ) use ($keyword) {
+                      $tQ->where('name', 'like', "%{$keyword}%")
+                         ->orWhere('description', 'like', "%{$keyword}%");
+                  });
             });
         }
 
@@ -180,7 +184,7 @@ class VillaController extends Controller
      */
     public function show(Properties $property)
     {
-        $property->load(['settings', 'galleries', 'facilities', 'approvedReviews.user']);
+        $property->load(['translations', 'settings', 'galleries', 'facilities.translations', 'approvedReviews.user', 'promotions']);
         $paymentMethods = PaymentMethod::where('is_active', true)->get();
 
         $approvedReviews = $property->approvedReviews;
@@ -222,6 +226,7 @@ class VillaController extends Controller
             : false;
 
         $propertyRules = PropertyRule::active()
+            ->with('translations')
             ->forPropertyType($property->type ?? 'Villa')
             ->orderBy('sort_order', 'asc')
             ->get();

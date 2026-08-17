@@ -23,26 +23,26 @@
         <div class="max-w-7xl mx-auto relative z-10">
             <!-- Breadcrumbs -->
             <div class="flex items-center gap-2 text-xs text-white/70 mb-3 font-medium">
-                <a href="{{ route('home') }}" class="hover:text-[#ca9e54] transition-colors">Beranda</a>
+                <a href="{{ route('home') }}" class="hover:text-[#ca9e54] transition-colors">{{ __('frontend.booking.breadcrumb_home') }}</a>
                 <span>/</span>
-                <a href="{{ route('villa.index') }}" class="hover:text-[#ca9e54] transition-colors">Villa</a>
+                <a href="{{ route('villa.index') }}" class="hover:text-[#ca9e54] transition-colors">{{ __('frontend.booking.breadcrumb_villa') }}</a>
                 @if($selectedProperty)
                     <span>/</span>
                     <a href="{{ route('villa.show', $selectedProperty->slug) }}" class="hover:text-[#ca9e54] transition-colors">{{ $selectedProperty->name }}</a>
                 @endif
                 <span>/</span>
-                <span class="text-white font-semibold">Form Booking</span>
+                <span class="text-white font-semibold">{{ __('frontend.booking.breadcrumb_form') }}</span>
             </div>
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">Pemesanan Langsung Garansi Resmi</span>
+                    <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">{{ __('frontend.booking.official_guarantee') }}</span>
                     <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-normal text-white">
-                        Halaman Reservasi Villa
+                        {{ __('frontend.booking.page_title') }}
                     </h1>
                 </div>
                 <a href="{{ $selectedProperty ? route('villa.show', $selectedProperty->slug) : route('villa.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/20 shrink-0 w-fit">
-                    <i class="ri-arrow-left-line text-sm"></i> Kembali ke Detail Villa
+                    <i class="ri-arrow-left-line text-sm"></i> {{ __('frontend.booking.back_to_detail') }}
                 </a>
             </div>
         </div>
@@ -96,15 +96,15 @@
                             <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                                 <i class="ri-hotel-bed-line text-lg text-[#ca9e54]"></i>
                                 <div>
-                                    <span class="text-[10px] text-slate-400 block uppercase font-bold">Kamar Tidur</span>
-                                    <span class="font-bold text-slate-900">{{ $selectedProperty->bedrooms ?? 3 }} Kamar</span>
+                                    <span class="text-[10px] text-slate-400 block uppercase font-bold">{{ __('frontend.booking.bedrooms_label') }}</span>
+                                    <span class="font-bold text-slate-900">{{ $selectedProperty->bedrooms ?? 3 }} {{ __('frontend.villa.bedrooms') }}</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                                 <i class="ri-group-line text-lg text-[#ca9e54]"></i>
                                 <div>
-                                    <span class="text-[10px] text-slate-400 block uppercase font-bold">Kapasitas</span>
-                                    <span class="font-bold text-slate-900">{{ $selectedProperty->capacity ?? 6 }} Tamu</span>
+                                    <span class="text-[10px] text-slate-400 block uppercase font-bold">{{ __('frontend.booking.capacity_label') }}</span>
+                                    <span class="font-bold text-slate-900">{{ $selectedProperty->capacity ?? 6 }} {{ __('frontend.villa.guests') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                         <!-- Price display (Same UI as villa/show.blade.php) -->
                         @php $promoDetails = $selectedProperty->active_promo_details; @endphp
                         <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-xs font-medium text-slate-500">Harga Per Malam</span>
+                            <span class="text-xs font-medium text-slate-500">{{ __('frontend.booking.price_per_night') }}</span>
                             <div class="text-right space-y-0.5">
                                 @if($promoDetails)
                                     <div class="flex items-center gap-2 justify-end">
@@ -125,7 +125,7 @@
                                     </div>
                                     <div class="flex items-baseline gap-1 justify-end">
                                         <x-ui.price :value="(float) $promoDetails['final_price']" class="text-xl font-bold text-[#152c4e] font-serif-title tracking-tight" />
-                                        <span class="text-xs text-slate-500 font-normal">/malam</span>
+                                        <span class="text-xs text-slate-500 font-normal">{{ __('frontend.villa.per_night') }}</span>
                                     </div>
                                 @else
                                     <x-ui.price :value="$selectedProperty->price" suffix="/malam" class="text-xl font-bold text-[#152c4e]" containerClass="inline-block text-right" />
@@ -138,7 +138,7 @@
                     <div class="bg-slate-50/80 p-5 sm:p-6 rounded-3xl border border-slate-200/80 space-y-4 text-xs font-medium text-slate-700">
                         <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
                             <h4 class="font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-xs">
-                                <i class="ri-shield-check-line text-base text-[#ca9e54]"></i> Aturan & Kebijakan Menginap
+                                <i class="ri-shield-check-line text-base text-[#ca9e54]"></i> {{ __('frontend.booking.rules_policies') }}
                             </h4>
                             <span class="text-[10px] font-bold text-[#ca9e54] uppercase bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
                                 {{ $selectedProperty->type ?? 'Properti' }}
@@ -192,7 +192,7 @@
                     <!-- DATES & CALCULATOR SECTION -->
                     <div class="bg-slate-50 p-5 rounded-3xl border border-slate-200/80 space-y-4 font-satoshi">
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="ri-calendar-event-fill text-[#ca9e54]"></i> Tanggal Menginap
+                            <i class="ri-calendar-event-fill text-[#ca9e54]"></i> {{ __('frontend.booking.schedule_and_duration') }}
                         </h4>
 
                         <x-ui.date 
@@ -211,11 +211,11 @@
                         <div class="p-4 bg-white rounded-2xl border border-slate-200/80 space-y-3 font-satoshi">
                             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                                 <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 font-bold text-[11px]" id="calc-nights-badge">2 Malam</span>
+                                    <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 font-bold text-[11px]" id="calc-nights-badge">2 {{ __('frontend.booking.nights') }}</span>
                                     <span class="text-slate-500 text-[11px]">x {{ format_rupiah($selectedProperty->price ?? 0) }}</span>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Subtotal</span>
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold block">{{ __('frontend.booking.subtotal') }}</span>
                                     <span id="calc-subtotal-price" class="text-sm font-bold text-slate-800">{{ format_rupiah(($selectedProperty->price ?? 0) * 2) }}</span>
                                 </div>
                             </div>
@@ -223,13 +223,13 @@
                             <!-- Discount Row (Hidden initially) -->
                             <div id="calc-discount-row" class="flex items-center justify-between text-xs text-[#ca9e54] font-medium hidden">
                                 <span class="flex items-center gap-1 font-bold">
-                                    <i class="ri-coupon-3-fill text-[#ca9e54] text-sm"></i> Potongan Promo (<span id="calc-discount-code" class="font-mono font-bold uppercase">-</span>)
+                                    <i class="ri-coupon-3-fill text-[#ca9e54] text-sm"></i> {{ __('frontend.booking.promo_discount') }} (<span id="calc-discount-code" class="font-mono font-bold uppercase">-</span>)
                                 </span>
                                 <strong id="calc-discount-price" class="font-bold text-[#ca9e54]">- Rp 0</strong>
                             </div>
 
                             <div class="flex items-center justify-between pt-1 border-t border-slate-100">
-                                <span class="text-xs text-slate-500 font-bold uppercase">Total Pembayaran</span>
+                                <span class="text-xs text-slate-500 font-bold uppercase">{{ __('frontend.booking.total_payment') }}</span>
                                 <span id="calc-total-price" class="text-lg font-bold text-[#152c4e]">{{ format_rupiah(($selectedProperty->price ?? 0) * 2) }}</span>
                             </div>
                         </div>
@@ -239,9 +239,9 @@
                     <div class="bg-slate-50/80 p-5 rounded-3xl border border-slate-200/80 space-y-4 font-satoshi">
                         <div class="flex items-center justify-between">
                             <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                                <i class="ri-coupon-3-line text-[#ca9e54] text-base"></i> Kode Promo / Voucher Diskon
+                                <i class="ri-coupon-3-line text-[#ca9e54] text-base"></i> {{ __('frontend.booking.promo_section_title') }}
                             </h4>
-                            <span class="text-[10px] bg-slate-200/70 text-slate-700 font-bold px-2.5 py-0.5 rounded-full">1 Promo / Transaksi</span>
+                            <span class="text-[10px] bg-slate-200/70 text-slate-700 font-bold px-2.5 py-0.5 rounded-full">{{ __('frontend.booking.promo_limit') }}</span>
                         </div>
 
                         <!-- Hidden input for validated promo code -->
@@ -253,7 +253,7 @@
                                 <i class="ri-ticket-2-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                                 <input type="text" 
                                        id="input-promo-code" 
-                                       placeholder="Masukkan kode promo (contoh: VILLA-SEMINYAK / WELCOME100)" 
+                                       placeholder="{{ __('frontend.booking.promo_placeholder') }}" 
                                        class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs uppercase font-mono font-bold text-slate-800 focus:outline-none focus:border-[#ca9e54] focus:ring-1 focus:ring-[#ca9e54] transition shadow-xs"
                                        value="{{ old('promo_code', $autoPromoCode ?? '') }}"
                                 >
@@ -264,7 +264,7 @@
                                     class="px-5 py-2.5 bg-[#152c4e] hover:bg-[#ca9e54] text-[#e5c382] hover:text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
                             >
                                 <i class="ri-check-line"></i>
-                                <span>Gunakan</span>
+                                <span>{{ __('frontend.booking.apply_btn') }}</span>
                             </button>
                         </div>
 
@@ -275,8 +275,8 @@
                                     <i class="ri-checkbox-circle-fill text-lg"></i>
                                 </div>
                                 <div>
-                                    <strong id="active-promo-name" class="text-slate-900 font-bold block text-xs">Promo Aktif</strong>
-                                    <span id="active-promo-desc" class="text-[#ca9e54] text-[11px] font-medium">Hemat Rp 0</span>
+                                    <strong id="active-promo-name" class="text-slate-900 font-bold block text-xs">{{ __('frontend.booking.active_promo') }}</strong>
+                                    <span id="active-promo-desc" class="text-[#ca9e54] text-[11px] font-medium">{{ __('frontend.booking.save_amount') }} Rp 0</span>
                                 </div>
                             </div>
                             <button type="button" 
@@ -294,7 +294,7 @@
                             <div class="flex items-start gap-2">
                                 <i class="ri-error-warning-fill text-rose-500 text-base shrink-0 mt-0.5"></i>
                                 <div class="space-y-0.5">
-                                    <strong class="font-bold text-rose-950 block">Kode Promo Gagal Dipasang</strong>
+                                    <strong class="font-bold text-rose-950 block">Kode Promo Gagal</strong>
                                     <p id="promo-error-message" class="text-rose-800 text-[11px] leading-relaxed">
                                         {{ session('error_promo') }}
                                     </p>
@@ -306,14 +306,14 @@
                     <!-- GUEST INFORMATION SECTION -->
                     <div class="space-y-4">
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="ri-user-3-fill text-[#ca9e54]"></i> Informasi Data Tamu
+                            <i class="ri-user-3-fill text-[#ca9e54]"></i> {{ __('frontend.booking.guest_info_title') }}
                         </h4>
 
                         <div class="space-y-3">
                             <x-ui.input 
                                 name="guest_name" 
-                                label="Nama Lengkap Tamu" 
-                                placeholder="Masukkan nama sesuai identitas / KTP / Paspor" 
+                                label="{{ __('frontend.booking.guest_name') }}" 
+                                placeholder="{{ __('frontend.booking.guest_name_ph') }}" 
                                 value="{{ old('guest_name', auth()->user()->name ?? '') }}"
                                 required
                             />
@@ -322,7 +322,7 @@
                                 <x-ui.input 
                                     type="email"
                                     name="guest_email" 
-                                    label="Email Konfirmasi" 
+                                    label="{{ __('frontend.booking.guest_email') }}" 
                                     placeholder="nama@domain.com" 
                                     value="{{ old('guest_email', auth()->user()->email ?? '') }}"
                                     required
@@ -330,7 +330,7 @@
 
                                 <x-ui.input 
                                     name="guest_phone" 
-                                    label="Nomor Telepon / WhatsApp" 
+                                    label="{{ __('frontend.booking.guest_phone') }}" 
                                     placeholder="+62 812 3456 7890" 
                                     value="{{ old('guest_phone', '') }}"
                                     required
@@ -340,8 +340,8 @@
                             <div>
                                 <x-ui.textarea 
                                     name="notes" 
-                                    label="Catatan / Permintaan Khusus (Opsional)" 
-                                    placeholder="Contoh: Minta tempat tidur tambahan, perkiraan waktu kedatangan jam 15:00..."
+                                    label="{{ __('frontend.booking.special_notes') }}" 
+                                    placeholder="{{ __('frontend.booking.special_notes_ph') }}"
                                     value="{{ old('notes') }}"
                                     rows="2"
                                 />
@@ -352,15 +352,15 @@
                     <!-- PAYMENT METHOD SECTION USING COMPONENT x-ui.select2 -->
                     <div class="space-y-4 pt-2">
                         <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="ri-bank-card-fill text-[#ca9e54]"></i> Metode Pembayaran & Transfer
+                            <i class="ri-bank-card-fill text-[#ca9e54]"></i> {{ __('frontend.booking.payment_section_title') }}
                         </h4>
 
                         <div>
                             <x-ui.select2 
                                 name="payment_method_id"
                                 id="select-payment-method-id"
-                                label="Pilih Metode Pembayaran" 
-                                placeholder="-- Pilih Metode Pembayaran --"
+                                label="{{ __('frontend.booking.select_payment_method') }}" 
+                                placeholder="{{ __('frontend.booking.select_payment_ph') }}"
                                 :options="$paymentOptions"
                                 :value="old('payment_method_id')"
                                 required
@@ -378,9 +378,9 @@
                             <div id="pm-box-cash-notice" class="p-3 rounded-xl bg-slate-100/90 border border-slate-200 text-slate-800 text-xs hidden flex items-start gap-2.5">
                                 <i class="ri-information-fill text-[#152c4e] text-base shrink-0 mt-0.5"></i>
                                 <div class="space-y-1">
-                                    <strong class="font-bold text-slate-900 block text-xs">Ketentuan Pembayaran Cash / Tunai:</strong>
+                                    <strong class="font-bold text-slate-900 block text-xs">{{ __('frontend.booking.cash_notice_title') }}</strong>
                                     <p class="text-[11px] leading-relaxed text-slate-600">
-                                        Pilihan pembayaran tunai wajib melunasi <strong>DP (Down Payment)</strong> via transfer ke rekening bank di bawah ini terlebih dahulu untuk mengonfirmasi & mengunci tanggal reservasi Anda. Sisa pelunasan dilakukan saat check-in.
+                                        {{ __('frontend.booking.cash_notice_desc') }}
                                     </p>
                                 </div>
                             </div>
@@ -389,25 +389,25 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs" id="pm-box-details-grid">
                                 <!-- Account Number Block (Hidden for QRIS) -->
                                 <div id="pm-box-account-number-wrapper">
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Nomor Rekening / VA</span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase block">{{ __('frontend.booking.account_number_label') }}</span>
                                     <div class="flex items-center gap-2 mt-1">
                                         <strong class="text-slate-900 font-mono text-sm font-bold" id="pm-box-number">8830123999</strong>
                                         <button type="button" onclick="copyAccountNo()" class="px-2.5 py-0.5 rounded-md bg-slate-200/80 hover:bg-[#152c4e] hover:text-white text-slate-700 text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
-                                            <i class="ri-file-copy-line"></i> Salin
+                                            <i class="ri-file-copy-line"></i> {{ __('frontend.booking.copy') }}
                                         </button>
                                     </div>
                                 </div>
 
                                 <!-- Recipient / Account Holder Block -->
                                 <div id="pm-box-account-holder-wrapper">
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase block" id="pm-box-holder-label">Atas Nama / Pemilik</span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase block" id="pm-box-holder-label">{{ __('frontend.booking.account_holder_label') }}</span>
                                     <strong class="text-slate-900 text-xs font-bold block mt-1" id="pm-box-holder">PT Palma Luxury Villa</strong>
                                 </div>
                             </div>
 
                             <!-- QRIS Image Container if available -->
                             <div id="pm-box-qris-container" class="pt-3 border-t border-slate-200/70 hidden text-center space-y-2">
-                                <span class="text-[10px] font-bold text-slate-500 uppercase block">Scan Kode QRIS Untuk Pembayaran</span>
+                                <span class="text-[10px] font-bold text-slate-500 uppercase block">{{ __('frontend.booking.scan_qris') }}</span>
                                 <div class="inline-block">
                                     <img id="pm-box-qris-img" src="" alt="QRIS Code" class="h-80 w-80 object-contain mx-auto rounded-xl">
                                 </div>
@@ -424,7 +424,7 @@
                             <x-ui.dropzone 
                                 name="bukti_payment"
                                 id="input-bukti-payment"
-                                label="Unggah Bukti Pembayaran / Transfer *"
+                                label="{{ __('frontend.booking.upload_proof_label') }}"
                                 accept="image/jpeg,image/png,image/webp"
                                 :maxSize="5"
                                 :multiple="false"
@@ -440,7 +440,7 @@
                         <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs flex items-start gap-2.5">
                             <input type="checkbox" id="agree_rules" name="agree_rules" required class="mt-0.5 rounded border-slate-300 text-[#152c4e] focus:ring-[#ca9e54] cursor-pointer shrink-0">
                             <label for="agree_rules" class="text-slate-600 font-medium cursor-pointer leading-snug">
-                                Saya telah membaca dan menyetujui <strong class="text-slate-900 font-bold">Peraturan & Kebijakan Villa</strong> yang berlaku.
+                                {{ __('frontend.booking.agree_rules_label') }}
                             </label>
                         </div>
 
@@ -451,9 +451,14 @@
                             style="primary" 
                             class="w-full bg-[#152c4e] hover:bg-[#ca9e54] text-white rounded-2xl py-4 shadow-xl flex items-center justify-center gap-2 transition duration-300 cursor-pointer group"
                         >
-                            <span class="uppercase tracking-wider text-xs font-bold">Konfirmasi & Kirim Pemesanan</span>
+                            <span class="uppercase tracking-wider text-xs font-bold">{{ __('frontend.booking.submit_button') }}</span>
                             <i class="ri-arrow-right-line text-lg group-hover:translate-x-1 transition-transform"></i>
                         </x-ui.button>
+                        
+                        <p class="text-[11px] text-slate-400 text-center flex items-center justify-center gap-1.5 pt-1 font-medium">
+                            <i class="ri-shield-check-fill text-emerald-600 text-sm"></i>
+                            <span>{{ __('frontend.booking.security_badge') }}</span>
+                        </p>
                     </div>
 
                 </form>

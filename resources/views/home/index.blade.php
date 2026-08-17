@@ -17,28 +17,28 @@
         <div class="relative z-10 max-w-5xl mx-auto text-center text-white space-y-4 sm:space-y-6 my-auto pt-8 sm:pt-12">
             <!-- Editorial Subhead Text -->
             <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">
-                Bali, Indonesia • Private Sanctuaries
+                {{ __('frontend.home.hero_sub') }}
             </span>
 
             <!-- Title -->
             <h1 class="font-serif-title text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-tight md:leading-none tracking-tight">
-                Keindahan & Ketenangan <br class="hidden md:inline"/>
-                <span class="italic font-normal gold-gradient-text inline-block pr-2.5">Mewah di Bali</span>
+                {{ __('frontend.home.hero_title_1') }} <br class="hidden md:inline"/>
+                <span class="italic font-normal gold-gradient-text inline-block pr-2.5">{{ __('frontend.home.hero_title_2') }}</span>
             </h1>
 
             <!-- Subtitle -->
             <p class="text-xs sm:text-base md:text-lg text-slate-200 font-light max-w-2xl mx-auto leading-relaxed px-2">
-                Koleksi villa & resort eksklusif terverifikasi di Seminyak, Ubud, Uluwatu, dan Canggu. Dirancang untuk menghadirkan privasi penuh.
+                {{ __('frontend.home.hero_desc') }}
             </p>
 
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 px-4 sm:px-0">
                 <a href="#villa" class="w-full sm:w-auto bg-[#ca9e54] hover:bg-[#b88c43] text-white font-semibold px-8 py-3.5 sm:py-4 rounded-full shadow-lg hover:shadow-xl transition duration-300 flex items-center justify-center gap-2 group text-xs uppercase tracking-wider gold-glow">
-                    <span>Pesan Sekarang</span>
+                    <span>{{ __('frontend.home.book_now') }}</span>
                     <i class="ri-arrow-right-line text-lg group-hover:translate-x-1 transition-transform"></i>
                 </a>
                 <a href="#destinasi" class="w-full sm:w-auto border border-white/40 hover:border-white bg-white/10 hover:bg-white/20 text-white font-medium px-8 py-3.5 sm:py-4 rounded-full transition duration-300 flex items-center justify-center text-xs uppercase tracking-wider backdrop-blur-md">
-                    Destinasi Favorit
+                    {{ __('frontend.home.favorite_destinations') }}
                 </a>
             </div>
         </div>
@@ -50,9 +50,9 @@
         <!-- Section Header -->
         <div class="flex flex-row items-end justify-between mb-6 sm:mb-10 gap-4">
             <div>
-                <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">Destinasi Ikonik</span>
+                <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">{{ __('frontend.home.destinations_tag') }}</span>
                 <h2 class="font-serif-title text-2xl sm:text-3xl md:text-5xl font-normal text-slate-900 mt-0.5 sm:mt-1">
-                    Daerah Favorit Turis
+                    {{ __('frontend.home.destinations_title') }}
                 </h2>
             </div>
             
@@ -71,7 +71,7 @@
         <div id="destinasi-slider" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth touch-pan-x cursor-grab active:cursor-grabbing select-none">
             @foreach($destinations ?? [] as $dest)
                 <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
-                    <img src="{{ $dest->image_url }}" 
+                    <img src="{{ asset('storage/' . $dest->image_path) }}" 
                          alt="{{ $dest->name }}" 
                          draggable="false"
                          class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
@@ -90,7 +90,7 @@
                         
                         @if(!empty($dest->attraction))
                             <p class="text-[11px] sm:text-xs text-slate-300 font-light leading-snug pt-1 border-t border-white/10">
-                                <strong class="text-[#e5c382] font-semibold">Daya Tarik:</strong> {{ $dest->attraction }}
+                                <strong class="text-[#e5c382] font-semibold">{{ __('frontend.home.attraction_label') }}</strong> {{ $dest->attraction }}
                             </p>
                         @endif
                     </div>
@@ -103,14 +103,16 @@
     <section id="villa" class="pt-12 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto section-lazy font-satoshi">
         <!-- Section Header -->
         <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-16 space-y-2 sm:space-y-3">
-            <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">Koleksi Terkurasi</span>
+            <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">{{ __('frontend.home.villas_tag') }}</span>
             <h2 class="font-serif-title text-2xl sm:text-3xl md:text-5xl font-normal text-slate-900 mt-1">
-                Villa Terpilih Palma
+                {{ __('frontend.home.villas_title') }}
             </h2>
             <p class="text-slate-600 font-light text-xs sm:text-base md:text-lg">
-                Temukan pilihan properti luar biasa kami di destinasi paling menakjubkan di dunia
+                {{ __('frontend.home.villas_desc') }}
             </p>
-        </div>        <!-- Villa Grid (Dynamic Cards - Matched with Villa List Page) -->
+        </div>
+
+        <!-- Villa Grid (Dynamic Cards - Matched with Villa List Page) -->
         <div class="mb-10 sm:mb-12">
             @include('villa.partials.grid', ['properties' => isset($properties) ? $properties->take(6) : collect([])])
         </div>
@@ -118,7 +120,7 @@
         <!-- Section Action Button -->
         <div class="text-center">
             <a href="{{ route('villa.index') }}" class="inline-flex items-center gap-2 bg-[#152c4e] hover:bg-[#0f1e36] text-white font-semibold px-8 py-3.5 sm:py-4 rounded-full shadow-md hover:shadow-lg transition duration-300 text-xs uppercase tracking-wider group">
-                <span>Lihat Semua Villa</span>
+                <span>{{ __('frontend.home.view_all_villas') }}</span>
                 <i class="ri-arrow-right-line text-base group-hover:translate-x-1 transition-transform"></i>
             </a>
         </div>
@@ -129,12 +131,12 @@
         <div class="max-w-7xl mx-auto">
             <!-- Section Header -->
             <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-16 space-y-2 sm:space-y-3">
-                <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">Penawaran Eksklusif</span>
+                <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">{{ __('frontend.home.promo_tag') }}</span>
                 <h2 class="font-serif-title text-2xl sm:text-3xl md:text-5xl font-normal text-slate-900 mt-1">
-                    Promo Terbatas
+                    {{ __('frontend.home.promo_title') }}
                 </h2>
                 <p class="text-slate-600 font-light text-xs sm:text-base md:text-lg">
-                    Jangan lewatkan pengalaman villa premium kami dengan harga terbaik
+                    {{ __('frontend.home.promo_desc') }}
                 </p>
             </div>
 
@@ -147,37 +149,37 @@
                     <div>
                         <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold text-[#e5c382] mb-4 sm:mb-6 border border-white/10">
                             <i class="ri-time-line text-sm"></i>
-                            <span>Flash Sale</span>
+                            <span>{{ __('frontend.home.flash_sale') }}</span>
                         </div>
                         <h3 class="font-serif-title text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 leading-tight">
-                            Spesial Weekend Escape
+                            {{ __('frontend.home.flash_sale_title') }}
                         </h3>
                         <p class="text-white/80 font-light text-xs sm:text-base mb-6 sm:mb-8 max-w-md">
-                            Hemat hingga 40% untuk booking weekend di villa mewah pilihan
+                            {{ __('frontend.home.flash_sale_desc') }}
                         </p>
 
                         <!-- Countdown Timer -->
                         <div class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8" id="countdown-timer">
                             <div class="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-2.5 sm:p-3 min-w-[58px] sm:min-w-[70px] text-center border border-white/10">
                                 <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="timer-hours">23</span>
-                                <span class="text-[9px] sm:text-[10px] uppercase font-bold text-white/60 tracking-wider">JAM</span>
+                                <span class="text-[9px] sm:text-[10px] uppercase font-bold text-white/60 tracking-wider">{{ __('frontend.home.timer_hours') }}</span>
                             </div>
                             <span class="text-lg sm:text-xl font-bold text-[#e5c382]">:</span>
                             <div class="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-2.5 sm:p-3 min-w-[58px] sm:min-w-[70px] text-center border border-white/10">
                                 <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="timer-minutes">42</span>
-                                <span class="text-[9px] sm:text-[10px] uppercase font-bold text-white/60 tracking-wider">MENIT</span>
+                                <span class="text-[9px] sm:text-[10px] uppercase font-bold text-white/60 tracking-wider">{{ __('frontend.home.timer_minutes') }}</span>
                             </div>
                             <span class="text-lg sm:text-xl font-bold text-[#e5c382]">:</span>
                             <div class="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-2.5 sm:p-3 min-w-[58px] sm:min-w-[70px] text-center border border-white/10">
                                 <span class="block text-xl sm:text-2xl font-bold font-mono text-[#e5c382]" id="timer-seconds">27</span>
-                                <span class="text-[9px] sm:text-[10px] uppercase font-bold text-white/60 tracking-wider">DETIK</span>
+                                <span class="text-[9px] sm:text-[10px] uppercase font-bold text-white/60 tracking-wider">{{ __('frontend.home.timer_seconds') }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div>
                         <a href="{{ route('promo.index') }}" class="inline-flex items-center justify-center gap-2 bg-[#ca9e54] hover:bg-[#b88c43] text-white font-semibold px-8 py-3.5 rounded-full shadow-lg transition duration-300 w-full sm:w-auto text-xs uppercase tracking-wider">
-                            <span>Ambil Penawaran Sekarang</span>
+                            <span>{{ __('frontend.home.claim_promo') }}</span>
                             <i class="ri-arrow-right-line text-base"></i>
                         </a>
                     </div>
@@ -189,35 +191,35 @@
                     <div>
                         <div class="inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold text-white mb-4 sm:mb-6 border border-white/20">
                             <i class="ri-vip-crown-line text-sm"></i>
-                            <span>Khusus Member VIP</span>
+                            <span>{{ __('frontend.home.vip_member_tag') }}</span>
                         </div>
                         <h3 class="font-serif-title text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 leading-tight">
-                            Bonus Booking Pertama
+                            {{ __('frontend.home.vip_member_title') }}
                         </h3>
                         <p class="text-white/90 font-light text-xs sm:text-base mb-6 max-w-md">
-                            Dapatkan diskon eksklusif 35% untuk reservasi villa pertama Anda
+                            {{ __('frontend.home.vip_member_desc') }}
                         </p>
 
                         <!-- Features list -->
                         <ul class="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8 text-xs sm:text-sm font-medium text-white/95">
                             <li class="flex items-center gap-2.5 sm:gap-3">
                                 <i class="ri-checkbox-circle-fill text-base sm:text-lg text-white"></i>
-                                <span>Transfer bandara gratis</span>
+                                <span>{{ __('frontend.home.feat_airport_transfer') }}</span>
                             </li>
                             <li class="flex items-center gap-2.5 sm:gap-3">
                                 <i class="ri-checkbox-circle-fill text-base sm:text-lg text-white"></i>
-                                <span>Makan malam selamat datang gratis</span>
+                                <span>{{ __('frontend.home.feat_welcome_dinner') }}</span>
                             </li>
                             <li class="flex items-center gap-2.5 sm:gap-3">
                                 <i class="ri-checkbox-circle-fill text-base sm:text-lg text-white"></i>
-                                <span>Layanan concierge 24/7</span>
+                                <span>{{ __('frontend.home.feat_concierge') }}</span>
                             </li>
                         </ul>
                     </div>
 
                     <div>
                         <a href="{{ route('promo.index') }}" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-50 font-bold px-8 py-3.5 rounded-full shadow-lg transition duration-300 w-full sm:w-auto text-xs uppercase tracking-wider">
-                            <span>Mulai Sekarang</span>
+                            <span>{{ __('frontend.home.start_now') }}</span>
                             <i class="ri-arrow-right-line text-base"></i>
                         </a>
                     </div>
@@ -232,12 +234,12 @@
         <div class="max-w-7xl mx-auto">
             <!-- Section Header -->
             <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-16 space-y-2 sm:space-y-3">
-                <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">Komitmen Kami</span>
+                <span class="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#ca9e54] uppercase block mb-1">{{ __('frontend.home.why_tag') }}</span>
                 <h2 class="font-serif-title text-2xl sm:text-3xl md:text-5xl font-normal text-slate-900 mt-1">
-                    Mengapa Memilih Palma
+                    {{ __('frontend.home.why_title') }}
                 </h2>
                 <p class="text-slate-600 font-light text-xs sm:text-base md:text-lg">
-                    Rasakan kemewahan dan layanan tak tertandingi yang melampaui ekspektasi
+                    {{ __('frontend.home.why_desc') }}
                 </p>
             </div>
 
@@ -250,10 +252,10 @@
                         <i class="ri-shield-check-line"></i>
                     </div>
                     <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">
-                        Properti Terverifikasi
+                        {{ __('frontend.home.why_val1_title') }}
                     </h3>
                     <p class="text-slate-600 font-light text-xs sm:text-sm leading-relaxed">
-                        Setiap villa diperiksa dan diverifikasi secara personal oleh tim ahli kami untuk menjamin standar kualitas tertinggi.
+                        {{ __('frontend.home.why_val1_desc') }}
                     </p>
                 </div>
 
@@ -263,10 +265,10 @@
                         <i class="ri-award-line"></i>
                     </div>
                     <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">
-                        Jaminan Harga Terbaik
+                        {{ __('frontend.home.why_val2_title') }}
                     </h3>
                     <p class="text-slate-600 font-light text-xs sm:text-sm leading-relaxed">
-                        Temukan harga lebih rendah? Kami akan menyamai dan memberikan 110% kembali dari selisih harga tersebut.
+                        {{ __('frontend.home.why_val2_desc') }}
                     </p>
                 </div>
 
@@ -276,10 +278,10 @@
                         <i class="ri-customer-service-2-line"></i>
                     </div>
                     <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">
-                        Concierge 24/7
+                        {{ __('frontend.home.why_val3_title') }}
                     </h3>
                     <p class="text-slate-600 font-light text-xs sm:text-sm leading-relaxed">
-                        Dukungan sepanjang waktu dari booking hingga checkout untuk memastikan pengalaman menginap Anda sempurna.
+                        {{ __('frontend.home.why_val3_desc') }}
                     </p>
                 </div>
 
@@ -289,10 +291,10 @@
                         <i class="ri-heart-3-line"></i>
                     </div>
                     <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">
-                        Layanan Personal
+                        {{ __('frontend.home.why_val4_title') }}
                     </h3>
                     <p class="text-slate-600 font-light text-xs sm:text-sm leading-relaxed">
-                        Rekomendasi villa yang disesuaikan secara khusus berdasarkan kebutuhan spesifik dan kenyamanan liburan keluarga Anda.
+                        {{ __('frontend.home.why_val4_desc') }}
                     </p>
                 </div>
 
@@ -302,10 +304,10 @@
                         <i class="ri-rocket-line"></i>
                     </div>
                     <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">
-                        Konfirmasi Instan
+                        {{ __('frontend.home.why_val5_title') }}
                     </h3>
                     <p class="text-slate-600 font-light text-xs sm:text-sm leading-relaxed">
-                        Proses booking cepat tanpa perlu menunggu konfirmasi manual lama, jadwal ketersediaan terbarui secara otomatis.
+                        {{ __('frontend.home.why_val5_desc') }}
                     </p>
                 </div>
 
@@ -315,10 +317,10 @@
                         <i class="ri-vip-crown-line"></i>
                     </div>
                     <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">
-                        Keuntungan Eksklusif
+                        {{ __('frontend.home.why_val6_title') }}
                     </h3>
                     <p class="text-slate-600 font-light text-xs sm:text-sm leading-relaxed">
-                        Akses khusus ke promo rahasia, welcome drink spesial, dan bonus upgrade fasilitas villa pada setiap pemesanan.
+                        {{ __('frontend.home.why_val6_desc') }}
                     </p>
                 </div>
 
@@ -338,35 +340,37 @@
         </div>
 
         <div class="max-w-5xl mx-auto text-center space-y-4 sm:space-y-6 relative z-10">
-            <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">PENGALAMAN MEWAH DENGAN PALMA</span>
+            <span class="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-[#e5c382] uppercase block mb-1">{{ __('frontend.home.cta_tag') }}</span>
             <h2 class="font-serif-title text-3xl sm:text-4xl md:text-6xl font-bold text-white leading-tight">
-                Siap Merasakan Kemewahan?
+                {{ __('frontend.home.cta_title') }}
             </h2>
             <p class="text-white/90 font-light text-xs sm:text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-2">
-                Bergabunglah dengan ribuan tamu puas yang telah menemukan villa sempurna mereka bersama Palma.
+                {{ __('frontend.home.cta_desc') }}
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-3 sm:pt-6 px-4 sm:px-0">
                 <a href="#villa" class="w-full sm:w-auto bg-[#ca9e54] hover:bg-[#b88c43] text-white font-semibold px-9 py-3.5 sm:py-4 rounded-full shadow-xl transition duration-300 text-xs uppercase tracking-wider gold-glow flex items-center justify-center gap-2">
-                    <span>Jelajahi Villa Sekarang</span>
+                    <span>{{ __('frontend.home.cta_explore_btn') }}</span>
                     <i class="ri-arrow-right-line text-base"></i>
                 </a>
                 <a href="#tentang" class="w-full sm:w-auto border border-white/30 hover:border-white bg-white/10 hover:bg-white/20 text-white font-medium px-9 py-3.5 sm:py-4 rounded-full transition duration-300 text-xs uppercase tracking-wider backdrop-blur-md flex items-center justify-center gap-2">
-                    <span>Hubungi Concierge</span>
+                    <span>{{ __('frontend.home.cta_concierge_btn') }}</span>
                     <i class="ri-customer-service-2-line text-base"></i>
                 </a>
             </div>
         </div>
-    </section>    <!-- SECTION: KATA TAMU KAMI (PHOTO MOSAIC & TESTIMONIALS MATCHING REFERENCE DESIGN) -->
+    </section>
+
+    <!-- SECTION: KATA TAMU KAMI (PHOTO MOSAIC & TESTIMONIALS MATCHING REFERENCE DESIGN) -->
     <section class="py-16 sm:py-28 px-4 sm:px-6 md:px-12 bg-white font-satoshi section-lazy border-t border-slate-100 overflow-hidden">
         <div class="max-w-7xl mx-auto space-y-12 sm:space-y-16">
 
             <!-- CENTER HEADLINE SECTION (MATCHING REFERENCE DESIGN) -->
             <div class="text-center max-w-3xl mx-auto space-y-3">
                 <h2 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
-                    Dipercaya oleh Wisatawan & Tokoh Dunia
+                    {{ __('frontend.home.testi_title') }}
                 </h2>
                 <p class="text-slate-500 font-normal text-base sm:text-lg md:text-xl max-w-xl mx-auto">
-                    dari berbagai kalangan, negara, & industri
+                    {{ __('frontend.home.testi_subtitle') }}
                 </p>
             </div>
 
@@ -382,7 +386,7 @@
 
                     <!-- Quote Text -->
                     <p class="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
-                        "Palma membuat proses menemukan villa mewah di Bali sangat mudah! Saya dapat memesan villa pantai dalam beberapa menit dan langsung mendapatkan konfirmasi instan. Sangat merekomendasikan!"
+                        {{ __('frontend.home.testi_quote_1') }}
                     </p>
 
                     <!-- Author Row -->
@@ -404,7 +408,7 @@
 
                     <!-- Quote Text -->
                     <p class="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
-                        "Tim kami membutuhkan villa privat yang fleksibel untuk retreat perusahaan. Pelayanan dari Palma sangat lancar, villa bersih luar biasa, dan fasilitasnya persis sesuai kebutuhan kami!"
+                        {{ __('frontend.home.testi_quote_2') }}
                     </p>
 
                     <!-- Author Row -->
@@ -426,7 +430,7 @@
 
                     <!-- Quote Text -->
                     <p class="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
-                        "Saya sangat menyukai keanekaragaman pilihan villa yang tersedia! Baik saat membutuhkan suasana tenang pantai atau tempat luas untuk keluarga, Palma selalu punya pilihan sempurna."
+                        {{ __('frontend.home.testi_quote_3') }}
                     </p>
 
                     <!-- Author Row -->
