@@ -52,73 +52,63 @@
             <div class="bg-white rounded-3xl p-2 shadow-lg shadow-slate-100/50 border border-slate-200/80 flex flex-wrap gap-2">
                 <button type="button" 
                         @click="activeTab = 'general'" 
-                        :class="activeTab === 'general' ? 'bg-slate-900 text-white font-satoshi-medium shadow-sm' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
-                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200">
-                    <i class="ri-information-line text-lg"></i> General Info & Location
+                        :class="activeTab === 'general' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
+                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200 cursor-pointer">
+                    <i class="ri-information-line text-lg"></i> General Info &amp; Location
                 </button>
 
                 <button type="button" 
                         @click="activeTab = 'facilities'" 
-                        :class="activeTab === 'facilities' ? 'bg-slate-900 text-white font-satoshi-medium shadow-sm' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
-                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200">
-                    <i class="ri-building-2-line text-lg"></i> Facilities & Amenities
+                        :class="activeTab === 'facilities' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
+                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200 cursor-pointer">
+                    <i class="ri-building-2-line text-lg"></i> Facilities &amp; Amenities
                 </button>
 
                 <button type="button" 
                         @click="activeTab = 'settings'" 
-                        :class="activeTab === 'settings' ? 'bg-slate-900 text-white font-satoshi-medium shadow-sm' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
-                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200">
-                    <i class="ri-settings-4-line text-lg"></i> Settings & Policies
+                        :class="activeTab === 'settings' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
+                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200 cursor-pointer">
+                    <i class="ri-settings-4-line text-lg"></i> Settings &amp; Policies
                 </button>
 
                 <button type="button" 
                         @click="activeTab = 'gallery'" 
-                        :class="activeTab === 'gallery' ? 'bg-slate-900 text-white font-satoshi-medium shadow-sm' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
-                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200">
+                        :class="activeTab === 'gallery' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
+                        class="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm transition-all duration-200 cursor-pointer">
                     <i class="ri-image-line text-lg"></i> Photo Gallery
                 </button>
             </div>
 
-            <!-- Tab 1: General Info & Location -->
+            <!-- ========================================================================= -->
+            <!-- TAB 1: GENERAL INFO & LOCATION                                           -->
+            <!-- ========================================================================= -->
             <div x-show="activeTab === 'general'" x-transition class="space-y-6">
-                <x-ui.card>
-                    <h5 class="text-lg font-satoshi-bold text-slate-900 mb-6">{{ $sub_title }}</h5>
+                <!-- CARD: INFORMASI UTAMA & DETAIL PROPERTI -->
+                <x-ui.card class="p-6">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <h5 class="text-base font-satoshi-bold text-slate-900 flex items-center gap-2">
+                            <i class="ri-home-5-line text-[#ca9e54] text-lg"></i> {{ $sub_title }}
+                        </h5>
+                        <p class="text-xs text-slate-500 mt-0.5">Informasi utama properti, nama, deskripsi, kapasitas, serta tarif sewa per malam.</p>
+                    </div>
 
-                    <!-- Multi-Language Translations Box -->
-                    <div x-data="{ langTab: 'id' }" class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-5 mb-6">
-                        <div class="flex items-center justify-between border-b border-slate-200/80 pb-3 flex-wrap gap-2">
-                            <div>
-                                <h6 class="text-sm font-satoshi-bold text-slate-900 flex items-center gap-2">
-                                    <i class="ri-translate-2 text-slate-700 text-base"></i> Multi-Language Content
-                                </h6>
-                                <p class="text-xs text-slate-500 font-satoshi-medium">Kelola nama dan deskripsi properti dalam berbagai bahasa.</p>
+                    <div class="space-y-6">
+                        <!-- Konten Bahasa Indonesia (Default) -->
+                        <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-4">
+                            <div class="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+                                <span class="text-base">🇮🇩</span>
+                                <div>
+                                    <h6 class="text-sm font-satoshi-bold text-slate-900">Konten Bahasa Indonesia (Default)</h6>
+                                    <p class="text-[11px] text-slate-500">Nama dan deskripsi properti dalam Bahasa Indonesia.</p>
+                                </div>
                             </div>
 
-                            <!-- Language Switcher Pill Buttons -->
-                            <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-xs">
-                                <button type="button" 
-                                        @click="langTab = 'id'" 
-                                        :class="langTab === 'id' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
-                                    <span>🇮🇩</span> <span>Indonesia (Default)</span>
-                                </button>
-                                <button type="button" 
-                                        @click="langTab = 'en'" 
-                                        :class="langTab === 'en' ? 'bg-slate-900 text-white font-satoshi-bold shadow-xs' : 'text-slate-600 hover:bg-slate-100 font-satoshi-medium'"
-                                        class="px-3.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
-                                    <span>🇬🇧</span> <span>English</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Tab 1: Bahasa Indonesia (ID) -->
-                        <div x-show="langTab === 'id'" class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div class="md:col-span-2">
                                     <x-ui.input 
                                         id="property_name_input"
                                         name="name" 
-                                        label="Property Name (Bahasa Indonesia) *" 
+                                        label="Nama Properti (ID) *" 
                                         placeholder="e.g. Villa Seminyak Sanctuary" 
                                         value="{{ old('name', $transId->name ?? ($property_data->name ?? '')) }}"
                                         required
@@ -128,28 +118,36 @@
                                     <x-ui.input 
                                         id="property_code_input"
                                         name="code" 
-                                        label="Property Code (Auto)" 
+                                        label="Kode Properti (Auto)" 
                                         placeholder="e.g. VSS" 
                                         value="{{ old('code', $property_data->code ?? '') }}"
                                         readonly
                                         class="bg-slate-100/80 text-slate-600 font-bold tracking-wider cursor-not-allowed border-slate-200"
                                     />
-                                    <span class="text-[11px] text-slate-400 mt-1 block">Karakter inisial otomatis dari Nama Properti</span>
+                                    <span class="text-[11px] text-slate-400 mt-1 block">Inisial otomatis dari Nama Properti</span>
                                 </div>
                             </div>
 
                             <div>
                                 <x-ui.editor 
                                     name="description" 
-                                    label="Property Description (Bahasa Indonesia)" 
+                                    label="Deskripsi Properti (ID)" 
                                     placeholder="Deskripsikan keindahan, fasilitas, dan keunikan properti ini..." 
                                     :value="old('description', $transId->description ?? ($property_data->description ?? ''))"
                                 />
                             </div>
                         </div>
 
-                        <!-- Tab 2: English (EN) -->
-                        <div x-show="langTab === 'en'" class="space-y-4" style="display: none;">
+                        <!-- Konten English (Opsional / Multilingual) -->
+                        <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/90 space-y-4">
+                            <div class="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+                                <span class="text-base">🇬🇧</span>
+                                <div>
+                                    <h6 class="text-sm font-satoshi-bold text-slate-900">English Content (Optional)</h6>
+                                    <p class="text-[11px] text-slate-500">Property name and description translated for international guests.</p>
+                                </div>
+                            </div>
+
                             <div>
                                 <x-ui.input 
                                     name="translations[en][name]" 
@@ -168,14 +166,9 @@
                                 />
                             </div>
                         </div>
-                                />
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                        <!-- Destination Select2 Component -->
-                        <div>
+                        <!-- Destination, Property Type & Price Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <x-ui.select2 
                                 name="destination_id" 
                                 label="Destinasi / Region" 
@@ -183,10 +176,7 @@
                                 :options="$destinationOptions"
                                 :value="old('destination_id', $property_data->destination_id ?? '')"
                             />
-                        </div>
 
-                        <!-- Property Type Select2 Component -->
-                        <div>
                             <x-ui.select2 
                                 name="type" 
                                 label="Property Type *" 
@@ -194,10 +184,7 @@
                                 :options="$propertyTypes"
                                 :value="old('type', $property_data->type ?? 'Villa')"
                             />
-                        </div>
 
-                        <!-- Price Per Night (Auto Dot Separator) -->
-                        <div>
                             <x-ui.price 
                                 type="input"
                                 id="price_input"
@@ -209,11 +196,9 @@
                                 inputmode="numeric"
                             />
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <!-- Bedrooms -->
-                        <div>
+                        <!-- Bedrooms, Capacity & Status Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                             <x-ui.input 
                                 type="number"
                                 name="bedrooms" 
@@ -223,57 +208,54 @@
                                 value="{{ old('bedrooms', $property_data->bedrooms ?? 1) }}"
                                 required
                             />
-                        </div>
 
-                        <!-- Capacity (Guests) -->
-                        <div>
                             <x-ui.input 
                                 type="number"
                                 name="capacity" 
-                                label="Kapasitas Tamu (Max Guests) *" 
+                                label="Kapasitas Tamu (Max) *" 
                                 placeholder="e.g. 6" 
                                 min="1"
                                 value="{{ old('capacity', $property_data->capacity ?? 2) }}"
                                 required
                             />
+
+                            <div class="flex items-center pt-6">
+                                <x-ui.switch 
+                                    name="status" 
+                                    label="Active Status" 
+                                    value="1"
+                                    :checked="old('status', $property_data->status ?? true) ? true : false"
+                                />
+                            </div>
+
+                            <div class="flex items-center pt-6">
+                                <x-ui.switch 
+                                    name="is_featured" 
+                                    label="Featured Property" 
+                                    value="1"
+                                    :checked="old('is_featured', $property_data->is_featured ?? false) ? true : false"
+                                />
+                            </div>
                         </div>
                     </div>
+                </x-ui.card>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <!-- Status / Active -->
-                        <div class="flex items-center">
-                            <x-ui.switch 
-                                name="status" 
-                                label="Active Status" 
-                                value="1"
-                                :checked="old('status', $property_data->status ?? true) ? true : false"
-                            />
-                        </div>
-
-                        <!-- Is Featured -->
-                        <div class="flex items-center">
-                            <x-ui.switch 
-                                name="is_featured" 
-                                label="Featured Property" 
-                                value="1"
-                                :checked="old('is_featured', $property_data->is_featured ?? false) ? true : false"
-                            />
-                        </div>
+                <!-- CARD: LOKASI & ALAMAT PROPERTI -->
+                <x-ui.card class="p-6">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <h5 class="text-base font-satoshi-bold text-slate-900 flex items-center gap-2">
+                            <i class="ri-map-pin-line text-[#ca9e54] text-lg"></i> Lokasi &amp; Alamat Properti
+                        </h5>
+                        <p class="text-xs text-slate-500 mt-0.5">Wilayah administratif, kode pos, alamat jalan lengkap, serta titik koordinat &amp; peta Google Maps.</p>
                     </div>
 
-                    <!-- Wilayah Indonesia API Select2 Cascading Pickers (Provinsi -> Kota/Kabupaten) -->
-                    <div class="pt-6 border-t border-slate-100 mt-6">
-                        <h6 class="text-base font-satoshi-medium text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="ri-map-pin-line text-slate-600"></i> Location & Regional Address
-                        </h6>
-
+                    <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <x-ui.region-picker 
                                 :saved-province="$savedProvince"
                                 :saved-city="$savedCity"
                             />
 
-                            <!-- Kode Pos -->
                             <x-ui.input 
                                 name="postal_code" 
                                 label="Postal Code" 
@@ -282,53 +264,62 @@
                             />
                         </div>
 
-                        <!-- Full Street Address -->
-                        <div class="mt-6">
-                            <x-ui.input 
-                                name="address" 
-                                label="Full Street Address" 
-                                placeholder="e.g. Jl. Kayu Aya No. 88, Seminyak, Kuta, Badung Regency" 
-                                value="{{ old('address', $property_data->address ?? '') }}"
-                            />
-                        </div>
+                        <x-ui.input 
+                            name="address" 
+                            label="Full Street Address" 
+                            placeholder="e.g. Jl. Kayu Aya No. 88, Seminyak, Kuta, Badung Regency" 
+                            value="{{ old('address', $property_data->address ?? '') }}"
+                        />
 
-                        <!-- Google Maps Embed Iframe Section -->
                         <x-ui.map-picker 
                             :saved-map-link="$savedMapLink"
                             :saved-lat="$savedLat"
                             :saved-lng="$savedLng"
                         />
                     </div>
+                </x-ui.card>
 
-                    <!-- Main Cover Image Dropzone Component -->
-                    <div class="pt-6 border-t border-slate-100 mt-6">
-                        <x-ui.dropzone 
-                            name="main_image" 
-                            label="Main Cover Image"
-                            accept="image/*"
-                            :previewUrl="isset($property_data->main_image) ? asset('storage/'.$property_data->main_image) : null"
-                        />
+                <!-- CARD: FOTO COVER UTAMA -->
+                <x-ui.card class="p-6">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <h5 class="text-base font-satoshi-bold text-slate-900 flex items-center gap-2">
+                            <i class="ri-image-2-line text-[#ca9e54] text-lg"></i> Foto Cover Utama Properti
+                        </h5>
+                        <p class="text-xs text-slate-500 mt-0.5">Unggah gambar resolusi tinggi untuk cover depan kartu properti.</p>
                     </div>
+
+                    <x-ui.dropzone 
+                        name="main_image" 
+                        label="Main Cover Image"
+                        accept="image/*"
+                        :previewUrl="isset($property_data->main_image) ? asset('storage/'.$property_data->main_image) : null"
+                    />
                 </x-ui.card>
             </div>
 
-            <!-- Tab 2: Facilities & Amenities -->
+            <!-- ========================================================================= -->
+            <!-- TAB 2: FACILITIES & AMENITIES                                            -->
+            <!-- ========================================================================= -->
             <div x-show="activeTab === 'facilities'" x-transition class="space-y-6" style="display: none;">
-                <x-ui.card>
-                    <h5 class="text-lg font-satoshi-bold text-slate-900 mb-2">Select Available Facilities</h5>
-                    <p class="text-xs text-slate-500 font-satoshi-medium mb-6">Pilih fasilitas master yang tersedia pada properti ini.</p>
+                <x-ui.card class="p-6">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <h5 class="text-base font-satoshi-bold text-slate-900 flex items-center gap-2">
+                            <i class="ri-building-2-line text-[#ca9e54] text-lg"></i> Fasilitas &amp; Amenitas Properti
+                        </h5>
+                        <p class="text-xs text-slate-500 mt-0.5">Pilih fasilitas dan kelengkapan villa yang tersedia untuk dinikmati tamu.</p>
+                    </div>
 
                     @if($groupedFacilities->count() > 0)
                         <div class="space-y-6">
                             @foreach($groupedFacilities as $category => $items)
                                 <div class="bg-slate-50/70 rounded-2xl p-5 border border-slate-200/80">
-                                    <h6 class="text-sm font-satoshi-medium text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-slate-800"></span> {{ $category ?: 'General' }}
+                                    <h6 class="text-xs font-satoshi-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-[#ca9e54]"></span> {{ $category ?: 'General' }}
                                     </h6>
 
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
                                         @foreach($items as $facility)
-                                            <div class="p-3 rounded-2xl bg-white border border-slate-200 transition hover:border-slate-400">
+                                            <div class="p-3 rounded-2xl bg-white border border-slate-200/80 transition-all hover:border-slate-400 hover:shadow-xs">
                                                 <x-ui.checkbox 
                                                     name="facilities[]" 
                                                     :id="'fac_'.$facility->id"
@@ -344,19 +335,25 @@
                         </div>
                     @else
                         <div class="text-center py-8 text-slate-500 font-satoshi-medium">
-                            Belum ada data fasilitas master. Tambahkan fasilitas di menu <a href="{{ route('facilities.index') }}" class="text-slate-900 font-satoshi-medium underline">Facilities</a> terlebih dahulu.
+                            Belum ada data fasilitas master. Tambahkan fasilitas di menu <a href="{{ route('facilities.index') }}" class="text-slate-900 font-satoshi-bold underline">Facilities</a> terlebih dahulu.
                         </div>
                     @endif
                 </x-ui.card>
             </div>
 
-            <!-- Tab 3: Settings & Policies -->
+            <!-- ========================================================================= -->
+            <!-- TAB 3: SETTINGS & POLICIES                                               -->
+            <!-- ========================================================================= -->
             <div x-show="activeTab === 'settings'" x-transition class="space-y-6" style="display: none;">
-                <x-ui.card>
-                    <h5 class="text-lg font-satoshi-bold text-slate-900 mb-6">Property Operational Settings & Policies</h5>
+                <x-ui.card class="p-6">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <h5 class="text-base font-satoshi-bold text-slate-900 flex items-center gap-2">
+                            <i class="ri-customer-service-2-line text-[#ca9e54] text-lg"></i> Kontak &amp; Pengaturan Operasional
+                        </h5>
+                        <p class="text-xs text-slate-500 mt-0.5">Informasi kontak pemesanan langsung serta konfigurasi mata uang properti.</p>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Phone -->
                         <x-ui.input 
                             name="phone" 
                             label="Contact Phone / WhatsApp" 
@@ -364,7 +361,6 @@
                             value="{{ old('phone', $property_data->settings->phone ?? '') }}"
                         />
 
-                        <!-- Email -->
                         <x-ui.input 
                             type="email"
                             name="email" 
@@ -373,7 +369,6 @@
                             value="{{ old('email', $property_data->settings->email ?? '') }}"
                         />
 
-                        <!-- Currency -->
                         <x-ui.input 
                             name="currency" 
                             label="Currency Code" 
@@ -381,77 +376,86 @@
                             value="{{ old('currency', $property_data->settings->currency ?? 'IDR') }}"
                         />
                     </div>
-
-
                 </x-ui.card>
             </div>
 
-            <!-- Tab 4: Photo Gallery -->
+            <!-- ========================================================================= -->
+            <!-- TAB 4: PHOTO GALLERY                                                     -->
+            <!-- ========================================================================= -->
             <div x-show="activeTab === 'gallery'" x-transition class="space-y-6" style="display: none;">
-                <x-ui.card>
-                    <h5 class="text-lg font-satoshi-bold text-slate-900 mb-2">Property Photo Gallery</h5>
-                    <p class="text-xs text-slate-500 font-satoshi-medium mb-6">Unggah beberapa foto kamar, kolam renang, dan sudut properti untuk dipajang di galeri.</p>
+                <x-ui.card class="p-6">
+                    <div class="border-b border-slate-100 pb-4 mb-6">
+                        <h5 class="text-base font-satoshi-bold text-slate-900 flex items-center gap-2">
+                            <i class="ri-image-line text-[#ca9e54] text-lg"></i> Galeri Foto Properti
+                        </h5>
+                        <p class="text-xs text-slate-500 mt-0.5">Unggah foto-foto sudut ruangan, kolam renang, dan fasilitas villa untuk galeri foto.</p>
+                    </div>
 
-                    <!-- Existing Gallery Photos (if editing) -->
-                    @if(isset($property_data) && $property_data->galleries->count() > 0)
-                        <div class="mb-8">
-                            <h6 class="text-sm font-satoshi-medium text-slate-800 mb-3">Foto Galeri Saat Ini:</h6>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                                @foreach($property_data->galleries as $galleryItem)
-                                    <div x-data="{ isDeleted: false }" 
-                                         class="relative group rounded-2xl overflow-hidden border transition-all p-1.5"
-                                         :class="isDeleted ? 'border-slate-300 bg-slate-100 opacity-50' : 'border-slate-200 bg-white shadow-xs hover:border-slate-300'">
-                                        
-                                        <div class="relative w-full h-28 rounded-xl overflow-hidden bg-slate-100">
-                                            <img src="{{ asset('storage/' . $galleryItem->image_path) }}" class="w-full h-full object-cover">
+                    <div class="space-y-6">
+                        <!-- Existing Gallery Photos (if editing) -->
+                        @if(isset($property_data) && $property_data->galleries->count() > 0)
+                            <div>
+                                <h6 class="text-sm font-satoshi-bold text-slate-800 mb-3 flex items-center gap-2">
+                                    <i class="ri-gallery-line text-slate-600"></i> Foto Galeri Saat Ini:
+                                </h6>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                    @foreach($property_data->galleries as $galleryItem)
+                                        <div x-data="{ isDeleted: false }" 
+                                             class="relative group rounded-2xl overflow-hidden border transition-all p-1.5"
+                                             :class="isDeleted ? 'border-rose-300 bg-rose-50/50 opacity-60' : 'border-slate-200 bg-white shadow-xs hover:border-slate-300'">
                                             
-                                            <div x-show="isDeleted" class="absolute inset-0 bg-slate-900/70 flex items-center justify-center p-2 text-center">
-                                                <span class="text-[11px] font-satoshi-medium text-white bg-slate-800/90 px-2 py-1 rounded-lg">Akan Dihapus</span>
+                                            <div class="relative w-full h-28 rounded-xl overflow-hidden bg-slate-100">
+                                                <img src="{{ asset('storage/' . $galleryItem->image_path) }}" class="w-full h-full object-cover">
+                                                
+                                                <div x-show="isDeleted" class="absolute inset-0 bg-slate-900/70 flex items-center justify-center p-2 text-center">
+                                                    <span class="text-[11px] font-satoshi-bold text-white bg-rose-600 px-2 py-1 rounded-lg">Akan Dihapus</span>
+                                                </div>
                                             </div>
+
+                                            <input type="checkbox" name="delete_galleries[]" value="{{ $galleryItem->id }}" :checked="isDeleted" class="hidden">
+
+                                            <button type="button" 
+                                                    @click="isDeleted = !isDeleted" 
+                                                    :title="isDeleted ? 'Batalkan Hapus' : 'Hapus Foto'"
+                                                    class="absolute top-2.5 right-2.5 h-7 w-7 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white flex items-center justify-center shadow-md transition-all transform hover:scale-105">
+                                                <i :class="isDeleted ? 'ri-arrow-go-back-line' : 'ri-delete-bin-line'" class="text-sm"></i>
+                                            </button>
                                         </div>
-
-                                        <input type="checkbox" name="delete_galleries[]" value="{{ $galleryItem->id }}" :checked="isDeleted" class="hidden">
-
-                                        <button type="button" 
-                                                @click="isDeleted = !isDeleted" 
-                                                :title="isDeleted ? 'Batalkan Hapus' : 'Hapus Foto'"
-                                                class="absolute top-2.5 right-2.5 h-6 w-6 rounded-full bg-slate-900/80 hover:bg-slate-950 text-white flex items-center justify-center shadow-md transition-all transform hover:scale-105">
-                                            <i :class="isDeleted ? 'ri-arrow-go-back-line' : 'ri-close-line'" class="text-sm"></i>
-                                        </button>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
+                        @endif
 
+                        <!-- Upload New Gallery Images using multi-image dropzone component -->
+                        <div class="@if(isset($property_data) && $property_data->galleries->count() > 0) pt-4 border-t border-slate-100 @endif">
+                            <x-ui.dropzone 
+                                name="gallery_images[]" 
+                                label="Upload Gallery Photos (Multiple Images)"
+                                :multiple="true"
+                                accept="image/*"
+                            />
                         </div>
-                    @endif
-
-                    <!-- Upload New Gallery Images using multi-image dropzone component -->
-                    <div>
-                        <x-ui.dropzone 
-                            name="gallery_images[]" 
-                            label="Upload Gallery Photos (Multiple Images)"
-                            :multiple="true"
-                            accept="image/*"
-                        />
                     </div>
                 </x-ui.card>
             </div>
 
-            <!-- Submit / Cancel Action Buttons -->
-            <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+            <!-- ========================================================================= -->
+            <!-- GLOBAL ACTION BAR (CANCEL & SUBMIT)                                      -->
+            <!-- ========================================================================= -->
+            <div class="pt-4 flex items-center justify-end gap-3">
                 <x-ui.button type="button" font="medium" size="sm" style="secondary" onclick="window.location.href='{{ $breadcrumb_parent?->url ?? route('properties.index') }}'">
                     Cancel
                 </x-ui.button>
-                <x-ui.button type="submit" font="medium" size="sm">
+                <x-ui.button type="submit" font="bold" size="sm">
                     Submit
                 </x-ui.button>
             </div>
+
         </form>
     </div>
 @endsection
 
 @push('scripts')
-
     <!-- 
     ========================================================================
     AUTO-GENERATE PROPERTY CODE FROM PROPERTY NAME INITIALS (MAX 3 CHARS)
@@ -468,7 +472,6 @@
             const codeInput = document.getElementById('property_code_input') || document.querySelector('input[name="code"]');
 
             if (nameInput && codeInput) {
-
                 function generateInitialsCode(nameString) {
                     if (!nameString) return '';
 
@@ -499,7 +502,7 @@
         });
     </script>
 
-    {{-- SweetAlert otomatis --}}
+    {{-- SweetAlert Notification --}}
     @if(session('success'))
         <script>
             Swal.fire({ icon: 'success', title: 'Success', text: "{{ session('success') }}" });
