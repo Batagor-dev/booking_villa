@@ -43,50 +43,6 @@
             </div>
         </div>
 
-        <!-- SEARCH BAR CONTAINER -->
-        <div class="relative z-30 w-full max-w-5xl mx-auto transform translate-y-2 sm:translate-y-4 md:translate-y-6 px-2 sm:px-6 mb-2">
-            <div class="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 md:p-6 shadow-2xl border border-slate-100 text-slate-900">
-                <form class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 items-center">
-                    <!-- Destinasi -->
-                    <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-200/60">
-                        <label class="block text-[9px] sm:text-xs font-bold tracking-wider text-slate-500 uppercase mb-1">DESTINASI</label>
-                        <div class="flex items-center gap-2 text-slate-900">
-                            <i class="ri-map-pin-line text-base sm:text-xl text-[#ca9e54]"></i>
-                            <input type="text" placeholder="Bali, Ubud, Seminyak..." class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none placeholder:text-slate-400">
-                        </div>
-                    </div>
-
-                    <!-- Check In -->
-                    <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-200/60">
-                        <label for="search-checkin-date" class="block text-[9px] sm:text-xs font-bold tracking-wider text-slate-500 uppercase mb-1">CHECK IN</label>
-                        <div class="flex items-center gap-2 text-slate-900">
-                            <i class="ri-calendar-event-line text-base sm:text-xl text-[#ca9e54]"></i>
-                            <input type="text" id="search-checkin-date" placeholder="Pilih tanggal..." aria-label="Tanggal Check In" class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none cursor-pointer">
-                        </div>
-                    </div>
-
-                    <!-- Tamu -->
-                    <div class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-200/60">
-                        <label for="search-guest-count" class="block text-[9px] sm:text-xs font-bold tracking-wider text-slate-500 uppercase mb-1">TAMU</label>
-                        <div class="flex items-center gap-2 text-slate-900">
-                            <i class="ri-user-3-line text-base sm:text-xl text-[#ca9e54]"></i>
-                            <select id="search-guest-count" aria-label="Jumlah Tamu" class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none cursor-pointer">
-                                <option value="2">2 tamu</option>
-                                <option value="4">4 tamu</option>
-                                <option value="6">6+ tamu</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Search & Filter Button -->
-                    <div class="flex items-center gap-2 col-span-1 sm:col-span-2 md:col-span-1">
-                        <button type="submit" class="flex-1 bg-[#152c4e] hover:bg-[#0f1e36] text-white font-semibold py-3.5 sm:py-4 px-5 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
-                            <i class="ri-search-line text-base sm:text-lg"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </section>
 
     <!-- SECTION: DESTINASI REKOMENDASI FAVORIT TURIS -->
@@ -113,19 +69,9 @@
 
         <!-- Destination Cards Horizontal Touch & Drag Slider -->
         <div id="destinasi-slider" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth touch-pan-x cursor-grab active:cursor-grabbing select-none">
-            @php
-                $destList = $destinations ?? App\Models\Destination::where('status', true)->orderBy('sort')->get();
-            @endphp
-
-            @foreach($destList as $dest)
-                @php
-                    $imgSrc = \Illuminate\Support\Str::startsWith($dest->image_path, ['http://', 'https://'])
-                        ? $dest->image_path
-                        : asset('storage/' . $dest->image_path);
-                    $tags = array_filter(array_map('trim', explode(',', $dest->tags ?? '')));
-                @endphp
+            @foreach($destinations ?? [] as $dest)
                 <a href="#villa" class="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[300px] group relative h-80 sm:h-96 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl flex flex-col justify-end p-5 sm:p-6 border border-slate-100">
-                    <img src="{{ $imgSrc }}" 
+                    <img src="{{ $dest->image_url }}" 
                          alt="{{ $dest->name }}" 
                          draggable="false"
                          class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none">
@@ -134,9 +80,9 @@
                     <div class="relative z-10 text-white space-y-2 pointer-events-none">
                         <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-white tracking-wide">{{ $dest->name }}</h3>
                         
-                        @if(count($tags) > 0)
+                        @if(!empty($dest->formatted_tags) && is_countable($dest->formatted_tags) && count($dest->formatted_tags) > 0)
                             <div class="flex flex-wrap gap-1">
-                                @foreach($tags as $t)
+                                @foreach($dest->formatted_tags as $t)
                                     <span class="text-[9px] sm:text-[10px] bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-slate-100 font-medium">{{ $t }}</span>
                                 @endforeach
                             </div>
@@ -496,7 +442,7 @@
             </div>
 
         </div>
-    </section>ion>
+    </section>
 @endsection
 
 @push('scripts')

@@ -13,11 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    $properties = App\Models\Properties::where('status', true)->latest()->get();
-    $destinations = App\Models\Destination::where('status', true)->orderBy('sort')->get();
-    return view('home.index', compact('properties', 'destinations'));
-})->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Public Frontend Villa Pages
 Route::get('/villa', [App\Http\Controllers\VillaController::class, 'index'])->name('villa.index');
@@ -38,13 +34,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/my-account', [App\Http\Controllers\UserBookingController::class, 'updateAccount'])->name('user.account.update');
 });
 
-Route::get('/wisata', function () {
-    return view('wisata.index');
-})->name('wisata.index');
-
-Route::get('/layanan', function () {
-    return view('layanan.index');
-})->name('layanan.index');
+Route::get('/wisata', [App\Http\Controllers\HomeController::class, 'wisata'])->name('wisata.index');
+Route::get('/layanan', [App\Http\Controllers\HomeController::class, 'layanan'])->name('layanan.index');
 
 Route::get('/promo', [App\Http\Controllers\PromoController::class, 'index'])->name('promo.index');
 

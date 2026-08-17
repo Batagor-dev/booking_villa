@@ -27,4 +27,15 @@ class Destination extends Model
     {
         return $this->hasMany(Properties::class, 'destination_id');
     }
+
+    public function getFormattedTagsAttribute(): array
+    {
+        if (empty($this->tags)) {
+            return [];
+        }
+        if (is_array($this->tags)) {
+            return $this->tags;
+        }
+        return array_values(array_filter(array_map('trim', explode(',', $this->tags))));
+    }
 }
