@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Traits\HasUuid;
+use Illuminate\Support\Str;
+use App\Notifications\SendOtpVerificationNotification;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -117,7 +119,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification(): void
     {
         $otp = $this->generateOtpCode();
-        $this->notify(new \App\Notifications\SendOtpVerificationNotification($otp));
+        $this->notify(new SendOtpVerificationNotification($otp));
     }
 
     public function getRouteKeyName()
@@ -138,5 +140,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function reviews()
     {
         return $this->hasMany(Review::class, 'user_id');
+    }
+
+    /**
+     * Get the resolved avatar image URL for the user.
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (empty($this->foto)) {
+            return null;
+        }
+
+        if (Str::startsWith($this->foto, 'avatar-')) {
+            return asset('assets/img/avatar/' . $this->foto);
+        }
+
+        return asset('storage/uploads/users/' . $this->foto);
     }
 }

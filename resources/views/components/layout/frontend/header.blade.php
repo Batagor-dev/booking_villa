@@ -23,76 +23,31 @@
                 <i class="ri-search-line text-lg sm:text-xl"></i>
             </button>
             
-            @php
-                $currentLocale = app()->getLocale();
-                $localesMeta = config('localization.locales_meta', [
-                    'id' => ['name' => 'Bahasa Indonesia', 'short_name' => 'ID', 'flag' => '🇮🇩'],
-                    'en' => ['name' => 'English', 'short_name' => 'EN', 'flag' => '🇬🇧'],
-                ]);
-            @endphp
-
-            <!-- Language Selector Dropdown (Circular shape, ID & EN only) -->
-            <div class="relative" x-data="{ openLang: false }">
-                <button type="button" 
-                        @click="openLang = !openLang" 
-                        @click.outside="openLang = false"
-                        id="lang-toggle-btn" 
-                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/40 hover:border-white bg-white/10 hover:bg-[#152c4e] text-white font-satoshi text-xs font-bold uppercase transition duration-300 flex items-center justify-center cursor-pointer shrink-0 shadow-sm hover:scale-105" 
-                        title="Ganti Bahasa ({{ strtoupper($currentLocale) }})"
-                        aria-label="Ganti Bahasa">
-                    <span id="current-lang-text">{{ strtoupper($currentLocale) }}</span>
-                </button>
-
-                <div x-show="openLang" 
-                     x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-100"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     style="display: none;"
-                     class="absolute right-0 mt-2 w-44 rounded-2xl bg-white text-slate-800 shadow-xl border border-slate-100 p-1.5 z-50">
-                    @foreach($localesMeta as $locKey => $locInfo)
-                        <a href="{{ route('lang.switch', $locKey) }}" 
-                           class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-satoshi-bold transition {{ $currentLocale === $locKey ? 'bg-amber-50 text-[#ca9e54]' : 'hover:bg-slate-50 text-slate-700' }}">
-                            <span class="text-base">{{ $locInfo['flag'] }}</span>
-                            <span>{{ $locInfo['name'] }}</span>
-                            @if($currentLocale === $locKey)
-                                <i class="ri-check-line ml-auto text-[#ca9e54]"></i>
-                            @endif
-                        </a>
-                    @endforeach
-                </div>
-            </div>
+            <!-- Direct 1-Click Circular Language Toggle (ID <-> EN) -->
+            <a href="{{ route('lang.switch', app()->getLocale() === 'id' ? 'en' : 'id') }}" 
+               id="lang-toggle-btn" 
+               class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/40 hover:border-white bg-white/10 hover:bg-[#ca9e54] text-white font-satoshi text-xs font-bold uppercase transition-all duration-300 flex items-center justify-center cursor-pointer shrink-0 shadow-sm hover:scale-105 select-none" 
+               title="Ganti Bahasa"
+               aria-label="Ganti Bahasa">
+                <span id="current-lang-text">{{ strtoupper(app()->getLocale()) }}</span>
+            </a>
             
             @auth
-                @php
-                    $authUser = auth()->user();
-                    $userAvatar = $authUser->foto && \Illuminate\Support\Str::startsWith($authUser->foto, ['http://', 'https://'])
-                        ? $authUser->foto
-                        : ($authUser->foto && \Illuminate\Support\Str::startsWith($authUser->foto, 'avatar-')
-                            ? asset('assets/img/avatar/' . $authUser->foto)
-                            : ($authUser->foto 
-                                ? asset('storage/uploads/users/' . $authUser->foto) 
-                                : null));
-                @endphp
-
                 <!-- User Profile Dropdown -->
                 <div class="relative" id="user-dropdown-wrapper">
                     <button type="button" 
                             onclick="toggleUserDropdown(event)"
                             class="flex items-center gap-2 p-1 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0 focus:outline-none" 
                             id="user-menu-btn"
-                            title="{{ $authUser->name }}">
+                            title="{{ auth()->user()->name }}">
                         <div class="relative">
-                            @if($userAvatar)
-                                <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover">
+                            @if(auth()->user()->avatar_url)
+                                <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover">
                             @else
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-xs sm:text-sm">
-                                    {{ strtoupper(substr($authUser->name, 0, 1)) }}
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
                             @endif
-
                         </div>
                     </button>
 
@@ -101,19 +56,19 @@
                          class="absolute right-0 mt-2 w-56 origin-top-right rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl transition-all scale-95 opacity-0 pointer-events-none z-50">
                         <!-- User Info Header -->
                         <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
-                            @if($userAvatar)
-                                <img src="{{ $userAvatar }}" alt="{{ $authUser->name }}" class="h-12 w-12 rounded-full object-cover shadow-sm flex-shrink-0">
+                            @if(auth()->user()->avatar_url)
+                                <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="h-12 w-12 rounded-full object-cover shadow-sm flex-shrink-0">
                             @else
                                 <div class="h-12 w-12 rounded-full bg-[#ca9e54] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
-                                    {{ strtoupper(substr($authUser->name, 0, 1)) }}
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
                             @endif
                             <div class="min-w-0 flex-1">
                                 <h3 class="text-sm font-satoshi-bold text-slate-900 truncate">
-                                    {{ $authUser->name }}
+                                    {{ auth()->user()->name }}
                                 </h3>
                                 <p class="mt-0.5 text-xs font-satoshi-medium text-slate-500 truncate">
-                                    {{ $authUser->email }}
+                                    {{ auth()->user()->email }}
                                 </p>
                             </div>
                         </div>
@@ -130,7 +85,7 @@
                                 <span>{{ __('frontend.nav.my_bookings') }}</span>
                             </a>
 
-                            @if(method_exists($authUser, 'hasRole') && $authUser->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
+                            @if(auth()->user()->hasRole(['Admin', 'Super Admin', 'admin', 'super-admin']))
                                 <a href="{{ route('dashboard') }}" class="flex items-center font-satoshi-medium gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors {{ request()->routeIs('dashboard*') ? 'bg-amber-50/70 text-slate-500 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-500' }}">
                                     <i class="ri-dashboard-line text-lg"></i>
                                     <span>{{ __('frontend.nav.admin_panel') }}</span>
@@ -171,13 +126,16 @@
             <div class="flex items-center gap-3">
                 <!-- Mobile Language Selector (Circular ID & EN) -->
                 <div class="flex items-center gap-1.5 bg-white/10 p-1 rounded-full border border-white/20">
-                    @foreach($localesMeta as $locKey => $locInfo)
-                        <a href="{{ route('lang.switch', $locKey) }}" 
-                           class="w-7 h-7 rounded-full text-[10px] font-bold uppercase transition flex items-center justify-center {{ $currentLocale === $locKey ? 'bg-[#ca9e54] text-white shadow-sm' : 'text-white/70 hover:text-white' }}"
-                           title="{{ $locInfo['name'] }}">
-                            {{ strtoupper($locKey) }}
-                        </a>
-                    @endforeach
+                    <a href="{{ route('lang.switch', 'id') }}" 
+                       class="w-7 h-7 rounded-full text-[10px] font-bold uppercase transition flex items-center justify-center {{ app()->getLocale() === 'id' ? 'bg-[#ca9e54] text-white shadow-sm' : 'text-white/70 hover:text-white' }}"
+                       title="Bahasa Indonesia">
+                        ID
+                    </a>
+                    <a href="{{ route('lang.switch', 'en') }}" 
+                       class="w-7 h-7 rounded-full text-[10px] font-bold uppercase transition flex items-center justify-center {{ app()->getLocale() === 'en' ? 'bg-[#ca9e54] text-white shadow-sm' : 'text-white/70 hover:text-white' }}"
+                       title="English">
+                        EN
+                    </a>
                 </div>
                 <button id="mobile-close-btn" class="p-2 text-slate-400 hover:text-white text-2xl focus:outline-none cursor-pointer" aria-label="Tutup Menu Navigasi">
                     <i class="ri-close-line"></i>
