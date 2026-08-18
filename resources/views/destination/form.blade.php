@@ -70,13 +70,19 @@
                 </div>
 
                 <!-- Main Attraction / Description -->
-                <x-ui.textarea 
-                    name="attraction" 
-                    label="Main Attraction / Short Description" 
-                    placeholder="e.g. Spectacular sunsets & luxury beach lifestyle."
-                    value="{{ old('attraction', $destination_data->attraction ?? '') }}"
-                    rows="3"
-                />
+                <div>
+                    <x-ui.textarea 
+                        name="attraction" 
+                        label="Main Attraction / Short Description" 
+                        placeholder="e.g. Tempat terbaik menikmati matahari terbenam dan gaya hidup pantai mewah..."
+                        value="{{ old('attraction', $destination_data->attraction ?? '') }}"
+                        rows="3"
+                    />
+                    <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
+                        <i class="ri-sparkling-fill text-amber-500 text-sm"></i>
+                        <span>Input dalam Bahasa Indonesia. Terjemahan bahasa Inggris otomatis diproses oleh Gemini AI saat disimpan.</span>
+                    </div>
+                </div>
 
                 <!-- Image Upload -->
                 <div>

@@ -45,7 +45,13 @@ class DestinationController extends Controller
             $data['image_path'] = $filename;
         }
 
-        Destination::create($data);
+        $destination = Destination::create($data);
+
+        // Auto-translate with Gemini AI and Save Translations
+        $destination->autoTranslateAndSave([
+            'name'       => $data['name'] ?? '',
+            'attraction' => $data['attraction'] ?? null,
+        ]);
 
         return redirect()->route('destination.index')->with('success', 'Destination created successfully!');
     }
@@ -81,6 +87,12 @@ class DestinationController extends Controller
         }
 
         $destination->update($data);
+
+        // Auto-translate with Gemini AI and Save Translations
+        $destination->autoTranslateAndSave([
+            'name'       => $data['name'] ?? $destination->name,
+            'attraction' => $data['attraction'] ?? $destination->attraction,
+        ]);
 
         return redirect()->route('destination.index')->with('success', 'Destination updated successfully!');
     }

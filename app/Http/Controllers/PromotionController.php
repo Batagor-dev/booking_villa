@@ -57,6 +57,12 @@ class PromotionController extends Controller
 
             $promotion = Promotion::create($data);
 
+            // Auto-translate with Gemini AI and Save Translations
+            $promotion->autoTranslateAndSave([
+                'name'        => $data['name'] ?? '',
+                'description' => $data['description'] ?? null,
+            ]);
+
             // Sync targets
             if ($promotion->target_type === 'properties' && $request->has('property_ids')) {
                 $promotion->properties()->sync($request->property_ids);
@@ -120,6 +126,12 @@ class PromotionController extends Controller
             }
 
             $promotion->update($data);
+
+            // Auto-translate with Gemini AI and Save Translations
+            $promotion->autoTranslateAndSave([
+                'name'        => $data['name'] ?? $promotion->name,
+                'description' => $data['description'] ?? $promotion->description,
+            ]);
 
             // Clear previous targets
             $promotion->properties()->detach();

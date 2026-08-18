@@ -2,8 +2,15 @@
 
 namespace App\Models\Traits;
 
+use App\Models\DestinationTranslation;
+use App\Models\FacilityTranslation;
+use App\Models\PropertyTranslation;
+use App\Services\GeminiTranslationService;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Throwable;
 
 trait HasTranslations
 {
@@ -20,10 +27,10 @@ trait HasTranslations
         
         // Handle plural/singular naming convention
         if ($class === 'Properties') {
-            return \App\Models\PropertyTranslation::class;
+            return PropertyTranslation::class;
         }
         if ($class === 'Facilities') {
-            return \App\Models\FacilityTranslation::class;
+            return FacilityTranslation::class;
         }
 
         return 'App\\Models\\' . $class . 'Translation';
@@ -129,6 +136,11 @@ trait HasTranslations
         $foreignKey = $this->getTranslationForeignKey();
         $modelClass = $this->getTranslationModelClass();
 
+        // If translation table supports slug and name is provided, auto generate slug
+        if (isset($attributes['name']) && !isset($attributes['slug']) && in_array($modelClass, [PropertyTranslation::class, DestinationTranslation::class])) {
+            $attributes['slug'] = Str::slug($attributes['name']);
+        }
+
         return $modelClass::updateOrCreate(
             [
                 $foreignKey => $this->getKey(),
@@ -136,5 +148,60 @@ trait HasTranslations
             ],
             $attributes
         );
+    }
+
+    /**
+     * Auto translate and save translations for all supported locales using Gemini AI.
+     *
+     * @param array<string, mixed> $sourceAttributes Key-value pairs in Indonesian/source locale
+     * @param string $sourceLocale Default 'id'
+     */
+    public function autoTranslateAndSave(array $sourceAttributes, string $sourceLocale = 'id'): void
+    {
+        // 1. Save source locale translation first
+        $this->updateTranslation($sourceLocale, $sourceAttributes);
+
+        // 2. Get supported target locales (e.g., ['en'])
+        $supportedLocales = config('localization.supported_locales', ['id', 'en']);
+        $targetLocales = array_diff($supportedLocales, [$sourceLocale]);
+
+        if (empty($targetLocales)) {
+            return;
+        }
+
+        // Filter text-only fields that have content to translate
+        $translatableFields = array_filter($sourceAttributes, function ($value) {
+            return is_string($value) && trim($value) !== '';
+        });
+
+        if (empty($translatableFields)) {
+            foreach ($targetLocales as $targetLocale) {
+                $this->updateTranslation($targetLocale, $sourceAttributes);
+            }
+            return;
+        }
+
+        /** @var GeminiTranslationService $translator */
+        $translator = app(GeminiTranslationService::class);
+
+        foreach ($targetLocales as $targetLocale) {
+            $targetAttributes = $sourceAttributes;
+
+            if ($translator->isConfigured()) {
+                try {
+                    $result = $translator->translateBatch($translatableFields, $targetLocale, $sourceLocale);
+                    if ($result['success'] && !empty($result['data'])) {
+                        $targetAttributes = array_merge($sourceAttributes, $result['data']);
+                    } else {
+                        Log::warning("Gemini translation fallback for {$targetLocale}: " . ($result['error'] ?? 'Unknown error'));
+                    }
+                } catch (Throwable $e) {
+                    Log::warning("Gemini translation exception for {$targetLocale}: " . $e->getMessage());
+                }
+            }
+
+            // Save translation for target locale (translated or graceful fallback)
+            $this->updateTranslation($targetLocale, $targetAttributes);
+        }
     }
 }

@@ -44,7 +44,13 @@ class FacilityController extends Controller
             $data['image_path'] = $filename;
         }
 
-        Facilities::create($data);
+        $facility = Facilities::create($data);
+
+        // Auto-translate with Gemini AI and Save Translations
+        $facility->autoTranslateAndSave([
+            'name'        => $data['name'] ?? '',
+            'description' => $data['description'] ?? null,
+        ]);
 
         return redirect()->route('facilities.index')->with('success', 'Master Facility created successfully!');
     }
@@ -80,6 +86,12 @@ class FacilityController extends Controller
         }
 
         $facility->update($data);
+
+        // Auto-translate with Gemini AI and Save Translations
+        $facility->autoTranslateAndSave([
+            'name'        => $data['name'] ?? $facility->name,
+            'description' => $data['description'] ?? $facility->description,
+        ]);
 
         return redirect()->route('facilities.index')->with('success', 'Master Facility updated successfully!');
     }

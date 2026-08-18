@@ -62,14 +62,6 @@ class UpdatePropertyRequest extends FormRequest
             'status'                => 'nullable',
             'is_featured'           => 'nullable',
 
-            // Multi-language Translations rules
-            'translations'                      => 'nullable|array',
-            'translations.*.name'               => 'nullable|string|max:255',
-            'translations.*.description'        => 'nullable|string',
-            'translations.*.address'            => 'nullable|string',
-            'translations.*.short_description'  => 'nullable|string',
-
-
             // Settings rules
             'phone'                 => 'nullable|string|max:50',
             'email'                 => 'nullable|email|max:255',

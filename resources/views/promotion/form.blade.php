@@ -75,13 +75,19 @@
                     </div>
 
                     <!-- Description -->
-                    <x-ui.textarea 
-                        name="description" 
-                        label="Description" 
-                        placeholder="Describe the promotion benefits..."
-                        value="{{ old('description', $promotion_data->description ?? '') }}"
-                        rows="3"
-                    />
+                    <div>
+                        <x-ui.textarea 
+                            name="description" 
+                            label="Description" 
+                            placeholder="Deskripsikan keuntungan, syarat, atau benefit promosi ini..." 
+                            value="{{ old('description', $promotion_data->description ?? '') }}"
+                            rows="3"
+                        />
+                        <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
+                            <i class="ri-sparkling-fill text-amber-500 text-sm"></i>
+                            <span>Input dalam Bahasa Indonesia. Terjemahan nama & deskripsi promosi ke bahasa Inggris otomatis diproses oleh Gemini AI saat disimpan.</span>
+                        </div>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Promotion Type -->

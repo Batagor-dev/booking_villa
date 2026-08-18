@@ -36,7 +36,13 @@ class PropertyRuleController extends Controller
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
         $data['sort_order'] = $data['sort_order'] ?? 0;
 
-        PropertyRule::create($data);
+        $rule = PropertyRule::create($data);
+
+        // Auto-translate with Gemini AI and Save Translations
+        $rule->autoTranslateAndSave([
+            'title'       => $data['title'] ?? '',
+            'description' => $data['description'] ?? null,
+        ]);
 
         return redirect()->route('property_rules.index')->with('success', 'Peraturan Villa berhasil ditambahkan!');
     }
@@ -61,6 +67,12 @@ class PropertyRuleController extends Controller
         $data['sort_order'] = $data['sort_order'] ?? 0;
 
         $property_rule->update($data);
+
+        // Auto-translate with Gemini AI and Save Translations
+        $property_rule->autoTranslateAndSave([
+            'title'       => $data['title'] ?? $property_rule->title,
+            'description' => $data['description'] ?? $property_rule->description,
+        ]);
 
         return redirect()->route('property_rules.index')->with('success', 'Peraturan Villa berhasil diperbarui!');
     }

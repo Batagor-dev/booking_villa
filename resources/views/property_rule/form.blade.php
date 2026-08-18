@@ -59,14 +59,20 @@
                 </div>
 
                 <!-- Deskripsi Peraturan -->
-                <x-ui.textarea 
-                    name="description" 
-                    label="Deskripsi & Detail Ketentuan" 
-                    placeholder="Tuliskan detail ketentuan peraturan ini secara rinci..."
-                    value="{{ old('description', $rule_data->description ?? '') }}"
-                    rows="3"
-                    required
-                />
+                <div>
+                    <x-ui.textarea 
+                        name="description" 
+                        label="Deskripsi & Detail Ketentuan" 
+                        placeholder="Tuliskan detail ketentuan peraturan ini secara rinci..."
+                        value="{{ old('description', $rule_data->description ?? '') }}"
+                        rows="3"
+                        required
+                    />
+                    <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
+                        <i class="ri-sparkling-fill text-amber-500 text-sm"></i>
+                        <span>Input dalam Bahasa Indonesia. Terjemahan judul & deskripsi ke bahasa Inggris otomatis diproses oleh Gemini AI saat disimpan.</span>
+                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Remix Icon Class -->

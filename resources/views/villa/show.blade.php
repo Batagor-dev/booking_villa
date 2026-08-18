@@ -201,8 +201,8 @@
             <!-- Villa Description -->
             <div class="space-y-4 pb-8 border-b border-slate-200/80">
                 <h3 class="font-serif-title text-xl sm:text-2xl font-bold text-slate-900">{{ __('frontend.villa.about_villa') }}</h3>
-                <div class="text-xs sm:text-sm text-slate-600 font-satoshi-medium leading-relaxed space-y-3">
-                    {!! nl2br(e($property->description ?? '')) !!}
+                <div class="text-xs sm:text-sm text-slate-600 font-satoshi-medium leading-relaxed space-y-3 prose prose-slate max-w-none">
+                    {!! $property->description ?? '' !!}
                 </div>
             </div>
 

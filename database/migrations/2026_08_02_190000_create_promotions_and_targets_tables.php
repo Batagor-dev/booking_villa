@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('promotions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('badge_text')->nullable();
             $table->text('description')->nullable();
             
             // Type of Promotion
@@ -35,6 +36,16 @@ return new class extends Migration
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             
+            // Usage limit & statistics
+            $table->integer('max_uses')->nullable();
+            $table->unsignedInteger('used_count')->default(0);
+            
+            // Frontend UI Card Customization (/promo page)
+            $table->boolean('is_featured')->default(false);
+            $table->string('banner_theme')->default('navy');
+            $table->text('features')->nullable();
+            $table->string('icon')->nullable();
+
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
