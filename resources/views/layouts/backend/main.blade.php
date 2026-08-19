@@ -93,6 +93,173 @@
     <x-ui.notification />
     <x-ui.modal-confirm />
 
+    {{-- Live Admin Notification Poller --}}
+    <script>
+      (function() {
+        let lastNotifId = {{ \App\Models\AdminNotification::max('id') ?? 0 }};
+        let isFirstLoad = true;
+
+        function updateBadges(unreadCount) {
+          // 1. Sidebar Booking Menu Badge
+          document.querySelectorAll('.admin-booking-badge').forEach(badge => {
+            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            if (unreadCount > 0) {
+              badge.classList.remove('hidden');
+            } else {
+              badge.classList.add('hidden');
+            }
+          });
+
+          // 2. Sidebar Dedicated Notif Menu Badge & Dot
+          document.querySelectorAll('.admin-notif-badge').forEach(badge => {
+            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            if (unreadCount > 0) {
+              badge.classList.remove('hidden');
+            } else {
+              badge.classList.add('hidden');
+            }
+          });
+          document.querySelectorAll('.admin-notif-dot').forEach(dot => {
+            if (unreadCount > 0) {
+              dot.classList.remove('hidden');
+            } else {
+              dot.classList.add('hidden');
+            }
+          });
+
+          // 3. Header Bell Badge & Ping
+          document.querySelectorAll('.header-notif-badge').forEach(badge => {
+            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            if (unreadCount > 0) {
+              badge.classList.remove('hidden');
+            } else {
+              badge.classList.add('hidden');
+            }
+          });
+          document.querySelectorAll('.header-notif-ping').forEach(ping => {
+            if (unreadCount > 0) {
+              ping.classList.remove('hidden');
+            } else {
+              ping.classList.add('hidden');
+            }
+          });
+
+          // 4. Panel Header Count
+          const panelCount = document.getElementById('notif-panel-count');
+          if (panelCount) {
+            panelCount.textContent = unreadCount + ' Baru';
+          }
+        }
+
+        function renderNotificationList(items) {
+          const container = document.getElementById('notification-list-container');
+          if (!container || !items) return;
+
+          if (items.length === 0) {
+            container.innerHTML = `
+              <div id="notif-empty-state" class="py-10 px-4 text-center">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-3">
+                  <i class="ri-notification-off-line text-2xl"></i>
+                </div>
+                <p class="text-xs font-satoshi-bold text-slate-700">Belum ada notifikasi pesanan</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Pesanan baru dan pembatalan akan muncul di sini</p>
+              </div>
+            `;
+            return;
+          }
+
+          let html = '';
+          items.forEach(item => {
+            const isCancelled = item.type === 'order_cancelled';
+            const isConfirmed = item.type === 'order_confirmed';
+            
+            const iconBg = isCancelled ? 'bg-rose-50 text-rose-600 border border-rose-100' : (isConfirmed ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100');
+            const iconClass = isCancelled ? 'ri-close-circle-line' : (isConfirmed ? 'ri-checkbox-circle-line' : 'ri-calendar-check-line');
+            const titleColor = isCancelled ? 'text-rose-600' : (isConfirmed ? 'text-indigo-600' : 'text-emerald-600');
+            const unreadBg = item.is_unread ? 'bg-amber-50/25' : '';
+
+            let snapshotHtml = '';
+            if (item.property_name || item.total_price) {
+              snapshotHtml = `<div class="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">`;
+              if (item.booking_code) {
+                snapshotHtml += `<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono font-bold">#${item.booking_code}</span>`;
+              }
+              if (item.property_name) {
+                snapshotHtml += `<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 truncate max-w-[120px]">${item.property_name}</span>`;
+              }
+              if (item.total_price) {
+                snapshotHtml += `<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">${item.total_price}</span>`;
+              }
+              snapshotHtml += `</div>`;
+            }
+
+            const unreadDot = item.is_unread ? `<span class="h-2 w-2 rounded-full bg-rose-500 shrink-0 mt-1.5"></span>` : '';
+
+            html += `
+              <a href="${item.read_url}" class="flex items-start gap-3 p-3.5 hover:bg-slate-50/80 transition-colors ${unreadBg}">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBg}">
+                  <i class="${iconClass} text-lg"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-1 mb-0.5">
+                    <span class="text-xs font-satoshi-bold ${titleColor}">${item.title}</span>
+                    <span class="text-[10px] text-slate-400 whitespace-nowrap">${item.created_at_human}</span>
+                  </div>
+                  <p class="text-xs font-satoshi-medium text-slate-800 line-clamp-2 leading-relaxed">${item.message}</p>
+                  ${snapshotHtml}
+                </div>
+                ${unreadDot}
+              </a>
+            `;
+          });
+
+          container.innerHTML = html;
+        }
+
+        function pollFeed() {
+          const url = "{{ route('admin.notifications.feed') }}?last_id=" + lastNotifId;
+          fetch(url, {
+            headers: {
+              'Accept': 'application/json'
+            }
+          })
+          .then(res => res.json())
+          .then(data => {
+            updateBadges(data.unread_count);
+
+            if (data.latest) {
+              renderNotificationList(data.latest);
+            }
+
+            // If there are newly arrived notifications while admin is on page, show toast!
+            if (!isFirstLoad && data.new_items && data.new_items.length > 0) {
+              data.new_items.forEach(newItem => {
+                const toastType = newItem.type === 'order_cancelled' ? 'danger' : 'success';
+                const toastMsg = newItem.title + ': ' + newItem.message;
+                
+                if (window.dispatchEvent) {
+                  window.dispatchEvent(new CustomEvent('show-toast', {
+                    detail: { type: toastType, message: toastMsg }
+                  }));
+                }
+              });
+            }
+
+            if (data.latest_id) {
+              lastNotifId = data.latest_id;
+            }
+            isFirstLoad = false;
+          })
+          .catch(err => {
+            // Silently ignore network interruptions
+          });
+        }
+
+        // Run poller every 20 seconds
+        setInterval(pollFeed, 20000);
+      })();
+    </script>
+
     @stack('scripts')
   </body>
 </html>

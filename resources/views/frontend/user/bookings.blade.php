@@ -174,9 +174,22 @@
                                         'status' => ucfirst($b->status),
                                         'receipt' => $b->bukti_payment ? asset('storage/'.$b->bukti_payment) : null,
                                         'notes' => $b->notes
-                                    ]) }})" class="w-full px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1.5">
+                                    ]) }})" class="w-full px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
                                         <i class="ri-file-text-line"></i> Lihat Bukti & Detail
                                     </button>
+
+                                    @if($b->status !== 'cancelled')
+                                        <button type="button" 
+                                                onclick="openCancelBookingModal({{ json_encode([
+                                                    'code' => $b->booking_code,
+                                                    'prop_name' => $prop->name ?? 'Villa',
+                                                    'total_price' => format_rupiah($b->total_price),
+                                                    'action' => route('user.bookings.cancel', $b->uuid)
+                                                ]) }})" 
+                                                class="w-full px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-rose-200 cursor-pointer">
+                                            <i class="ri-close-circle-line"></i> Batalkan Reservasi
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
 
@@ -527,4 +540,104 @@
             </div>
         </div>
     </div>
+
+    <!-- CANCEL BOOKING CONFIRMATION MODAL -->
+    <div id="cancel-booking-modal" onclick="closeCancelBookingModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[80] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 font-satoshi">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 relative" onclick="event.stopPropagation()">
+            
+            <div class="p-5 bg-rose-600 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="ri-error-warning-line text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-[9px] uppercase font-bold tracking-widest text-rose-200 block">KONFIRMASI PEMBATALAN</span>
+                        <h3 class="font-serif-title text-base font-bold" id="cancel-modal-code">#BOOK-0000</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="closeCancelBookingModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+
+            <form id="cancel-booking-form" method="POST" class="p-6 space-y-4 text-xs font-medium text-slate-700">
+                @csrf
+                
+                <div class="p-4 bg-rose-50/70 border border-rose-100 rounded-2xl space-y-1">
+                    <p class="font-bold text-slate-900 text-xs" id="cancel-modal-prop">-</p>
+                    <p class="text-[11px] text-slate-500">Total Reservasi: <strong class="text-rose-700" id="cancel-modal-price">-</strong></p>
+                    <p class="text-[11px] text-rose-600 pt-1 leading-relaxed">
+                        Apakah Anda yakin ingin membatalkan reservasi ini? Tindakan ini tidak dapat dibatalkan.
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-900 mb-1.5">Pilih Alasan Pembatalan (Opsional)</label>
+                    <select name="reason_preset" id="cancel-reason-preset" onchange="handleCancelReasonPreset(this)" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500 bg-white mb-2">
+                        <option value="">-- Pilih Alasan Pembatalan --</option>
+                        <option value="Perubahan rencana jadwal perjalanan">Perubahan rencana jadwal perjalanan</option>
+                        <option value="Salah memilih tanggal atau jenis villa">Salah memilih tanggal atau jenis villa</option>
+                        <option value="Keperluan mendesak / darurat">Keperluan mendesak / darurat</option>
+                        <option value="Kendala pada metode pembayaran">Kendala pada metode pembayaran</option>
+                        <option value="other">Alasan lainnya...</option>
+                    </select>
+
+                    <textarea name="reason" id="cancel-reason-text" rows="2" placeholder="Tuliskan alasan pembatalan Anda..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeCancelBookingModal()" class="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
+                        Kembali
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-md cursor-pointer flex items-center gap-1.5">
+                        <i class="ri-close-circle-line"></i> Ya, Batalkan Reservasi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCancelBookingModal(data) {
+            const modal = document.getElementById('cancel-booking-modal');
+            const modalContent = modal.querySelector('div');
+            const form = document.getElementById('cancel-booking-form');
+
+            document.getElementById('cancel-modal-code').textContent = '#' + data.code;
+            document.getElementById('cancel-modal-prop').textContent = data.prop_name;
+            document.getElementById('cancel-modal-price').textContent = data.total_price;
+            
+            form.action = data.action;
+            document.getElementById('cancel-reason-preset').value = '';
+            document.getElementById('cancel-reason-text').value = '';
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function handleCancelReasonPreset(selectEl) {
+            const textarea = document.getElementById('cancel-reason-text');
+            if (selectEl.value && selectEl.value !== 'other') {
+                textarea.value = selectEl.value;
+            } else if (selectEl.value === 'other') {
+                textarea.value = '';
+                textarea.focus();
+            }
+        }
+
+        function closeCancelBookingModal() {
+            const modal = document.getElementById('cancel-booking-modal');
+            const modalContent = modal.querySelector('div');
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
 @endsection

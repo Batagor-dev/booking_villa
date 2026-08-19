@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Menu;
+use App\Models\AdminNotification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -11,7 +12,7 @@ class SidebarServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        View::composer(['components.layout.admin.sidebar', 'layout.backend.sidebar'], function ($view) {
+        View::composer(['components.layout.admin.sidebar', 'layout.backend.sidebar', 'components.layout.admin.header', 'layouts.backend.main'], function ($view) {
             static $cachedMenuData = null;
 
             if ($cachedMenuData === null) {
@@ -34,6 +35,18 @@ class SidebarServiceProvider extends ServiceProvider
 
             $view->with('groupedMenus', $cachedMenuData['groupedMenus']);
             $view->with('menus', $cachedMenuData['menus']);
+
+            // Dynamic live notification count for admin sidebar & header
+            try {
+                $unreadNotifCount = AdminNotification::unread()->count();
+                $recentAdminNotifs = AdminNotification::latest()->limit(6)->get();
+            } catch (\Throwable $e) {
+                $unreadNotifCount = 0;
+                $recentAdminNotifs = collect();
+            }
+
+            $view->with('unreadNotifCount', $unreadNotifCount);
+            $view->with('recentAdminNotifs', $recentAdminNotifs);
         });
     }
 

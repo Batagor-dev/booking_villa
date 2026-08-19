@@ -10,6 +10,7 @@ use App\Models\PaymentMethod;
 use App\Models\PropertyRule;
 use App\Models\Promotion;
 use App\Services\ImageService;
+use App\Services\NotificationService;
 use App\Services\PromoService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -192,6 +193,13 @@ class BookingController extends Controller
                 'notes'             => $validated['notes'] ?? null,
             ]);
 
+            // 6. Trigger Admin Notification for New Order
+            try {
+                NotificationService::notifyNewBooking($booking);
+            } catch (\Throwable $notifErr) {
+                \Log::warning('Failed creating new booking notification: ' . $notifErr->getMessage());
+            }
+
             DB::commit();
 
             return redirect()->back()->with('success_booking', [
@@ -232,6 +240,8 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking)
     {
+        $oldStatus = $booking->status;
+
         $validated = $request->validate([
             'status'      => 'required|in:pending,confirmed,cancelled',
             'guest_name'  => 'required|string|max:255',
@@ -241,6 +251,14 @@ class BookingController extends Controller
         ]);
 
         $booking->update($validated);
+
+        if ($oldStatus !== $request->status) {
+            if ($request->status === 'cancelled') {
+                NotificationService::notifyCancelledBooking($booking);
+            } elseif ($request->status === 'confirmed') {
+                NotificationService::notifyConfirmedBooking($booking);
+            }
+        }
 
         return redirect()->route('bookings.index')->with('success', 'Status & data booking #' . $booking->booking_code . ' berhasil diperbarui.');
     }
@@ -254,9 +272,19 @@ class BookingController extends Controller
             'status' => 'required|in:pending,confirmed,cancelled',
         ]);
 
+        $oldStatus = $booking->status;
+
         $booking->update([
             'status' => $request->status,
         ]);
+
+        if ($oldStatus !== $request->status) {
+            if ($request->status === 'cancelled') {
+                NotificationService::notifyCancelledBooking($booking);
+            } elseif ($request->status === 'confirmed') {
+                NotificationService::notifyConfirmedBooking($booking);
+            }
+        }
 
         return response()->json([
             'success' => true,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -50,6 +51,39 @@ class UserBookingController extends Controller
             'cancelledCount',
             'statusFilter'
         ));
+    }
+
+    /**
+     * Cancel a booking by the customer.
+     */
+    public function cancel(Request $request, Booking $booking)
+    {
+        $user = auth()->user();
+
+        // Verify authorization
+        if ($booking->user_id !== $user->id && $booking->guest_email !== $user->email) {
+            abort(403, 'Anda tidak memiliki akses untuk membatalkan pesanan ini.');
+        }
+
+        if ($booking->status === 'cancelled') {
+            return redirect()->back()->with('warning', 'Reservasi ini sudah berstatus dibatalkan.');
+        }
+
+        $reason = $request->input('reason', 'Dibatalkan oleh pelanggan');
+        
+        $booking->update([
+            'status' => 'cancelled',
+            'notes'  => $booking->notes ? ($booking->notes . "\n[Alasan Pembatalan]: " . $reason) : ('[Alasan Pembatalan]: ' . $reason),
+        ]);
+
+        // Trigger Admin Notification for Cancelled Order
+        try {
+            NotificationService::notifyCancelledBooking($booking, $reason);
+        } catch (\Throwable $e) {
+            \Log::warning('Failed notifying admin about customer cancellation: ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'Reservasi #' . $booking->booking_code . ' berhasil dibatalkan.');
     }
 
     /**

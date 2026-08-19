@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/booking/check-promo', [App\Http\Controllers\PromoController::class, 'checkPromo'])->name('booking.check-promo');
 
     Route::get('/my-bookings', [App\Http\Controllers\UserBookingController::class, 'bookings'])->name('user.bookings');
+    Route::post('/my-bookings/{booking:uuid}/cancel', [App\Http\Controllers\UserBookingController::class, 'cancel'])->name('user.bookings.cancel');
     Route::post('/reviews', [App\Http\Controllers\UserReviewController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}', [App\Http\Controllers\UserReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{review}', [App\Http\Controllers\UserReviewController::class, 'destroy'])->name('reviews.destroy');
@@ -123,6 +124,13 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
     Route::resource('/reviews', App\Http\Controllers\ReviewController::class)->parameters([
         'reviews' => 'review:uuid',
     ])->only(['index', 'edit', 'update', 'destroy']);
+
+    // Admin Notifications
+    Route::get('/admin/notifications/feed', [App\Http\Controllers\AdminNotificationController::class, 'feed'])->name('admin.notifications.feed');
+    Route::get('/admin/notifications', [App\Http\Controllers\AdminNotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::get('/admin/notifications/{notification:uuid}/read', [App\Http\Controllers\AdminNotificationController::class, 'read'])->name('admin.notifications.read');
+    Route::post('/admin/notifications/mark-all-read', [App\Http\Controllers\AdminNotificationController::class, 'markAllRead'])->name('admin.notifications.mark-all-read');
+    Route::delete('/admin/notifications/{notification:uuid}', [App\Http\Controllers\AdminNotificationController::class, 'destroy'])->name('admin.notifications.destroy');
 
 
 

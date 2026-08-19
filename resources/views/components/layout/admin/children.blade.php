@@ -54,14 +54,26 @@
         <li class="w-full">
             <a 
                 href="{{ $menu->href ?? '#' }}" 
-                class="group/menu flex items-center gap-3 px-3 py-2.5 rounded-xl text-base font-satoshi-medium transition-all duration-200 min-w-0 {{ $isActive ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10' : 'text-slate-600 hover:bg-slate-50/70 hover:text-slate-900' }}"
+                class="group/menu flex items-center justify-between px-3 py-2.5 rounded-xl text-base font-satoshi-medium transition-all duration-200 min-w-0 {{ $isActive ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10' : 'text-slate-600 hover:bg-slate-50/70 hover:text-slate-900' }}"
             >
-                @if($menu->icon)
-                    <i class="{{ $menu->icon }} text-xl w-5 flex-shrink-0 text-center transition-colors duration-200 {{ $isActive ? 'text-white' : 'text-slate-400 group-hover/menu:text-slate-600' }}"></i>
-                @else
-                    <i class="ri-circle-fill text-[10px] w-5 flex-shrink-0 text-center transition-colors duration-200 {{ $isActive ? 'text-white' : 'text-slate-300 group-hover/menu:text-slate-500' }}"></i>
+                <div class="flex items-center gap-3 min-w-0">
+                    @if($menu->icon)
+                        <i class="{{ $menu->icon }} text-xl w-5 flex-shrink-0 text-center transition-colors duration-200 {{ $isActive ? 'text-white' : 'text-slate-400 group-hover/menu:text-slate-600' }}"></i>
+                    @else
+                        <i class="ri-circle-fill text-[10px] w-5 flex-shrink-0 text-center transition-colors duration-200 {{ $isActive ? 'text-white' : 'text-slate-300 group-hover/menu:text-slate-500' }}"></i>
+                    @endif
+                    <span class="truncate text-left">{{ $menu->nama_menu }}</span>
+                </div>
+
+                @if(isset($menu->href) && (str_contains($menu->href, 'bookings') || strtolower($menu->nama_menu) === 'bookings'))
+                    <span 
+                        id="sidebar-booking-badge" 
+                        class="admin-booking-badge inline-flex items-center justify-center px-2 py-0.5 text-xs font-satoshi-bold rounded-full transition-all duration-300 {{ ($unreadNotifCount ?? 0) > 0 ? 'bg-rose-500 text-white shadow-sm ring-2 ring-rose-200 animate-pulse' : 'hidden' }}"
+                        data-count="{{ $unreadNotifCount ?? 0 }}"
+                    >
+                        {{ $unreadNotifCount ?? 0 }}
+                    </span>
                 @endif
-                <span class="truncate text-left">{{ $menu->nama_menu }}</span>
             </a>
         </li>
     @endif
