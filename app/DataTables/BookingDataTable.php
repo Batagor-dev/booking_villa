@@ -84,6 +84,8 @@ class BookingDataTable extends DataTable
                     $statusAction .= '<button type="button" onclick="updateBookingStatus(\'' . $row->uuid . '\', \'cancelled\')" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors font-satoshi-medium" title="Cancel Booking"><i class="ri ri-close-circle-line text-lg"></i></button>';
                 }
 
+                $pdfBtn = '<a href="' . route('bookings.invoice', $row->uuid) . '" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors font-satoshi-medium" title="Unduh Invoice PDF"><i class="ri ri-file-pdf-line text-lg"></i></a>';
+
                 $editBtn = '';
                 if (auth()->user()->can('Booking Update')) {
                     $editUrl = route('bookings.edit', $row->uuid);
@@ -104,7 +106,7 @@ class BookingDataTable extends DataTable
                     ';
                 }
 
-                return '<div class="flex items-center justify-center space-x-1">' . $statusAction . $editBtn . $deleteBtn . '</div>';
+                return '<div class="flex items-center justify-center space-x-1">' . $pdfBtn . $statusAction . $editBtn . $deleteBtn . '</div>';
             })
             ->rawColumns(['booking_code', 'property_info', 'guest_info', 'dates', 'total_price', 'payment_info', 'status', 'action']);
     }

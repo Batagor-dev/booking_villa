@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PromotionSeeder::class);
         $this->call(BookingSeeder::class);
         $this->call(SettingSeeder::class);
+        $this->call(TranslationSeeder::class);
     }
 }
 

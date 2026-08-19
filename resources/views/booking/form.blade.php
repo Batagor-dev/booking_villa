@@ -32,7 +32,10 @@
                             <span class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider block">KODE BOOKING</span>
                             <h5 class="text-xl font-satoshi-bold text-slate-900 mb-0">#{{ $booking->booking_code }}</h5>
                         </div>
-                        <div>
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('bookings.invoice', $booking->uuid) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#152c4e] hover:text-white text-slate-800 text-xs font-satoshi-bold border border-slate-200 transition">
+                                <i class="ri-file-pdf-line text-rose-500"></i> Cetak / Unduh PDF
+                            </a>
                             @if($booking->status === 'confirmed')
                                 <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-satoshi-bold border border-emerald-200">Confirmed</span>
                             @elseif($booking->status === 'cancelled')
@@ -135,8 +138,34 @@
                         </div>
 
                         <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
-                            <span class="text-slate-500 font-bold">Total Harga:</span>
-                            <x-ui.price :value="$booking->total_price" class="text-base font-satoshi-bold text-slate-900" containerClass="inline" />
+                            <span class="text-slate-500">Subtotal Sewa:</span>
+                            <span class="font-bold text-slate-800">{{ format_rupiah($booking->subtotal) }}</span>
+                        </div>
+
+                        @if($booking->services && $booking->services->count() > 0)
+                            <div class="pt-2 border-t border-slate-100 space-y-1">
+                                <span class="text-slate-500 font-bold block">Layanan Tambahan:</span>
+                                <div class="space-y-1 pl-1">
+                                    @foreach($booking->services as $sItem)
+                                        <div class="flex justify-between items-center text-[11px]">
+                                            <span class="text-slate-600">+ {{ $sItem->name }} (x{{ $sItem->quantity }})</span>
+                                            <span class="font-bold text-slate-800">{{ format_rupiah($sItem->subtotal) }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($booking->discount_amount > 0)
+                            <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-amber-600 font-bold">
+                                <span>Diskon Promo:</span>
+                                <span>- {{ format_rupiah($booking->discount_amount) }}</span>
+                            </div>
+                        @endif
+
+                        <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-slate-900 font-bold uppercase text-xs">Total Pembayaran:</span>
+                            <x-ui.price :value="$booking->total_price" class="text-base font-satoshi-bold text-[#152c4e]" containerClass="inline" />
                         </div>
                     </div>
                 </x-ui.card>

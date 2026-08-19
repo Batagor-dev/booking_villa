@@ -20,6 +20,9 @@ Route::get('/lang/{locale}', [App\Http\Controllers\LocalizationController::class
 Route::get('/villa', [App\Http\Controllers\VillaController::class, 'index'])->name('villa.index');
 Route::get('/villa/{property:slug}', [App\Http\Controllers\VillaController::class, 'show'])->name('villa.show');
 
+// Availability API for Frontend Calendar
+Route::get('/booking/availability/{property}', [App\Http\Controllers\BookingController::class, 'getAvailability'])->name('booking.availability');
+
 // User Frontend Account & Booking Portal (Requires Auth)
 Route::middleware(['auth'])->group(function () {
     Route::get('/booking/{property:slug?}', [App\Http\Controllers\BookingController::class, 'createPublic'])->name('booking.create');
@@ -27,6 +30,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/booking/check-promo', [App\Http\Controllers\PromoController::class, 'checkPromo'])->name('booking.check-promo');
 
     Route::get('/my-bookings', [App\Http\Controllers\UserBookingController::class, 'bookings'])->name('user.bookings');
+    Route::get('/my-bookings/{booking:uuid}/invoice', [App\Http\Controllers\UserBookingController::class, 'downloadInvoice'])->name('user.bookings.invoice');
     Route::post('/my-bookings/{booking:uuid}/cancel', [App\Http\Controllers\UserBookingController::class, 'cancel'])->name('user.bookings.cancel');
     Route::post('/reviews', [App\Http\Controllers\UserReviewController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{review}', [App\Http\Controllers\UserReviewController::class, 'update'])->name('reviews.update');
@@ -119,6 +123,7 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
     Route::resource('/bookings', App\Http\Controllers\BookingController::class)->parameters([
         'bookings' => 'booking:uuid',
     ])->only(['index', 'show', 'edit', 'update', 'destroy']);
+    Route::get('/bookings/{booking:uuid}/invoice', [App\Http\Controllers\BookingController::class, 'downloadInvoice'])->name('bookings.invoice');
     Route::patch('/bookings/{booking}/status', [App\Http\Controllers\BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
     Route::resource('/reviews', App\Http\Controllers\ReviewController::class)->parameters([

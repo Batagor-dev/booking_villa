@@ -20,6 +20,8 @@ class Booking extends Model
         'check_out' => 'date',
         'subtotal' => 'decimal:2',
         'discount_amount' => 'decimal:2',
+        'services_subtotal' => 'decimal:2',
+        'total_price' => 'decimal:2',
     ];
 
     public function getRouteKeyName()
@@ -30,6 +32,11 @@ class Booking extends Model
     public function property()
     {
         return $this->belongsTo(Properties::class, 'property_id');
+    }
+
+    public function services()
+    {
+        return $this->hasMany(BookingService::class, 'booking_id');
     }
 
     public function promotion()

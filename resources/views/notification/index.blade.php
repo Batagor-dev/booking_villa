@@ -46,21 +46,21 @@
         </a>
         <a 
             href="{{ route('admin.notifications.index', ['status' => 'unread']) }}" 
-            class="px-4 py-2 rounded-xl text-xs font-satoshi-bold transition-all whitespace-nowrap {{ $status === 'unread' ? 'bg-rose-500 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}"
+            class="px-4 py-2 rounded-xl text-xs font-satoshi-bold transition-all whitespace-nowrap {{ $status === 'unread' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}"
         >
             Belum Dibaca ({{ $unreadCount }})
         </a>
         <a 
             href="{{ route('admin.notifications.index', ['type' => 'order_created']) }}" 
-            class="px-4 py-2 rounded-xl text-xs font-satoshi-bold transition-all whitespace-nowrap {{ $type === 'order_created' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}"
+            class="px-4 py-2 rounded-xl text-xs font-satoshi-bold transition-all whitespace-nowrap {{ $type === 'order_created' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}"
         >
-            <i class="ri-calendar-check-line mr-1"></i> Order Masuk ({{ $orderCreatedCount }})
+            <i class="ri-calendar-check-line mr-1 text-[#ca9e54]"></i> Order Masuk ({{ $orderCreatedCount }})
         </a>
         <a 
             href="{{ route('admin.notifications.index', ['type' => 'order_cancelled']) }}" 
-            class="px-4 py-2 rounded-xl text-xs font-satoshi-bold transition-all whitespace-nowrap {{ $type === 'order_cancelled' ? 'bg-rose-600 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}"
+            class="px-4 py-2 rounded-xl text-xs font-satoshi-bold transition-all whitespace-nowrap {{ $type === 'order_cancelled' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}"
         >
-            <i class="ri-close-circle-line mr-1"></i> Order Dibatalkan ({{ $orderCancelledCount }})
+            <i class="ri-close-circle-line mr-1 text-[#ca9e54]"></i> Order Dibatalkan ({{ $orderCancelledCount }})
         </a>
     </div>
 
@@ -83,8 +83,8 @@
                         
                         <!-- Main Info & Snapshot -->
                         <div class="flex items-start gap-4 flex-1">
-                            <!-- Type Icon -->
-                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl {{ $isCancelled ? 'bg-rose-100 text-rose-600' : ($isConfirmed ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600') }}">
+                            <!-- Type Icon (Uniform Color Style) -->
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-[#ca9e54] border border-amber-200/60 shadow-xs">
                                 @if($isCancelled)
                                     <i class="ri-close-circle-fill text-2xl"></i>
                                 @elseif($isConfirmed)
@@ -97,7 +97,7 @@
                             <div class="space-y-3 flex-1">
                                 <div>
                                     <div class="flex flex-wrap items-center gap-2 mb-1">
-                                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-satoshi-bold uppercase tracking-wider {{ $isCancelled ? 'bg-rose-50 text-rose-700 border border-rose-200' : ($isConfirmed ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200') }}">
+                                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-satoshi-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
                                             {{ $item->title }}
                                         </span>
 

@@ -184,6 +184,43 @@
                     <p class="text-xs text-slate-500 font-light mt-1">Isi informasi tamu dan pilih metode pembayaran untuk melanjutkan.</p>
                 </div>
 
+                @if(session('success_booking'))
+                    <div class="p-6 bg-emerald-50/90 rounded-3xl border border-emerald-200 text-emerald-950 space-y-4 shadow-sm animate-fade-in">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                                <i class="ri-checkbox-circle-fill text-2xl"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Reservasi Berhasil Dibuat</span>
+                                <h3 class="text-base sm:text-lg font-bold text-slate-900">Terima kasih, {{ session('success_booking')['guest_name'] }}!</h3>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Kode booking Anda adalah <strong class="font-mono font-bold text-slate-900 bg-emerald-100/70 px-2 py-0.5 rounded">#{{ session('success_booking')['booking_code'] }}</strong> untuk properti <strong>{{ session('success_booking')['property_name'] }}</strong> dengan total pembayaran <strong>{{ session('success_booking')['total_price'] }}</strong>.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2.5 pt-2 border-t border-emerald-200/70">
+                            @if(!empty(session('success_booking')['download_url']))
+                                <a href="{{ session('success_booking')['download_url'] }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold transition shadow-sm">
+                                    <i class="ri-file-download-line text-sm"></i> Unduh E-Voucher / Invoice (PDF)
+                                </a>
+                            @endif
+                            <a href="{{ route('user.bookings') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold border border-slate-200 transition">
+                                <i class="ri-list-check text-sm"></i> Lihat Pesanan Saya
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
+                @if(session('failed_booking'))
+                    <div class="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-rose-950 flex items-start gap-3">
+                        <i class="ri-error-warning-fill text-rose-600 text-xl shrink-0 mt-0.5"></i>
+                        <div class="space-y-0.5 text-xs">
+                            <strong class="block font-bold">Pemesanan Tidak Dapat Diproses</strong>
+                            <p class="text-rose-800 leading-relaxed">{{ session('failed_booking') }}</p>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- MAIN BOOKING FORM SUBMISSION -->
                 <form action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="booking-submit-form">
                     @csrf
@@ -199,15 +236,15 @@
                             type="range"
                             checkinName="check_in"
                             checkoutName="check_out"
-                            checkinValue="{{ old('check_in', date('Y-m-d')) }}"
-                            checkoutValue="{{ old('check_out', date('Y-m-d', strtotime('+2 days'))) }}"
+                            checkinValue="{{ old('check_in', $defaultCheckIn ?? date('Y-m-d')) }}"
+                            checkoutValue="{{ old('check_out', $defaultCheckOut ?? date('Y-m-d', strtotime('+2 days'))) }}"
                             :disabledDates="$bookedDates ?? []"
                             minDate="today"
                             :inline="true"
                             showMonths="2"
                         />
 
-                        <!-- LIVE NIGHTS, SUBTOTAL, DISCOUNT & TOTAL CALCULATION BOX -->
+                        <!-- LIVE NIGHTS, SUBTOTAL, SERVICES, DISCOUNT & TOTAL CALCULATION BOX -->
                         <div class="p-4 bg-white rounded-2xl border border-slate-200/80 space-y-3 font-satoshi">
                             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                                 <div class="flex items-center gap-2">
@@ -215,9 +252,17 @@
                                     <span class="text-slate-500 text-[11px]">x {{ format_rupiah($selectedProperty->price ?? 0) }}</span>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-[10px] text-slate-400 uppercase font-bold block">{{ __('frontend.booking.subtotal') }}</span>
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold block">{{ __('frontend.booking.subtotal') }} Sewa Villa</span>
                                     <span id="calc-subtotal-price" class="text-sm font-bold text-slate-800">{{ format_rupiah(($selectedProperty->price ?? 0) * 2) }}</span>
                                 </div>
+                            </div>
+
+                            <!-- Extra Services Subtotal Row (Hidden initially) -->
+                            <div id="calc-services-row" class="flex items-center justify-between text-xs text-slate-700 font-medium hidden">
+                                <span class="flex items-center gap-1 font-bold">
+                                    <i class="ri-add-circle-fill text-[#ca9e54] text-sm"></i> Layanan Tambahan (<span id="calc-services-count">0 item</span>)
+                                </span>
+                                <strong id="calc-services-price" class="font-bold text-slate-900">+ Rp 0</strong>
                             </div>
 
                             <!-- Discount Row (Hidden initially) -->
@@ -234,6 +279,80 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- EXTRA SERVICES / ADD-ONS SECTION -->
+                    @if(isset($propertyServices) && $propertyServices->count() > 0)
+                        <div class="bg-slate-50/90 p-5 sm:p-6 rounded-3xl border border-slate-200/80 space-y-4 font-satoshi">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="ri-service-fill text-[#ca9e54] text-base"></i> Layanan Tambahan (Extra Services / Add-ons)
+                                </h4>
+                                <span class="text-[10px] bg-slate-200/70 text-slate-700 font-bold px-2.5 py-0.5 rounded-full">Opsional</span>
+                            </div>
+                            <p class="text-xs text-slate-500 font-light -mt-2">Tingkatkan kenyamanan menginap dengan memilih paket layanan khusus saat reservasi.</p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                                @foreach($propertyServices as $idx => $svc)
+                                    @php
+                                        $isPerNight = str_contains(strtolower($svc->price_type ?? ''), 'night');
+                                    @endphp
+                                    <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-slate-300 transition-all duration-200 flex flex-col justify-between service-card" id="service-card-{{ $svc->id }}">
+                                        <div>
+                                            <div class="flex items-start justify-between gap-2 mb-1.5">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="w-8 h-8 rounded-xl bg-amber-50 text-[#ca9e54] flex items-center justify-center shrink-0 border border-amber-200/60">
+                                                        <i class="{{ $svc->icon ?: 'ri-service-line' }} text-base"></i>
+                                                    </span>
+                                                    <div>
+                                                        <strong class="text-xs font-bold text-slate-900 block leading-tight">{{ $svc->name }}</strong>
+                                                        @if($svc->category)
+                                                            <span class="text-[9px] uppercase font-bold text-[#ca9e54] tracking-wider">{{ $svc->category }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <input type="checkbox" 
+                                                       id="svc_chk_{{ $svc->id }}" 
+                                                       data-id="{{ $svc->id }}" 
+                                                       data-price="{{ (float)$svc->price }}" 
+                                                       data-per-night="{{ $isPerNight ? 'true' : 'false' }}"
+                                                       data-index="{{ $idx }}"
+                                                       onchange="toggleServiceItem(this, {{ $idx }}, {{ $svc->id }})" 
+                                                       class="w-4 h-4 rounded border-slate-300 text-[#152c4e] focus:ring-[#ca9e54] cursor-pointer mt-1">
+                                            </div>
+
+                                            @if($svc->description)
+                                                <p class="text-[11px] text-slate-500 font-light line-clamp-2 mt-1 mb-2">{{ $svc->description }}</p>
+                                            @endif
+                                        </div>
+
+                                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
+                                            <div class="text-xs font-bold text-slate-800">
+                                                {{ format_rupiah($svc->price) }}
+                                                <span class="text-[10px] text-slate-400 font-normal">/ {{ $isPerNight ? 'malam' : 'item' }}</span>
+                                            </div>
+
+                                            <!-- Quantity Selector (Hidden unless checked) -->
+                                            <div id="svc_qty_wrapper_{{ $svc->id }}" class="flex items-center gap-1.5 hidden">
+                                                <button type="button" onclick="changeServiceQty({{ $svc->id }}, -1)" class="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer">-</button>
+                                                <input type="number" 
+                                                       id="svc_qty_input_{{ $svc->id }}" 
+                                                       value="1" 
+                                                       min="1" 
+                                                       max="20" 
+                                                       readonly 
+                                                       class="w-8 text-center text-xs font-bold text-slate-900 border border-slate-200 rounded-md py-0.5 bg-slate-50">
+                                                <button type="button" onclick="changeServiceQty({{ $svc->id }}, 1)" class="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs cursor-pointer">+</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Hidden Form Inputs for Submission -->
+                                        <input type="hidden" name="services[{{ $idx }}][id]" id="input_svc_id_{{ $svc->id }}" value="" disabled>
+                                        <input type="hidden" name="services[{{ $idx }}][qty]" id="input_svc_qty_{{ $svc->id }}" value="1" disabled>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- PROMO CODE & VOUCHER SECTION (LUXURY MINIMALIST PALMA THEME) -->
                     <div class="bg-slate-50/80 p-5 rounded-3xl border border-slate-200/80 space-y-4 font-satoshi">
@@ -507,6 +626,63 @@
                 applyPromoCode();
             }
         });
+        function toggleServiceItem(chk, index, serviceId) {
+            const inputId = document.getElementById('input_svc_id_' + serviceId);
+            const inputQty = document.getElementById('input_svc_qty_' + serviceId);
+            const qtyWrapper = document.getElementById('svc_qty_wrapper_' + serviceId);
+            const card = document.getElementById('service-card-' + serviceId);
+
+            if (chk.checked) {
+                if (inputId) {
+                    inputId.value = serviceId;
+                    inputId.disabled = false;
+                }
+                if (inputQty) {
+                    inputQty.disabled = false;
+                }
+                if (qtyWrapper) {
+                    qtyWrapper.classList.remove('hidden');
+                }
+                if (card) {
+                    card.classList.add('border-[#ca9e54]', 'bg-amber-50/20');
+                }
+            } else {
+                if (inputId) {
+                    inputId.value = '';
+                    inputId.disabled = true;
+                }
+                if (inputQty) {
+                    inputQty.disabled = true;
+                }
+                if (qtyWrapper) {
+                    qtyWrapper.classList.add('hidden');
+                }
+                if (card) {
+                    card.classList.remove('border-[#ca9e54]', 'bg-amber-50/20');
+                }
+            }
+
+            calculateBookingTotal();
+        }
+        window.toggleServiceItem = toggleServiceItem;
+
+        function changeServiceQty(serviceId, delta) {
+            const qtyInput = document.getElementById('svc_qty_input_' + serviceId);
+            const formInputQty = document.getElementById('input_svc_qty_' + serviceId);
+            if (!qtyInput) return;
+
+            let currentQty = parseInt(qtyInput.value) || 1;
+            let newQty = Math.max(1, Math.min(20, currentQty + delta));
+            
+            qtyInput.value = newQty;
+            if (formInputQty) {
+                formInputQty.value = newQty;
+            }
+
+            calculateBookingTotal();
+        }
+        window.changeServiceQty = changeServiceQty;
+
         function calculateBookingTotal() {
             const checkInInput = document.getElementById('input-check-in');
             const checkOutInput = document.getElementById('input-check-out');
@@ -526,6 +702,24 @@
             const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
             const subtotal = propertyPrice * diffDays;
+
+            // Calculate Extra Services
+            let servicesSubtotal = 0;
+            let servicesCount = 0;
+            const serviceCheckboxes = document.querySelectorAll('input[id^="svc_chk_"]:checked');
+            serviceCheckboxes.forEach(chk => {
+                const price = parseFloat(chk.getAttribute('data-price')) || 0;
+                const isPerNight = chk.getAttribute('data-per-night') === 'true';
+                const sId = chk.getAttribute('data-id');
+                const qtyInput = document.getElementById('svc_qty_input_' + sId);
+                const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+
+                const itemTotal = isPerNight ? (price * qty * diffDays) : (price * qty);
+                servicesSubtotal += itemTotal;
+                servicesCount += qty;
+            });
+
+            const totalBeforeDiscount = subtotal + servicesSubtotal;
             let discountAmount = 0;
 
             if (activePromoData) {
@@ -536,13 +730,16 @@
                 } else {
                     discountAmount = (activePromoData.discount_value || 0) * diffDays;
                 }
-                discountAmount = Math.min(subtotal, Math.max(0, discountAmount));
+                discountAmount = Math.min(totalBeforeDiscount, Math.max(0, discountAmount));
             }
 
-            const finalTotal = Math.max(0, subtotal - discountAmount);
+            const finalTotal = Math.max(0, totalBeforeDiscount - discountAmount);
 
             const nightsBadge = document.getElementById('calc-nights-badge');
             const subtotalPriceEl = document.getElementById('calc-subtotal-price');
+            const servicesRowEl = document.getElementById('calc-services-row');
+            const servicesCountEl = document.getElementById('calc-services-count');
+            const servicesPriceEl = document.getElementById('calc-services-price');
             const discountRowEl = document.getElementById('calc-discount-row');
             const discountCodeEl = document.getElementById('calc-discount-code');
             const discountPriceEl = document.getElementById('calc-discount-price');
@@ -550,6 +747,17 @@
 
             if (nightsBadge) nightsBadge.innerText = diffDays + ' Malam';
             if (subtotalPriceEl) subtotalPriceEl.innerText = formatRupiah(subtotal);
+
+            // Update Extra Services breakdown row
+            if (servicesRowEl) {
+                if (servicesSubtotal > 0) {
+                    if (servicesCountEl) servicesCountEl.innerText = servicesCount + ' item';
+                    if (servicesPriceEl) servicesPriceEl.innerText = '+ ' + formatRupiah(servicesSubtotal);
+                    servicesRowEl.classList.remove('hidden');
+                } else {
+                    servicesRowEl.classList.add('hidden');
+                }
+            }
 
             if (discountRowEl) {
                 if (discountAmount > 0 && activePromoData) {

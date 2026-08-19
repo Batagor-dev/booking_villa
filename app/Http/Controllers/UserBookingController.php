@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Services\NotificationService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -23,7 +24,7 @@ class UserBookingController extends Controller
         $query = Booking::where(function ($q) use ($user) {
             $q->where('user_id', $user->id)
               ->orWhere('guest_email', $user->email);
-        })->with(['property', 'paymentMethod', 'review'])->latest();
+        })->with(['property', 'paymentMethod', 'review', 'services'])->latest();
 
         $statusFilter = $request->query('status');
         if ($statusFilter && in_array($statusFilter, ['pending', 'confirmed', 'cancelled'])) {
@@ -54,6 +55,26 @@ class UserBookingController extends Controller
     }
 
     /**
+     * Download or stream PDF Booking Invoice / E-Voucher for customer.
+     */
+    public function downloadInvoice(Booking $booking)
+    {
+        $user = auth()->user();
+
+        // Verify ownership
+        if ($booking->user_id !== $user->id && $booking->guest_email !== $user->email) {
+            abort(403, 'Anda tidak memiliki otorisasi untuk mengunduh e-voucher ini.');
+        }
+
+        $booking->load(['property', 'paymentMethod', 'user', 'promotion', 'services']);
+
+        $pdf = Pdf::loadView('pdf.booking-invoice', compact('booking'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('E-Voucher-' . $booking->booking_code . '.pdf');
+    }
+
+    /**
      * Cancel a booking by the customer.
      */
     public function cancel(Request $request, Booking $booking)
@@ -69,7 +90,14 @@ class UserBookingController extends Controller
             return redirect()->back()->with('warning', 'Reservasi ini sudah berstatus dibatalkan.');
         }
 
-        $reason = $request->input('reason', 'Dibatalkan oleh pelanggan');
+        $validated = $request->validate([
+            'reason' => 'required|string|min:3|max:500',
+        ], [
+            'reason.required' => 'Alasan pembatalan wajib diisi.',
+            'reason.min'      => 'Alasan pembatalan minimal 3 karakter.',
+        ]);
+
+        $reason = $validated['reason'];
         
         $booking->update([
             'status' => 'cancelled',

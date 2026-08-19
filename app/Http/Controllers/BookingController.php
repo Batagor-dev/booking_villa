@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\DataTables\BookingDataTable;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
+use App\Models\BookingService;
 use App\Models\Properties;
 use App\Models\PaymentMethod;
 use App\Models\PropertyRule;
+use App\Models\PropertyServices;
 use App\Models\Promotion;
 use App\Services\ImageService;
 use App\Services\NotificationService;
 use App\Services\PromoService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,8 +36,51 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
-        $booking->load(['property', 'paymentMethod', 'user']);
+        $booking->load(['property', 'paymentMethod', 'user', 'promotion', 'services.propertyService']);
         return view('booking.show', compact('booking'));
+    }
+
+    /**
+     * Download or stream PDF Booking Invoice / E-Voucher for Admin.
+     */
+    public function downloadInvoice(Booking $booking)
+    {
+        $booking->load(['property', 'paymentMethod', 'user', 'promotion', 'services']);
+        $pdf = Pdf::loadView('pdf.booking-invoice', compact('booking'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('Invoice-' . $booking->booking_code . '.pdf');
+    }
+
+    /**
+     * Get availability booked dates for a property (JSON API).
+     */
+    public function getAvailability(Request $request, $propertyIdentifier)
+    {
+        $property = Properties::where('slug', $propertyIdentifier)
+            ->orWhere('id', $propertyIdentifier)
+            ->firstOrFail();
+
+        $existingBookings = Booking::where('property_id', $property->id)
+            ->whereIn('status', ['confirmed', 'pending'])
+            ->get(['check_in', 'check_out']);
+
+        $bookedDates = [];
+        foreach ($existingBookings as $b) {
+            if ($b->check_in && $b->check_out) {
+                $bookedDates[] = [
+                    'from' => $b->check_in->format('Y-m-d'),
+                    'to'   => $b->check_out->format('Y-m-d'),
+                ];
+            }
+        }
+
+        return response()->json([
+            'success'      => true,
+            'property_id'  => $property->id,
+            'property_name'=> $property->name,
+            'booked_dates' => $bookedDates,
+        ]);
     }
 
     /**
@@ -85,6 +131,19 @@ class BookingController extends Controller
             }
         }
 
+        // Fetch Extra Services / Add-ons for the selected property (or global)
+        $propertyServices = PropertyServices::where('status', true)
+            ->where(function ($q) use ($selectedProperty) {
+                if ($selectedProperty) {
+                    $q->where('property_id', $selectedProperty->id)
+                      ->orWhereNull('property_id');
+                } else {
+                    $q->whereNull('property_id');
+                }
+            })
+            ->orderBy('sort', 'asc')
+            ->get();
+
         $autoPromoCode = $request->query('promo');
         if (empty($autoPromoCode) && $selectedProperty) {
             $activePromo = $selectedProperty->active_promo_details;
@@ -97,7 +156,10 @@ class BookingController extends Controller
             ? PropertyRule::active()->forPropertyType($selectedProperty->type ?? 'Villa')->orderBy('sort_order', 'asc')->get()
             : PropertyRule::active()->orderBy('sort_order', 'asc')->get();
 
-        return view('frontend.booking.create', compact('properties', 'selectedProperty', 'paymentMethods', 'bookedDates', 'autoPromoCode', 'propertyRules'));
+        $defaultCheckIn = $request->query('check_in', date('Y-m-d'));
+        $defaultCheckOut = $request->query('check_out', date('Y-m-d', strtotime('+2 days')));
+
+        return view('frontend.booking.create', compact('properties', 'selectedProperty', 'paymentMethods', 'bookedDates', 'autoPromoCode', 'propertyRules', 'propertyServices', 'defaultCheckIn', 'defaultCheckOut'));
     }
 
     /**
@@ -123,7 +185,39 @@ class BookingController extends Controller
             $totalPrice = $subtotal;
             $promotionId = null;
 
-            // 2. Validate & Apply Promo Code if provided or Automatic Property Promo
+            // 2. Calculate Extra Services (Add-ons)
+            $servicesSubtotal = 0.0;
+            $selectedServicesData = [];
+            if (!empty($validated['services']) && is_array($validated['services'])) {
+                $serviceIds = array_filter(array_column($validated['services'], 'id'));
+                if (!empty($serviceIds)) {
+                    $validServices = PropertyServices::whereIn('id', $serviceIds)->where('status', true)->get()->keyBy('id');
+                    foreach ($validated['services'] as $svcItem) {
+                        $sId = $svcItem['id'] ?? null;
+                        $qty = max(1, intval($svcItem['qty'] ?? 1));
+                        if ($sId && isset($validServices[$sId])) {
+                            $dbService = $validServices[$sId];
+                            $itemPrice = (float) $dbService->price;
+                            $isPerNight = str_contains(strtolower($dbService->price_type ?? ''), 'night');
+                            $itemSubtotal = $isPerNight ? ($itemPrice * $qty * $nights) : ($itemPrice * $qty);
+                            
+                            $servicesSubtotal += $itemSubtotal;
+                            $selectedServicesData[] = [
+                                'property_service_id' => $dbService->id,
+                                'name'                => $dbService->name,
+                                'category'            => $dbService->category,
+                                'price'               => $itemPrice,
+                                'price_type'          => $dbService->price_type ?? 'per_item',
+                                'quantity'            => $qty,
+                                'subtotal'            => $itemSubtotal,
+                            ];
+                        }
+                    }
+                }
+            }
+
+            // 3. Validate & Apply Promo Code if provided or Automatic Property Promo
+            $totalBeforeDiscount = $subtotal + $servicesSubtotal;
             if (!empty($validated['promo_code'])) {
                 $promoResult = $promoService->validatePromoCode(
                     $validated['promo_code'],
@@ -141,7 +235,7 @@ class BookingController extends Controller
 
                 $promotionId    = $promoResult['promotion_id'];
                 $discountAmount = $promoResult['discount_amount'];
-                $totalPrice     = $promoResult['final_total'];
+                $totalPrice     = max(0, $totalBeforeDiscount - $discountAmount);
 
                 $promoRecord = Promotion::find($promotionId);
                 if ($promoRecord) {
@@ -151,15 +245,17 @@ class BookingController extends Controller
                 $promotionId    = $activePromo['promotion_id'];
                 $discountPerNight = $activePromo['discount_amount'];
                 $discountAmount = min($subtotal, $discountPerNight * $nights);
-                $totalPrice     = max(0, $subtotal - $discountAmount);
+                $totalPrice     = max(0, $totalBeforeDiscount - $discountAmount);
 
                 $promoRecord = Promotion::find($promotionId);
                 if ($promoRecord) {
                     $promoRecord->incrementUsage();
                 }
+            } else {
+                $totalPrice = $totalBeforeDiscount;
             }
 
-            // 3. Upload Bukti Payment Image
+            // 4. Upload Bukti Payment Image
             $receiptPath = null;
             if ($request->hasFile('bukti_payment')) {
                 $file = $request->file('bukti_payment');
@@ -168,10 +264,10 @@ class BookingController extends Controller
                 Storage::disk('public')->put($receiptPath, $compressed);
             }
 
-            // 4. Generate Unique Booking Code
+            // 5. Generate Unique Booking Code
             $bookingCode = 'BOOK-' . date('Ymd') . '-' . strtoupper(Str::random(5));
 
-            // 5. Create Booking
+            // 6. Create Booking Record
             $booking = Booking::create([
                 'booking_code'      => $bookingCode,
                 'property_id'       => $property->id,
@@ -184,6 +280,7 @@ class BookingController extends Controller
                 'check_out'         => $validated['check_out'],
                 'total_nights'      => $nights,
                 'subtotal'          => $subtotal,
+                'services_subtotal' => $servicesSubtotal,
                 'discount_amount'   => $discountAmount,
                 'total_price'       => $totalPrice,
                 'payment_method_id' => $paymentMethod->id,
@@ -193,7 +290,12 @@ class BookingController extends Controller
                 'notes'             => $validated['notes'] ?? null,
             ]);
 
-            // 6. Trigger Admin Notification for New Order
+            // 7. Save Selected Booking Services
+            foreach ($selectedServicesData as $svcData) {
+                $booking->services()->create($svcData);
+            }
+
+            // 8. Trigger Admin Notification for New Order
             try {
                 NotificationService::notifyNewBooking($booking);
             } catch (\Throwable $notifErr) {
@@ -203,12 +305,15 @@ class BookingController extends Controller
             DB::commit();
 
             return redirect()->back()->with('success_booking', [
-                'booking_code'    => $booking->booking_code,
-                'guest_name'      => $booking->guest_name,
-                'property_name'   => $property->name,
-                'subtotal'        => format_rupiah($booking->subtotal),
-                'discount_amount' => format_rupiah($booking->discount_amount),
-                'total_price'     => format_rupiah($booking->total_price),
+                'uuid'              => $booking->uuid,
+                'booking_code'      => $booking->booking_code,
+                'guest_name'        => $booking->guest_name,
+                'property_name'     => $property->name,
+                'subtotal'          => format_rupiah($booking->subtotal),
+                'services_subtotal' => format_rupiah($booking->services_subtotal),
+                'discount_amount'   => format_rupiah($booking->discount_amount),
+                'total_price'       => format_rupiah($booking->total_price),
+                'download_url'      => route('user.bookings.invoice', $booking->uuid),
             ]);
 
         } catch (\Throwable $e) {

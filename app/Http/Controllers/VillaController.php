@@ -231,6 +231,20 @@ class VillaController extends Controller
             ->orderBy('sort_order', 'asc')
             ->get();
 
-        return view('villa.show', compact('property', 'paymentMethods', 'galleryList', 'approvedReviews', 'totalReviews', 'propRating', 'userReview', 'userCanReview', 'propertyRules'));
+        $existingBookings = \App\Models\Booking::where('property_id', $property->id)
+            ->whereIn('status', ['confirmed', 'pending'])
+            ->get(['check_in', 'check_out']);
+
+        $bookedDates = [];
+        foreach ($existingBookings as $b) {
+            if ($b->check_in && $b->check_out) {
+                $bookedDates[] = [
+                    'from' => $b->check_in->format('Y-m-d'),
+                    'to'   => $b->check_out->format('Y-m-d'),
+                ];
+            }
+        }
+
+        return view('villa.show', compact('property', 'paymentMethods', 'galleryList', 'approvedReviews', 'totalReviews', 'propRating', 'userReview', 'userCanReview', 'propertyRules', 'bookedDates'));
     }
 }

@@ -128,6 +128,19 @@
                                 <div class="pt-1 text-[#ca9e54] font-bold">
                                     {{ $b->total_nights }} Malam
                                 </div>
+
+                                @if($b->services && $b->services->count() > 0)
+                                    <div class="pt-2 border-t border-slate-100/80">
+                                        <span class="text-[10px] text-slate-400 uppercase font-bold block">Layanan Ekstra:</span>
+                                        <div class="flex flex-wrap gap-1 mt-0.5">
+                                            @foreach($b->services as $sItem)
+                                                <span class="inline-flex items-center gap-1 text-[10px] bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-md">
+                                                    <i class="ri-check-line text-[#ca9e54]"></i> {{ $sItem->name }} (x{{ $sItem->quantity }})
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Payment & Actions (3 Cols) -->
@@ -160,6 +173,7 @@
                                             </a>
                                         @endif
                                     @endif
+
                                     <button type="button" onclick="showInvoiceModal({{ json_encode([
                                         'code' => $b->booking_code,
                                         'prop_name' => $prop->name ?? 'Villa',
@@ -173,9 +187,11 @@
                                         'payment_method' => $b->paymentMethod->name ?? ($b->payment_type ?? '-'),
                                         'status' => ucfirst($b->status),
                                         'receipt' => $b->bukti_payment ? asset('storage/'.$b->bukti_payment) : null,
-                                        'notes' => $b->notes
+                                        'notes' => $b->notes,
+                                        'download_url' => route('user.bookings.invoice', $b->uuid),
+                                        'services' => $b->services ? $b->services->map(fn($s) => $s->name . ' (x' . $s->quantity . ' - ' . format_rupiah($s->subtotal) . ')')->values() : []
                                     ]) }})" class="w-full px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-                                        <i class="ri-file-text-line"></i> Lihat Bukti & Detail
+                                        <i class="ri-file-text-line"></i> Rincian & Bukti Bayar
                                     </button>
 
                                     @if($b->status !== 'cancelled')
@@ -274,6 +290,12 @@
                     <strong class="text-xl font-bold text-[#152c4e]" id="inv-total-price">-</strong>
                 </div>
 
+                <!-- Extra Services in Modal -->
+                <div id="inv-services-container" class="pt-2 border-t border-slate-100 space-y-1 hidden">
+                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Layanan Tambahan:</span>
+                    <ul id="inv-services-list" class="space-y-1 text-[11px] text-slate-700 pl-3 list-disc"></ul>
+                </div>
+
                 <!-- Receipt Image Container -->
                 <div class="pt-3 border-t border-slate-100 space-y-2" id="inv-receipt-container">
                     <span class="text-[10px] text-slate-400 uppercase font-bold block">Bukti Pembayaran Diunggah:</span>
@@ -283,8 +305,11 @@
                 </div>
             </div>
 
-            <div class="p-4 bg-slate-50 border-t border-slate-100 text-center">
-                <button type="button" onclick="closeInvoiceModal()" class="px-6 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold">Tutup</button>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+                <a id="inv-download-btn" href="#" class="px-4 py-2.5 rounded-xl bg-[#152c4e] hover:bg-[#ca9e54] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                    <i class="ri-file-download-line text-sm"></i> Unduh E-Voucher (PDF)
+                </a>
+                <button type="button" onclick="closeInvoiceModal()" class="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition cursor-pointer">Tutup</button>
             </div>
         </div>
     </div>
@@ -300,6 +325,25 @@
             document.getElementById('inv-checkout').innerText = data.check_out;
             document.getElementById('inv-payment-method').innerText = data.payment_method;
             document.getElementById('inv-total-price').innerText = data.total_price;
+
+            const downloadBtn = document.getElementById('inv-download-btn');
+            if (downloadBtn && data.download_url) {
+                downloadBtn.href = data.download_url;
+            }
+
+            const servicesContainer = document.getElementById('inv-services-container');
+            const servicesList = document.getElementById('inv-services-list');
+            if (data.services && data.services.length > 0) {
+                servicesList.innerHTML = '';
+                data.services.forEach(s => {
+                    const li = document.createElement('li');
+                    li.innerText = s;
+                    servicesList.appendChild(li);
+                });
+                servicesContainer.classList.remove('hidden');
+            } else {
+                servicesContainer.classList.add('hidden');
+            }
 
             const receiptContainer = document.getElementById('inv-receipt-container');
             const receiptImg = document.getElementById('inv-receipt-img');
@@ -560,7 +604,7 @@
                 </button>
             </div>
 
-            <form id="cancel-booking-form" method="POST" class="p-6 space-y-4 text-xs font-medium text-slate-700">
+            <form id="cancel-booking-form" method="POST" onsubmit="return validateCancelForm()" class="p-6 space-y-4 text-xs font-medium text-slate-700">
                 @csrf
                 
                 <div class="p-4 bg-rose-50/70 border border-rose-100 rounded-2xl space-y-1">
@@ -571,18 +615,30 @@
                     </p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-900 mb-1.5">Pilih Alasan Pembatalan (Opsional)</label>
-                    <select name="reason_preset" id="cancel-reason-preset" onchange="handleCancelReasonPreset(this)" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500 bg-white mb-2">
-                        <option value="">-- Pilih Alasan Pembatalan --</option>
-                        <option value="Perubahan rencana jadwal perjalanan">Perubahan rencana jadwal perjalanan</option>
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-900">
+                        Pilih Alasan Pembatalan <span class="text-rose-500">*</span>
+                    </label>
+                    <select name="reason_preset" id="cancel-reason-preset" required onchange="handleCancelReasonPreset(this)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500 bg-white">
+                        <option value="">-- Pilih Alasan Pembatalan (Wajib) --</option>
+                        <option value="Perubahan rencana / jadwal liburan">Perubahan rencana / jadwal liburan</option>
                         <option value="Salah memilih tanggal atau jenis villa">Salah memilih tanggal atau jenis villa</option>
-                        <option value="Keperluan mendesak / darurat">Keperluan mendesak / darurat</option>
-                        <option value="Kendala pada metode pembayaran">Kendala pada metode pembayaran</option>
-                        <option value="other">Alasan lainnya...</option>
+                        <option value="Menemukan penginapan / villa alternatif lain">Menemukan penginapan / villa alternatif lain</option>
+                        <option value="Jumlah tamu / rombongan berubah">Jumlah tamu / rombongan berubah</option>
+                        <option value="Keperluan mendesak / kondisi darurat">Keperluan mendesak / kondisi darurat</option>
+                        <option value="Kendala transportasi / perjalanan">Kendala transportasi / perjalanan</option>
+                        <option value="Kendala metode pembayaran">Kendala metode pembayaran</option>
+                        <option value="other">Alasan lainnya (Tulis di catatan)...</option>
                     </select>
 
-                    <textarea name="reason" id="cancel-reason-text" rows="2" placeholder="Tuliskan alasan pembatalan Anda..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500"></textarea>
+                    <div id="cancel-custom-reason-container" class="hidden pt-1">
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                            Tuliskan Detail Alasan <span class="text-rose-500">*</span>
+                        </label>
+                        <textarea name="reason_custom" id="cancel-reason-text" rows="3" placeholder="Jelaskan alasan pembatalan Anda..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-rose-500"></textarea>
+                    </div>
+
+                    <input type="hidden" name="reason" id="cancel-final-reason" value="">
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-2">
@@ -608,8 +664,11 @@
             document.getElementById('cancel-modal-price').textContent = data.total_price;
             
             form.action = data.action;
-            document.getElementById('cancel-reason-preset').value = '';
+            const presetSelect = document.getElementById('cancel-reason-preset');
+            presetSelect.value = '';
             document.getElementById('cancel-reason-text').value = '';
+            document.getElementById('cancel-custom-reason-container').classList.add('hidden');
+            document.getElementById('cancel-final-reason').value = '';
 
             modal.classList.remove('hidden');
             setTimeout(() => {
@@ -620,13 +679,49 @@
         }
 
         function handleCancelReasonPreset(selectEl) {
-            const textarea = document.getElementById('cancel-reason-text');
-            if (selectEl.value && selectEl.value !== 'other') {
-                textarea.value = selectEl.value;
-            } else if (selectEl.value === 'other') {
-                textarea.value = '';
-                textarea.focus();
+            const customContainer = document.getElementById('cancel-custom-reason-container');
+            const customTextarea = document.getElementById('cancel-reason-text');
+            const finalReason = document.getElementById('cancel-final-reason');
+
+            if (selectEl.value === 'other') {
+                customContainer.classList.remove('hidden');
+                customTextarea.setAttribute('required', 'required');
+                customTextarea.focus();
+                finalReason.value = customTextarea.value.trim();
+            } else if (selectEl.value) {
+                customContainer.classList.add('hidden');
+                customTextarea.removeAttribute('required');
+                finalReason.value = selectEl.value;
+            } else {
+                customContainer.classList.add('hidden');
+                customTextarea.removeAttribute('required');
+                finalReason.value = '';
             }
+        }
+
+        function validateCancelForm() {
+            const selectEl = document.getElementById('cancel-reason-preset');
+            const customTextarea = document.getElementById('cancel-reason-text');
+            const finalReason = document.getElementById('cancel-final-reason');
+
+            if (!selectEl.value) {
+                alert('Silakan pilih alasan pembatalan reservasi terlebih dahulu.');
+                selectEl.focus();
+                return false;
+            }
+
+            if (selectEl.value === 'other') {
+                if (!customTextarea.value.trim()) {
+                    alert('Mohon tuliskan detail alasan pembatalan Anda.');
+                    customTextarea.focus();
+                    return false;
+                }
+                finalReason.value = customTextarea.value.trim();
+            } else {
+                finalReason.value = selectEl.value;
+            }
+
+            return true;
         }
 
         function closeCancelBookingModal() {
