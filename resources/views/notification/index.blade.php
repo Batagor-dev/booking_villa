@@ -177,12 +177,12 @@
                                 </a>
                             @endif
 
-                            <form action="{{ route('admin.notifications.destroy', $item->uuid) }}" method="POST" onsubmit="return confirm('Hapus riwayat notifikasi ini?')">
+                            <form action="{{ route('admin.notifications.destroy', $item->uuid) }}" method="POST" class="inline-block m-0">
                                 @csrf
                                 @method('DELETE')
                                 <button 
-                                    type="submit" 
-                                    class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                                    type="button" 
+                                    class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer delete-btn"
                                     title="Hapus Notifikasi"
                                 >
                                     <i class="ri-delete-bin-line text-base"></i>

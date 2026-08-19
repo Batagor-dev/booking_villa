@@ -21,6 +21,7 @@ return new class extends Migration
             $table->json('data')->nullable(); // Snapshot of booking data: code, guest, villa, checkin, checkout, price, etc.
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
