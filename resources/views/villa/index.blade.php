@@ -77,17 +77,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
             <div>
                 <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-slate-900">{{ __('frontend.villa.catalog_title') }}</h2>
-                <p class="text-xs text-slate-500 font-light mt-1" id="villa-count-text">
-                    {{ $properties->total() ?? count($properties) }} {{ __('frontend.villa.photos_count') }}
-                </p>
             </div>
-            <div class="flex items-center gap-2">
-                <select name="sort" id="villa-sort-select" class="bg-white border border-slate-200 text-xs font-semibold text-slate-800 rounded-full px-4 py-2 focus:outline-none cursor-pointer">
-                    <option value="" {{ request('sort') == '' ? 'selected' : '' }}>{{ __('frontend.villa.sort_latest') }}</option>
-                    <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>{{ __('frontend.villa.sort_price_asc') }}</option>
-                    <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('frontend.villa.sort_price_desc') }}</option>
-                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>{{ __('frontend.villa.sort_rating') }}</option>
-                </select>
+            <div class="w-full sm:w-64">
+                <x-ui.select2 
+                    name="sort" 
+                    placeholder="{{ __('frontend.villa.sort_latest') }}" 
+                    :options="$sortOptions ?? []" 
+                    :value="request('sort')" 
+                />
             </div>
         </div>
 
@@ -108,7 +105,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterForm = document.getElementById('villa-filter-form');
-            const sortSelect = document.getElementById('villa-sort-select');
             const searchInput = document.getElementById('search-q');
 
             // Trigger AJAX when form changes (inputs or select2 hidden inputs)
@@ -122,11 +118,12 @@
                 });
             }
 
-            if (sortSelect) {
-                sortSelect.addEventListener('change', function() {
+            // Trigger AJAX when sort select2 changes
+            document.addEventListener('change', function(e) {
+                if (e.target && e.target.name === 'sort') {
                     fetchFilteredVillas();
-                });
-            }
+                }
+            });
 
             // Debounced typing search
             let searchTimer;
@@ -146,9 +143,9 @@
             const targetUrl = url || form.getAttribute('action');
             const formData = new FormData(form);
             
-            const sortSelect = document.getElementById('villa-sort-select');
-            if (sortSelect) {
-                formData.append('sort', sortSelect.value);
+            const sortInput = document.querySelector('input[name="sort"]');
+            if (sortInput && sortInput.value) {
+                formData.set('sort', sortInput.value);
             }
 
             const params = new URLSearchParams(formData);
@@ -172,9 +169,6 @@
                     
                     const pagination = document.getElementById('villa-pagination-container');
                     if (pagination) pagination.innerHTML = data.pagination;
-
-                    const countText = document.getElementById('villa-count-text');
-                    if (countText) countText.textContent = 'Menampilkan ' + data.total + ' villa terbaik dengan garansi harga resmi';
                 }
             })
             .catch(err => console.error('AJAX Filter Error:', err))

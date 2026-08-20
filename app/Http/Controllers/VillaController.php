@@ -88,7 +88,9 @@ class VillaController extends Controller
         // 7. Sorting
         if ($request->filled('sort')) {
             $sort = $request->input('sort');
-            if ($sort === 'price_asc') {
+            if ($sort === 'popular') {
+                $query->orderBy('rating', 'desc')->orderBy('created_at', 'desc');
+            } elseif ($sort === 'price_asc') {
                 $query->orderBy('price', 'asc');
             } elseif ($sort === 'price_desc') {
                 $query->orderBy('price', 'desc');
@@ -125,35 +127,43 @@ class VillaController extends Controller
         sort($propertyTypes);
 
         // Prepare option arrays formatted for <x-ui.select2>
-        $locationOptions = ['' => 'Semua Lokasi'];
+        $locationOptions = ['' => __('frontend.villa.all_locations')];
         foreach ($locations as $loc) {
             $locationOptions[strtolower($loc)] = $loc;
         }
 
-        $typeOptions = ['' => 'Semua Tipe'];
+        $typeOptions = ['' => __('frontend.villa.all_types')];
         foreach ($propertyTypes as $type) {
             $typeOptions[strtolower($type)] = $type;
         }
 
         $bedroomOptions = [
-            '' => 'Semua Kamar',
-            'normal' => 'Normal (1 - 2 Kamar)',
-            'middle' => 'Middle (3 - 4 Kamar)',
-            'big' => 'Big (5+ Kamar)',
+            ''       => __('frontend.villa.all_bedrooms'),
+            'normal' => __('frontend.villa.bedroom_normal'),
+            'middle' => __('frontend.villa.bedroom_middle'),
+            'big'    => __('frontend.villa.bedroom_big'),
         ];
 
         $ratingOptions = [
-            '' => 'Semua Rating',
-            'biasa' => '⭐️ Biasa (3.0 - 3.9)',
-            'bagus' => '⭐️⭐️ Bagus (4.0 - 4.6)',
-            'bagus_banget' => '⭐️⭐️⭐️ Bagus Banget (4.7+)',
+            ''             => __('frontend.villa.all_ratings'),
+            'biasa'        => __('frontend.villa.rating_biasa'),
+            'bagus'        => __('frontend.villa.rating_bagus'),
+            'bagus_banget' => __('frontend.villa.rating_bagus_banget'),
         ];
 
         $priceOptions = [
-            '' => 'Semua Harga',
-            'low' => '< Rp 5.000.000 / malam',
-            'mid' => 'Rp 5.000.000 - Rp 10.000.000 / malam',
-            'high' => '> Rp 10.000.000 / malam',
+            ''     => __('frontend.villa.all_prices'),
+            'low'  => __('frontend.villa.price_low'),
+            'mid'  => __('frontend.villa.price_mid'),
+            'high' => __('frontend.villa.price_high'),
+        ];
+
+        $sortOptions = [
+            ''           => __('frontend.villa.sort_latest'),
+            'popular'    => __('frontend.villa.sort_popular'),
+            'rating'     => __('frontend.villa.sort_rating'),
+            'price_asc'  => __('frontend.villa.sort_price_asc'),
+            'price_desc' => __('frontend.villa.sort_price_desc'),
         ];
 
         // Handle AJAX request
@@ -175,7 +185,8 @@ class VillaController extends Controller
             'typeOptions',
             'bedroomOptions',
             'ratingOptions',
-            'priceOptions'
+            'priceOptions',
+            'sortOptions'
         ));
     }
 
@@ -187,11 +198,13 @@ class VillaController extends Controller
         $property->load(['translations', 'settings', 'galleries', 'facilities.translations', 'approvedReviews.user', 'promotions']);
         $paymentMethods = PaymentMethod::where('is_active', true)->get();
 
-        $approvedReviews = $property->approvedReviews;
+        $approvedReviews = $property->approvedReviews ?? collect();
         $totalReviews = $approvedReviews->count();
-        $propRating = $property->rating > 0 ? number_format($property->rating, 1) : ($totalReviews > 0 ? number_format($approvedReviews->avg('rating'), 1) : '5.0');
+        $propRating = $property->rating > 0 
+            ? number_format($property->rating, 1) 
+            : ($totalReviews > 0 ? number_format($approvedReviews->avg('rating'), 1) : '5.0');
 
-        // Construct unified gallery list purely from database
+        // Construct unified gallery list
         $galleryList = [];
 
         if ($property->main_image) {
@@ -201,7 +214,7 @@ class VillaController extends Controller
 
             $galleryList[] = [
                 'url' => $mainImgUrl,
-                'title' => $property->name . ' - Utama'
+                'title' => ($property->name ?? 'Villa') . ' - Utama'
             ];
         }
 
@@ -239,12 +252,24 @@ class VillaController extends Controller
         foreach ($existingBookings as $b) {
             if ($b->check_in && $b->check_out) {
                 $bookedDates[] = [
-                    'from' => $b->check_in->format('Y-m-d'),
-                    'to'   => $b->check_out->format('Y-m-d'),
+                    'from' => \Carbon\Carbon::parse($b->check_in)->format('Y-m-d'),
+                    'to'   => \Carbon\Carbon::parse($b->check_out)->format('Y-m-d'),
                 ];
             }
         }
 
-        return view('villa.show', compact('property', 'paymentMethods', 'galleryList', 'approvedReviews', 'totalReviews', 'propRating', 'userReview', 'userCanReview', 'propertyRules', 'bookedDates'));
+        return view('villa.show', compact(
+            'property', 
+            'paymentMethods', 
+            'galleryList', 
+            'approvedReviews', 
+            'totalReviews', 
+            'propRating', 
+            'userReview', 
+            'userCanReview', 
+            'propertyRules', 
+            'bookedDates'
+        ));
     }
+
 }

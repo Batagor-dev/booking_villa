@@ -89,10 +89,6 @@ Route::middleware(['auth', 'verified', 'role:Super Admin|Admin|admin|super-admin
         'article' => 'article:slug',
     ]);
 
-    Route::resource('/banner', App\Http\Controllers\BannerController::class)->parameters([
-        'banner' => 'banner:uuid',
-    ]);
-
     Route::resource('/destination', App\Http\Controllers\DestinationController::class)->parameters([
         'destination' => 'destination:uuid',
     ])->except('show');

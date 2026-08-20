@@ -16,152 +16,96 @@ class RolePermissionSeeder extends Seeder
      */
     public function run()
     {
-        $permissiongroups = [
-            'User',                 // 1
-            'Role',                 // 2
-            'Permission Group',     // 3
-            'Permission',           // 4
-            'Menu',                 // 5
-            'Menu Group',           // 6
-            'Article Category',     // 7
-            'Article',              // 8
-            'Setting',              // 9
-            'Banner',               // 10
-            'Property Service',     // 11
-            'Facility',             // 12
-            'Property',             // 13
-            'Content Management',   // 14
-            'Property Management',  // 15
-            'Settings',             // 16
-            'Payment Method',       // 17
-            'Booking',              // 18
-            'Destination',          // 19
-            'Promotion',            // 20
-            'Review',               // 21
+        $permissionsByGroup = [
+            'User' => [
+                'User Access', 'User Detail', 'User Create', 'User Update', 'User Banned', 'User Role Create'
+            ],
+            'Role' => [
+                'Role Access', 'Role Detail', 'Role Create', 'Role Update', 'Role Delete'
+            ],
+            'Permission Group' => [
+                'Permission Group Access', 'Permission Group Create', 'Permission Group Update', 'Permission Group Delete'
+            ],
+            'Permission' => [
+                'Permission Access', 'Permission Create', 'Permission Update', 'Permission Delete'
+            ],
+            'Menu' => [
+                'Menu Access', 'Menu Create', 'Menu Update', 'Menu Delete'
+            ],
+            'Menu Group' => [
+                'Menu Group Access', 'Menu Group Create', 'Menu Group Update', 'Menu Group Delete'
+            ],
+            'Article Category' => [
+                'Article Category Access', 'Article Category Create', 'Article Category Update', 'Article Category Delete'
+            ],
+            'Article' => [
+                'Article Access', 'Article Detail', 'Article Create', 'Article Update', 'Article Delete'
+            ],
+            'Setting' => [
+                'Setting Access', 'Setting Detail', 'Setting Create', 'Setting Update', 'Setting Delete'
+            ],
+            'Property Service' => [
+                'Property Service Access', 'Property Service Detail', 'Property Service Create', 'Property Service Update', 'Property Service Delete'
+            ],
+            'Facility' => [
+                'Facility Access', 'Facility Detail', 'Facility Create', 'Facility Update', 'Facility Delete'
+            ],
+            'Property' => [
+                'Property Access', 'Property Detail', 'Property Create', 'Property Update', 'Property Delete'
+            ],
+            'Content Management' => [
+                'Content Management Access'
+            ],
+            'Property Management' => [
+                'Property Management Access'
+            ],
+            'Settings' => [
+                'Settings Access'
+            ],
+            'Payment Method' => [
+                'Payment Method Access', 'Payment Method Detail', 'Payment Method Create', 'Payment Method Update', 'Payment Method Delete'
+            ],
+            'Booking' => [
+                'Booking Access', 'Booking Detail', 'Booking Create', 'Booking Update', 'Booking Delete'
+            ],
+            'Destination' => [
+                'Destination Access', 'Destination Detail', 'Destination Create', 'Destination Update', 'Destination Delete'
+            ],
+            'Promotion' => [
+                'Promotion Access', 'Promotion Detail', 'Promotion Create', 'Promotion Update', 'Promotion Delete'
+            ],
+            'Review' => [
+                'Review Access', 'Review Detail', 'Review Update', 'Review Delete'
+            ],
+            'Property Rule' => [
+                'Property Rule Access', 'Property Rule Detail', 'Property Rule Create', 'Property Rule Update', 'Property Rule Delete'
+            ],
         ];
 
-        $groupMap = [];
-        foreach ($permissiongroups as $permissiongroup) {
-            $pg = PermissionGroup::firstOrCreate([
-                'name' => $permissiongroup
+        foreach ($permissionsByGroup as $groupName => $permissions) {
+            $group = PermissionGroup::firstOrCreate([
+                'name' => $groupName
             ]);
-            $groupMap[$permissiongroup] = $pg->id;
-        }
 
-        $permissions = [
-            'User Access-1',
-            'User Detail-1',
-            'User Create-1',
-            'User Update-1',
-            'User Banned-1',
-            'User Role Create-1',
-            'Role Access-2',
-            'Role Detail-2',
-            'Role Create-2',
-            'Role Update-2',
-            'Role Delete-2',
-            'Permission Group Access-3',
-            'Permission Group Create-3',
-            'Permission Group Update-3',
-            'Permission Group Delete-3',
-            'Permission Access-4',
-            'Permission Create-4',
-            'Permission Update-4',
-            'Permission Delete-4',
-            'Menu Access-5',
-            'Menu Create-5',
-            'Menu Update-5',
-            'Menu Delete-5',
-            'Menu Group Access-6',
-            'Menu Group Create-6',
-            'Menu Group Update-6',
-            'Menu Group Delete-6',
-            'Article Category Access-7',
-            'Article Category Create-7',
-            'Article Category Update-7',
-            'Article Category Delete-7',
-            'Article Access-8',
-            'Article Detail-8',
-            'Article Create-8',
-            'Article Update-8',
-            'Article Delete-8',
-            'Setting Access-9',
-            'Setting Detail-9',
-            'Setting Create-9',
-            'Setting Update-9',
-            'Setting Delete-9',
-            'Banner Access-10',
-            'Banner Detail-10',
-            'Banner Create-10',
-            'Banner Update-10',
-            'Banner Delete-10',
-            'Property Service Access-11',
-            'Property Service Detail-11',
-            'Property Service Create-11',
-            'Property Service Update-11',
-            'Property Service Delete-11',
-            'Facility Access-12',
-            'Facility Detail-12',
-            'Facility Create-12',
-            'Facility Update-12',
-            'Facility Delete-12',
-            'Property Access-13',
-            'Property Detail-13',
-            'Property Create-13',
-            'Property Update-13',
-            'Property Delete-13',
-            'Content Management Access-14',
-            'Property Management Access-15',
-            'Settings Access-16',
-            'Payment Method Access-17',
-            'Payment Method Detail-17',
-            'Payment Method Create-17',
-            'Payment Method Update-17',
-            'Payment Method Delete-17',
-            'Booking Access-18',
-            'Booking Detail-18',
-            'Booking Create-18',
-            'Booking Update-18',
-            'Booking Delete-18',
-            'Destination Access-19',
-            'Destination Detail-19',
-            'Destination Create-19',
-            'Destination Update-19',
-            'Destination Delete-19',
-            'Promotion Access-20',
-            'Promotion Detail-20',
-            'Promotion Create-20',
-            'Promotion Update-20',
-            'Promotion Delete-20',
-            'Review Access-21',
-            'Review Detail-21',
-            'Review Update-21',
-            'Review Delete-21',
-        ];
-
-        foreach ($permissions as $permission) {
-            $permission_array = explode("-", $permission);
-            $groupIndex = (int)$permission_array[1] - 1;
-            $groupName = $permissiongroups[$groupIndex] ?? null;
-            $groupId = $groupName ? ($groupMap[$groupName] ?? (int)$permission_array[1]) : (int)$permission_array[1];
-
-            Permission::firstOrCreate([
-                'name' => $permission_array[0],
-                'guard_name' => 'web'
-            ], [
-                'permission_group_id' => $groupId
-            ]);
+            foreach ($permissions as $permName) {
+                Permission::firstOrCreate([
+                    'name'       => $permName,
+                    'guard_name' => 'web'
+                ], [
+                    'permission_group_id' => $group->id
+                ]);
+            }
         }
 
         $superAdmin = Role::firstOrCreate([
-            'name' => 'Super Admin',
+            'name'       => 'Super Admin',
             'guard_name' => 'web'
         ]);
 
         $superAdmin->givePermissionTo(Permission::all());
 
         $role = Role::firstOrCreate([
-            'name' => 'User',
+            'name'       => 'User',
             'guard_name' => 'web'
         ]);
         $role->givePermissionTo('Article Access');

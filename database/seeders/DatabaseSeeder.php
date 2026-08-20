@@ -18,25 +18,29 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RolePermissionSeeder::class);
 
-        $admin = User::create([
-            'username' => 'farel',
-            'name' => 'tagor',
-            'email' => 'techareaproduction@gmail.com',
-            'email_verified_at' => '2022-08-16 20:57:19',
-            'password' => Hash::make('admin123')
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'techareaproduction@gmail.com'],
+            [
+                'username' => 'farel',
+                'name' => 'tagor',
+                'email_verified_at' => '2022-08-16 20:57:19',
+                'password' => Hash::make('admin123')
+            ]
+        );
 
-        $admin->assignRole('Super Admin');
+        $admin->syncRoles(['Super Admin']);
 
-        $user = User::create([
-            'username' => 'user',
-            'name' => 'User',
-            'email' => 'user@gmail.com',
-            'email_verified_at' => '2022-08-16 20:57:19',
-            'password' => Hash::make('user12345')
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => 'user@gmail.com'],
+            [
+                'username' => 'user',
+                'name' => 'User',
+                'email_verified_at' => '2022-08-16 20:57:19',
+                'password' => Hash::make('user12345')
+            ]
+        );
 
-        $user->assignRole('User');
+        $user->syncRoles(['User']);
 
         $this->call(MenuGroupSeeder::class);
         $this->call(MenuSeeder::class);
